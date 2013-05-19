@@ -1,0 +1,11 @@
+!.gitignore
+*~
+._*
+*.bak
+*.swp
+a.out
+*.patch
+*.class
+*.jar
+*.log
+target
