@@ -1,0 +1,7 @@
+virtualenv & pip requirement
+====
+Django==1.5.1
+wsgiref==0.1.2
+
+
+

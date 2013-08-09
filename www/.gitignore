@@ -1,0 +1,6 @@
+*.pyc
+*.log
+*.pid
+.DS_Store
+*.db
+env/
