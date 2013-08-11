@@ -1,0 +1,327 @@
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@import url(http://fonts.googleapis.com/earlyaccess/nanumbrushscript.css);
+@import "/static/resources/less/elements.less";
+// LESS
+
+@line: #E5E5E5;
+@lineLight: @line + #111111;
+@lineDark: @line - #111111;
+@background: #FAFAFA;
+@fontBase: #555555;
+
+@headerHeight: 70px;
+
+@gray:#999999;
+// @blue:#4082BC;
+@black:#333333;
+
+@brown:#776B5F;
+@orange:#E55C38;
+@red:#CF4E4E;
+@light:#FAFAFA;
+@green:#4DAF7C;
+@blue:#5F90B0;
+@blueLight:@blue + #222222;
+
+
+@text:#333333;
+@textLight:#AAAAAA;
+
+@padding:20px;
+
+.fade {
+    .transition-duration(0.15s);
+}
+.brush {
+    font-family: 'Nanum Brush Script', cursive;
+}
+.border(@color:@line) {
+    border:1px solid @color;
+}
+.boxsizingBorder {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+.wordwrap {
+   white-space: pre-wrap;      /* CSS3 */
+   white-space: -moz-pre-wrap; /* Firefox */
+   white-space: -pre-wrap;     /* Opera <7 */
+   white-space: -o-pre-wrap;   /* Opera 7 */
+   word-wrap: break-word;      /* IE */
+}
+
+textarea, input, button {
+    font: 13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
+}
+body {
+color:@fontBase;
+font: 13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
+border-top:5px solid @blue;
+background:url(/static/images/background.png);
+
+    > header {
+        // background:rgba(255, 255, 255, 0.7);
+        background:white;
+        min-height:@headerHeight;
+        line-height:@headerHeight;
+        border-bottom:1px solid @lineDark;
+        .box-shadow(0px 0px 4px rgba(0, 0, 0, 0.1));
+        margin:0px -20px;
+        padding:0 20px;
+    }
+
+    > section {
+        padding-top:10px;
+        padding-bottom:10px;
+    }
+
+    hr {
+        margin:0px;
+        background-color:@line;
+        border-bottom:3px solid #FAFAFA;
+        border-top:none;
+        height:1px;
+        display: none;
+    }
+
+    > footer .container {
+        color:@gray;
+        text-align:center;
+    }
+}
+
+a {
+    .fade;
+}
+
+// button, a.button {
+//     font-size:13px;
+//     background:@blue;
+//     padding:8px 15px;
+//     font-weight:bold;
+//     color:white;
+//     .rounded(3px);
+//     text-decoration:none;
+// }
+
+// button, a.button:hover {
+//     background:@black;
+// }
+
+
+.task:hover {
+    border:1px solid @blue;
+}
+.task {
+    .fade;
+    .drop-shadow(0px, 0px, 4px, 0.1);
+    background:white;
+    margin-top:10px;
+    margin-bottom:10px;
+    border:1px solid @lineDark;
+    header {
+        padding:@padding;
+    }
+
+
+    .icon {
+        .fade;
+       .opacity(0.3);
+    }
+    .icon:hover {
+        .opacity(1);
+    }
+
+    .info {
+        float:left;
+        min-height:40px;
+    }
+    .date {
+        display:inline-block;
+        color:#999999;
+        background-color:@background;
+        padding:2px 5px;
+        font-size:10px;
+        .rounded(3px);
+        .border();
+        margin-top:5px;
+        font-weight:bold;
+    }
+    .subject {
+        margin-top:5px;
+        font-size:15px;
+        font-weight:bold;
+        line-height:30px;
+    }
+    .owner {
+        font-size:11px;
+        color:@textLight;
+    }
+    .attendance {
+        float:right;
+    }
+
+    section {
+        clear:both;
+        padding:@padding;
+        line-height:140%;
+    }
+
+    footer {
+        border-top:1px solid @line;
+        background:@light;
+        clear:both;
+        .inner-shadow(0px, 0px, 5px, 0.05);
+
+        ul.comment-list {
+            list-style-type:none;
+            padding:@padding/2;
+            margin:0;
+
+            li {
+                position:relative;
+                overflow:visible;
+                margin-bottom:10px;
+                border-bottom:1px solid @line;
+
+                .avatar-comment {
+                    top:2px;
+                    position:absolute;
+                }
+                .bubble {
+                    .rounded(10px);
+                    .border;
+                    overflow:visible;
+                    margin-left:35px;
+                    padding:@padding/3;
+                    background:white;
+                }
+                .content {
+                    .wordwrap;
+                }
+                .comment-name {
+                    font-weight:bold;
+                }
+                .comment-date {
+                    font-size:11px;
+                    color:@textLight;
+                }
+            }
+        }
+        .comment-form {
+            .fade;
+            border-top:1px solid @lineDark;
+            background:@line;
+            form, p {
+                padding:0;
+                margin:0;
+            }
+
+            textarea {
+                width:100%;
+                max-width:100%;
+                .boxsizingBorder;
+                padding:@padding/2;
+                padding-right:80px;
+                height:65px;
+                border:0;
+                margin:0;
+                .rounded(0px);
+                overflow:hidden;
+            }
+
+            form {
+                position:relative;
+            }
+
+            p.submit {
+                right:10px;
+                top:10px;
+                position:absolute;
+
+                input {
+                    .fade;
+                    font-size:11px;
+                    border:1px solid @line;
+                    background:@light;
+                    .rounded(2px);
+                    padding:5px 10px;
+                }
+
+                input:hover {
+                    color:white;
+                    border:1px solid @blue;
+                    background:@blueLight;
+                }
+            }
+        }
+    }
+
+    footer:after {
+        clear:both;
+    }
+}
+
+// Avatar
+.avatar {
+    width:50px;
+    height:50px;
+    margin-right:@padding / 2;
+    .rounded(28px);
+    border:1px solid @lineLight;
+    padding:3px;
+    background:white;
+}
+
+.avatar-small {
+    width:25px;
+    height:25px;
+    .rounded(14px);
+    padding:1px;
+    margin-right:@padding/4;
+}
+.avatar-owner {
+    float:left;
+    .avatar
+}
+
+.avatar-attendance {
+    .avatar-small
+}
+
+.avatar-comment {
+    .avatar-small
+}
+
+
+// d3
+.node circle {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+path.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+marker#licensing {
+  fill: green;
+}
+
+path.link.licensing {
+  stroke: green;
+}
+
+path.link.resolved {
+  stroke-dasharray: 0,2 1;
+}
+
+
