@@ -7,7 +7,7 @@ This is a simple Github Crawler for DeveloperRank by YasikStudio.
 Install dependencies (global)
 -----------------------------
 
-    sudo pip install pygithub3
+    pip install -r requirements.txt
 
 
 Settings
