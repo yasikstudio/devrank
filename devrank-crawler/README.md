@@ -7,6 +7,8 @@ This is a simple Github Crawler for DeveloperRank by YasikStudio.
 Install dependencies (global)
 -----------------------------
 
+    virtualenv .
+	source bin/activate
     pip install -r requirements.txt
 
 
