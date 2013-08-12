@@ -1,10 +1,10 @@
 {
   "links":[
-    {"source":"reeoss@gmail.com","target":"A", "type":"licensing"},
-    {"source":"A","target":"B", "type":"licensing"},
-    {"source":"A","target":"C", "type":"suit"},
-    {"source":"B","target":"raegon@gmail.com", "type":"suit"},
-    {"source":"C","target":"raegon@gmail.com", "type":"resolved"},
-    {"source":"raegon@gmail.com","target":"jong10@gmail.com", "type":"suit"}
+    {"source":"reeoss@gmail.com","target":"jwebse@gmail.com", "type":"type1"},
+    {"source":"jwebse@gmail.com","target":"B", "type":"type2"},
+    {"source":"jwebse@gmail.com","target":"beonit@gmail.com", "type":"type3"},
+    {"source":"B","target":"raegon@gmail.com", "type":"type2"},
+    {"source":"beonit@gmail.com","target":"raegon@gmail.com", "type":"type2"},
+    {"source":"raegon@gmail.com","target":"jong10@gmail.com", "type":"type1"}
   ]
 }
