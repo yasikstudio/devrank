@@ -1,10 +1,10 @@
 {
   "links":[
-    {"source":"reeoss","target":"A", "type":"licensing"},
+    {"source":"reeoss@gmail.com","target":"A", "type":"licensing"},
     {"source":"A","target":"B", "type":"licensing"},
     {"source":"A","target":"C", "type":"suit"},
-    {"source":"B","target":"D", "type":"suit"},
-    {"source":"C","target":"D", "type":"resolved"},
-    {"source":"D","target":"Apple", "type":"suit"}
+    {"source":"B","target":"raegon@gmail.com", "type":"suit"},
+    {"source":"C","target":"raegon@gmail.com", "type":"resolved"},
+    {"source":"raegon@gmail.com","target":"jong10@gmail.com", "type":"suit"}
   ]
 }
