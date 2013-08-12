@@ -8,7 +8,7 @@
 {% block content %}
 <script>
 
-var width = 960, height = 500;
+var width = 800, height = 500;
 var color = d3.scale.category20();
 var radius = d3.scale.sqrt()
     .range([0, 6]);
@@ -19,8 +19,8 @@ var svg = d3.select("body").append("svg")
 
 var force = d3.layout.force()
     .size([width, height])
-    .charge(-1200)
-	.linkDistance( 100 );
+    .charge(-900)
+	.linkDistance( 130 );
 
 d3.json("/static/dummy.json", function(error, graph) {
     var nodes = {};
@@ -85,18 +85,30 @@ var node = svg.append("g").selectAll("circle")
 	.style("font-size", '12px')
     .text(function(d) { return d.name; });
 
-    function tick() {
-        node.attr("transform", function(d) {
-            return "translate(" + d.x + "," + d.y + ")";
-        });
+function tick() {
+	node.attr("transform", function(d) {
+		if (d.index == 0){
+			return "translate( 100, 200)";
+		}else{
+			return "translate(" + d.x + "," + d.y + ")";
+		}
+	});
 
-        path.attr("d", function(d) {
-            var dx = d.target.x - d.source.x,
-            dy = d.target.y - d.source.y;
-            return "M" + d.source.x + "," + d.source.y + "A0,0 0 0,1 " + d.target.x + "," + d.target.y;
-        });
+	path.attr("d", function(d) {
+		if (d.source.index == 0){
+			d.source.x=100;
+			d.source.y=200;
+			var dx = d.target.x - d.source.x,
+			dy = d.target.y - d.source.y;
+			return "M" + d.source.x + "," + d.source.y + "A0,0 0 0,1 " + d.target.x + "," + d.target.y;
+		}else{
+			var dx = d.target.x - d.source.x,
+			dy = d.target.y - d.source.y;
+			return "M" + d.source.x + "," + d.source.y + "A0,0 0 0,1 " + d.target.x + "," + d.target.y;
+		}
+	});
 
-    }
+}
 
 });
 </script>
