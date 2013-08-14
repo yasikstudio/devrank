@@ -9,3 +9,12 @@ a.out
 *.jar
 *.log
 target
+
+# intellij
+.idea
+devrank.iml
+
+# eclipse
+.project
+.settings
+.classpath
