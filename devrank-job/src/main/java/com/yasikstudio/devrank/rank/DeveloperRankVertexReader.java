@@ -1,4 +1,4 @@
-package com.yasikstudio.devrank;
+package com.yasikstudio.devrank.rank;
 
 import java.io.IOException;
 import java.util.Map;

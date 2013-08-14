@@ -1,4 +1,4 @@
-package com.yasikstudio.devrank;
+package com.yasikstudio.devrank.rank;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -12,7 +12,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
-public class DeveloperRankRunner implements Tool {
+public class DeveloperRankJob implements Tool {
 
   private Configuration configuration;
 
@@ -37,15 +37,15 @@ public class DeveloperRankRunner implements Tool {
     }
 
     int workers = Integer.parseInt(cmd.getOptionValue('w'));
+    String inputPath = cmd.getOptionValue("inputPath");
+    String outputPath = cmd.getOptionValue("outputPath");
 
     GiraphJob job = new GiraphJob(getConf(), getClass().getName());
     job.setVertexClass(DeveloperRankVertex.class);
     job.setVertexInputFormatClass(DeveloperRankVertexInputFormat.class);
     job.setVertexOutputFormatClass(DeveloperRankVertexOutputFormat.class);
-    FileInputFormat.addInputPath(job,
-      new Path(cmd.getOptionValue("inputPath")));
-    FileOutputFormat.setOutputPath(job,
-      new Path(cmd.getOptionValue("outputPath")));
+    FileInputFormat.addInputPath(job, new Path(inputPath));
+    FileOutputFormat.setOutputPath(job, new Path(outputPath));
 
     job.setWorkerConfiguration(workers, workers, 100.0f);
     return job.run(true) ? 0 : -1;
