@@ -44,7 +44,7 @@ public class DataMergeJob implements Tool {
     Job job = new Job(getConf(), getClass().getName());
     job.setJarByClass(DataMergeJob.class);
     job.setMapperClass(DataMergeMapper.class);
-    job.setCombinerClass(DataMergeReducer.class);
+    job.setCombinerClass(DataMergeCombiner.class);
     job.setReducerClass(DataMergeReducer.class);
 
     job.setOutputKeyClass(Text.class);

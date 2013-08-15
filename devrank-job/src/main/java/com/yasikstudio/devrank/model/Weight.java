@@ -10,15 +10,26 @@ public class Weight implements Writable {
   private String id;
   private int count;
 
+  public Weight() {
+  }
+
+  public Weight(String id, int count) {
+    this.id = id;
+    this.count = count;
+  }
+
   public String getId() {
     return id;
   }
+
   public void setId(String uid) {
     this.id = uid;
   }
+
   public int getCount() {
     return count;
   }
+
   public void setCount(int count) {
     this.count = count;
   }
@@ -28,9 +39,11 @@ public class Weight implements Writable {
     id = input.readUTF();
     count = input.readInt();
   }
+
   @Override
   public void write(DataOutput output) throws IOException {
     output.writeUTF(id);
     output.writeInt(count);
   }
+
 }

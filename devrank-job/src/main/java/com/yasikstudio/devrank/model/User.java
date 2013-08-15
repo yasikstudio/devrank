@@ -14,7 +14,16 @@ public class User implements Writable {
   private List<Weight> forks;
   private List<Weight> pulls;
   private List<Weight> stars;
-  private List<Weight> watchs;
+  private List<Weight> watches;
+
+  public User() {
+    uid = "";
+    followings = new ArrayList<Weight>();
+    forks = new ArrayList<Weight>();
+    pulls = new ArrayList<Weight>();
+    stars = new ArrayList<Weight>();
+    watches = new ArrayList<Weight>();
+  }
 
   @Override
   public void readFields(DataInput input) throws IOException {
@@ -23,7 +32,7 @@ public class User implements Writable {
     forks = readWeights(input);
     pulls = readWeights(input);
     stars = readWeights(input);
-    watchs = readWeights(input);
+    watches = readWeights(input);
   }
 
   @Override
@@ -33,7 +42,7 @@ public class User implements Writable {
     writeWeights(output, forks);
     writeWeights(output, pulls);
     writeWeights(output, stars);
-    writeWeights(output, watchs);
+    writeWeights(output, watches);
   }
 
   private List<Weight> readWeights(DataInput input) throws IOException {
@@ -53,5 +62,53 @@ public class User implements Writable {
     for (Weight r : data) {
       r.write(output);
     }
+  }
+
+  public String getUid() {
+    return uid;
+  }
+
+  public void setUid(String uid) {
+    this.uid = uid;
+  }
+
+  public List<Weight> getFollowings() {
+    return followings;
+  }
+
+  public void setFollowings(List<Weight> followings) {
+    this.followings = followings;
+  }
+
+  public List<Weight> getForks() {
+    return forks;
+  }
+
+  public void setForks(List<Weight> forks) {
+    this.forks = forks;
+  }
+
+  public List<Weight> getPulls() {
+    return pulls;
+  }
+
+  public void setPulls(List<Weight> pulls) {
+    this.pulls = pulls;
+  }
+
+  public List<Weight> getStars() {
+    return stars;
+  }
+
+  public void setStars(List<Weight> stars) {
+    this.stars = stars;
+  }
+
+  public List<Weight> getWatchs() {
+    return watches;
+  }
+
+  public void setWatchs(List<Weight> watchs) {
+    this.watches = watchs;
   }
 }
