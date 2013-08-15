@@ -173,30 +173,35 @@ class GitHubCrawler(object):
 
             # my repos
             repos = self.repos(user)
-            fork_repos = []
+            fork_repo_owner_ids = []
             pull_requests = []
             for repo in repos:
                 if repo.fork:
-                    fork_repos.append(str(repo.id))
+                    fork_repo_owner_ids.append(str(repo.owner.id))
                 else:
                     # watcher write
                     watchers = self.watchers(user, repo.name)
                     for watcher in watchers:
-                        self.write(u'W|%d|%d' % (watcher.id, repo.id))
+                        if watcher.id != repo.owner.id:
+                            self.write(u'W|%d|%d' %
+                                    (watcher.id, repo.owner.id))
 
                     # pull requests write
                     pull_requests_cnt = self.pull_requests_cnt(user, repo.name)
                     for tup in pull_requests_cnt:
-                        self.write(u'P|%d|%d|%d' % (tup[0], repo.id, tup[1]))
+                        self.write(u'P|%d|%d|%d' %
+                                (repo.owner.id, tup[0], tup[1]))
 
             # write to file
-            followers_id = ','.join([str(u.id) for u in followers])
-            fork_repos = ','.join(fork_repos)
-            self.write(u'U|%d|%s|%s' % (user_id, followers_id, fork_repos))
+            followings_id = ','.join([str(u.id) for u in followings])
+            fork_repo_owner_ids = ','.join(fork_repo_owner_ids)
+            self.write(u'U|%d|%s|%s' %
+                    (user_id, followings_id, fork_repo_owner_ids))
 
             # print progress
-            if cnt % 100 == 0:
-                print('progress: %d' % cnt)
+            if cnt % 10 == 0:
+                print('progress: %d, rate-limit: %s' %
+                        (cnt, self.gh.remaining_requests))
 
             # append new users if not in visited
             if depth + 1 < self.MAXDEPTH:
@@ -231,7 +236,7 @@ class GitHubCrawler(object):
         if 'token' in result:
             return result['token']
         else:
-            print 'API rate limit exceeded for %s' % self.username
+            print('API rate limit exceeded for %s' % self.username)
             raise KeyboardInterrupt
 
     def flush(self):
