@@ -4,7 +4,7 @@
 
 	<groupId>com.yasikstudio</groupId>
 	<artifactId>devrank</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<packaging>jar</packaging>
 
 	<name>devrank</name>
@@ -64,7 +64,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.yasikstudio.devrank.rank.DeveloperRank</mainClass>
+							<mainClass>com.yasikstudio.devrank.DevRank</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
