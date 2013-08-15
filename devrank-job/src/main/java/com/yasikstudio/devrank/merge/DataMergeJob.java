@@ -1,7 +1,5 @@
 package com.yasikstudio.devrank.merge;
 
-import javax.xml.soap.Text;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -10,10 +8,15 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
+
+import com.yasikstudio.devrank.model.User;
 
 public class DataMergeJob implements Tool {
 
@@ -43,10 +46,13 @@ public class DataMergeJob implements Tool {
 
     Job job = new Job(getConf(), getClass().getName());
     job.setJarByClass(DataMergeJob.class);
+
     job.setMapperClass(DataMergeMapper.class);
     job.setCombinerClass(DataMergeCombiner.class);
     job.setReducerClass(DataMergeReducer.class);
 
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(User.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(NullWritable.class);
 
