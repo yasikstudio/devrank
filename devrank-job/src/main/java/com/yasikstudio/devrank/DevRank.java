@@ -24,7 +24,7 @@ public class DevRank {
     }
 
     String cmd = args[0];
-    if (jobs.containsKey(cmd)) {
+    if (!jobs.containsKey(cmd)) {
       usageWithExit();
     }
 
@@ -33,12 +33,13 @@ public class DevRank {
     System.arraycopy(args, 1, arguments, 0, length);
 
     Tool job = (Tool) jobs.get(cmd).newInstance();
-    System.exit(ToolRunner.run(job, args));
+    System.exit(ToolRunner.run(job, arguments));
   }
 
   private static void usageWithExit() {
+    String jarname = "devrank-x.x.x-jar-with-dependencies.jar";
     String joblist = Joiner.on("|").join(jobs.keySet());
-    System.out.println("Usage: hadoop jar devrank-x.x.x.jar [" + joblist + "]");
+    System.out.printf("Usage: hadoop jar %s [%s]\n", jarname, joblist);
     System.exit(-1);
   }
 }
