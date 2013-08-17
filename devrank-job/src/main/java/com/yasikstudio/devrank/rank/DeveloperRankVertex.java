@@ -63,12 +63,12 @@ public class DeveloperRankVertex extends
     }
   }
 
-  private void sendMsgTo(Map<String, Integer> targets, int type, double value,
-      int vertices) {
-    double v = (vertices != 0) ? (value / vertices) : 0;
-    Message msg = new Message(type, v);
-    for (String id : targets.keySet()) {
-      sendMsg(new Text(id), msg);
+  private void sendMsgTo(Map<String, Integer> targets, int type,
+      double totalValue, int vertices) {
+    double v = (vertices != 0) ? (totalValue / vertices) : 0;
+    for (Map.Entry<String, Integer> target : targets.entrySet()) {
+      sendMsg(new Text(target.getKey()),
+          new Message(type, v * target.getValue()));
     }
   }
 
