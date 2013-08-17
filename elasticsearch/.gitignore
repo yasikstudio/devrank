@@ -1,3 +1,4 @@
 elasticsearch-*.tar
 elasticsearch-*/
+config.py
 
