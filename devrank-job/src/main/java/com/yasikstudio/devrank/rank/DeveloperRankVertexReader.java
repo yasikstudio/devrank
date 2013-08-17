@@ -11,6 +11,7 @@ import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.RecordReader;
+import org.hsqldb.lib.StringUtil;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -78,13 +79,15 @@ public class DeveloperRankVertexReader extends
     Map<String, Integer> map = Maps.newHashMap();
     for (String category : data) {
       for (String item : category.split(",")) {
-        String[] idAndCount = item.split(":", 2);
-        String id = idAndCount[0];
-        int count = Integer.parseInt(idAndCount[1]);
-        if (map.containsKey(id)) {
-          map.put(id, map.get(id) + count);
-        } else {
-          map.put(id, count);
+        if (!StringUtil.isEmpty(item)) {
+          String[] idAndCount = item.split(":", 2);
+          String id = idAndCount[0];
+          int count = Integer.parseInt(idAndCount[1]);
+          if (map.containsKey(id)) {
+            map.put(id, map.get(id) + count);
+          } else {
+            map.put(id, count);
+          }
         }
       }
     }

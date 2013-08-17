@@ -26,8 +26,8 @@ public class DeveloperRankVertex extends
   @Override
   public void compute(Iterator<Message> messages) throws IOException {
     UserVertexValue self = getVertexValue();
-    int folVertices = sum(self.getFollowings().values());
-    int actVertices = sum(self.getActivities().values());
+    int folNumOutEdges = sum(self.getFollowings().values());
+    int actNumOutEdges = sum(self.getActivities().values());
 
     if (getSuperstep() > 0) {
       double folDevrank = 0;
@@ -46,8 +46,8 @@ public class DeveloperRankVertex extends
       }
 
       // calculate with PageRank algorithm
-      self.setFollowingValue((0.15f / folVertices) + 0.85f * folDevrank);
-      self.setActivityValue((0.15f / actVertices) + 0.85f * actDevrank);
+      self.setFollowingValue((0.15f / getNumVertices()) + (0.85f * folDevrank));
+      self.setActivityValue((0.15f / getNumVertices()) + (0.85f * actDevrank));
 
       // store my value
       setVertexValue(self);
@@ -55,9 +55,9 @@ public class DeveloperRankVertex extends
 
     if (getSuperstep() < k) {
       sendMsgTo(self.getFollowings(), FOLLOWING, self.getFollowingValue(),
-          folVertices);
+          folNumOutEdges);
       sendMsgTo(self.getActivities(), ACTIVITY, self.getActivityValue(),
-          actVertices);
+          actNumOutEdges);
     } else {
       voteToHalt();
     }
