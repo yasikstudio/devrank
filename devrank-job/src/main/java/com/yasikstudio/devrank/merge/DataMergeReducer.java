@@ -7,29 +7,26 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-import com.yasikstudio.devrank.model.User;
-import com.yasikstudio.devrank.model.Weight;
-
-public class DataMergeReducer extends Reducer<Text, User, Text, NullWritable> {
+public class DataMergeReducer extends Reducer<Text, UserRecord, Text, NullWritable> {
 
   private static final String FIELD_SEP = "|";
   private static final String LIST_SEP = ",";
   private static final String COUNT_SEP = ":";
 
   @Override
-  protected void reduce(Text key, Iterable<User> values, Context context)
+  protected void reduce(Text key, Iterable<UserRecord> values, Context context)
       throws IOException, InterruptedException {
-    User user = new User();
+    UserRecord user = new UserRecord();
     user.setUid(key.toString());
 
-    for (User u : values) {
+    for (UserRecord u : values) {
       MergeUtils.merge(user, u);
     }
 
     context.write(new Text(writeToString(user)), null);
   }
 
-  private String writeToString(User user) {
+  private String writeToString(UserRecord user) {
     // uid
     // |follow1:1,follow2:1
     // |fork1:1,fork2:1

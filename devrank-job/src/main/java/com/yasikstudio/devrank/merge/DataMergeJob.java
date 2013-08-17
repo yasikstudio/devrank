@@ -16,8 +16,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 
-import com.yasikstudio.devrank.model.User;
-
 public class DataMergeJob implements Tool {
 
   private Configuration configuration;
@@ -52,7 +50,7 @@ public class DataMergeJob implements Tool {
     job.setReducerClass(DataMergeReducer.class);
 
     job.setMapOutputKeyClass(Text.class);
-    job.setMapOutputValueClass(User.class);
+    job.setMapOutputValueClass(UserRecord.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(NullWritable.class);
 

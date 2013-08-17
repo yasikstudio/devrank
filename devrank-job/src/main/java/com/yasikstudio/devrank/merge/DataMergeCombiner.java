@@ -5,17 +5,15 @@ import java.io.IOException;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-import com.yasikstudio.devrank.model.User;
-
-public class DataMergeCombiner extends Reducer<Text, User, Text, User> {
+public class DataMergeCombiner extends Reducer<Text, UserRecord, Text, UserRecord> {
 
   @Override
-  protected void reduce(Text key, Iterable<User> values, Context context)
+  protected void reduce(Text key, Iterable<UserRecord> values, Context context)
       throws IOException, InterruptedException {
-    User user = new User();
+    UserRecord user = new UserRecord();
     user.setUid(key.toString());
 
-    for (User u : values) {
+    for (UserRecord u : values) {
       MergeUtils.merge(user, u);
     }
 

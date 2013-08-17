@@ -2,12 +2,9 @@ package com.yasikstudio.devrank.merge;
 
 import java.util.List;
 
-import com.yasikstudio.devrank.model.User;
-import com.yasikstudio.devrank.model.Weight;
-
 public class MergeUtils {
 
-  public static void merge(User dest, User src) {
+  public static void merge(UserRecord dest, UserRecord src) {
     merge(dest.getFollowings(), src.getFollowings());
     merge(dest.getForks(), src.getForks());
     merge(dest.getPulls(), src.getPulls());

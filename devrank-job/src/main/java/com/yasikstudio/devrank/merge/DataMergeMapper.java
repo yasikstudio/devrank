@@ -8,10 +8,8 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-import com.yasikstudio.devrank.model.User;
-import com.yasikstudio.devrank.model.Weight;
-
-public class DataMergeMapper extends Mapper<LongWritable, Text, Text, User> {
+public class DataMergeMapper extends
+    Mapper<LongWritable, Text, Text, UserRecord> {
 
   @Override
   protected void map(LongWritable key, Text value, Context context)
@@ -22,7 +20,7 @@ public class DataMergeMapper extends Mapper<LongWritable, Text, Text, User> {
           "line is empty or not contain seperator: " + line);
     }
 
-    User user = new User();
+    UserRecord user = new UserRecord();
     char type = line.charAt(0);
     String[] data = line.split("\\|", -1);
     if (data.length <= 2) {

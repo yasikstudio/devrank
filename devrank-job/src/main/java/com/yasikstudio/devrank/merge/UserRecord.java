@@ -1,4 +1,4 @@
-package com.yasikstudio.devrank.model;
+package com.yasikstudio.devrank.merge;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.hadoop.io.Writable;
 
-public class User implements Writable {
+public class UserRecord implements Writable {
   private String uid;
   private List<Weight> followings;
   private List<Weight> forks;
@@ -16,7 +16,7 @@ public class User implements Writable {
   private List<Weight> stars;
   private List<Weight> watches;
 
-  public User() {
+  public UserRecord() {
     uid = "";
     followings = new ArrayList<Weight>();
     forks = new ArrayList<Weight>();
