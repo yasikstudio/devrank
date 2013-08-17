@@ -1,8 +1,5 @@
 package com.yasikstudio.devrank.rank;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -17,7 +14,6 @@ import org.apache.hadoop.util.Tool;
 
 public class DeveloperRankJob implements Tool {
 
-  private static final String ISO8601 = "yyyy-MM-dd'T'HH:mm:ssZ";
   private Configuration configuration;
 
   @Override
@@ -41,12 +37,10 @@ public class DeveloperRankJob implements Tool {
       return 0;
     }
 
-    int workers = Integer.parseInt(cmd.getOptionValue('w', "10"));
+    int workers = Integer.parseInt(cmd.getOptionValue('w', "1"));
     long supersteps = Long.parseLong(cmd.getOptionValue('s', "10"));
     String inputPath = cmd.getOptionValue("inputPath");
     String outputPath = cmd.getOptionValue("outputPath");
-
-    String s = new SimpleDateFormat(ISO8601).format(new Date());
     configuration.setLong("superstep", supersteps);
 
     GiraphJob job = new GiraphJob(getConf(), "devrank-job-rank");
