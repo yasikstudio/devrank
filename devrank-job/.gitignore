@@ -12,7 +12,7 @@ target
 
 # intellij
 .idea
-devrank.iml
+*.iml
 
 # eclipse
 .project
