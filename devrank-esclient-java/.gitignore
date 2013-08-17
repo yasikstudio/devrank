@@ -1,0 +1,20 @@
+!.gitignore
+*~
+._*
+*.bak
+*.swp
+a.out
+*.patch
+*.class
+*.jar
+*.log
+target
+
+# intellij
+.idea
+*.iml
+
+# eclipse
+.project
+.settings
+.classpath
