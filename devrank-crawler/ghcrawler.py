@@ -70,6 +70,7 @@ class GitHubCrawler(object):
     def __index(self, index_type, index_id, data):
         retry = self.RETRY
         index_name = config.index_name
+        print('__index(%s, %s)' % (index_type, index_id))
         while retry > 0:
             retry -= 1
             try:
@@ -121,16 +122,16 @@ class GitHubCrawler(object):
             user_dict = results[0]
             etag = user_dict['ETag']
         result = self.__get(path='users/%s' % username, etag=etag)
-        if result['type'] != 'User':
-            return None
         status_code = result.status_code
         if status_code == 304:
             print 'cached %s' % username
+        else:
+            user_dict = result.json
+            user_dict['ETag'] = result.headers['ETag']
+            self.__index('users', user_dict['id'], user_dict)
+        if user_dict['type'] == 'User':
             return user_dict
-        user_dict = result.json
-        user_dict['ETag'] = result.headers['ETag']
-        self.__index('users', user_dict['id'], user_dict)
-        return user_dict
+        return None
 
     def user_id_from_es(self, username):
         user_dict = {}
@@ -200,8 +201,10 @@ class GitHubCrawler(object):
         etag = None # TODO: applied
         repos = []
         while path != None or url != None:
+            print 'repos(%s) path=%s, url=%s' % (username, path, url)
             res = self.__get(path=path, url=url, etag=etag)
             path = None
+            url = None
             for repo in res.json:
                 self.__index('repos', repo['id'], repo)
                 repos.append(repo)
@@ -224,7 +227,7 @@ class GitHubCrawler(object):
                 return []
         raise HTTPError('API failed')
 
-    def pull_requests_cnt(self, username, reponame):
+    def pull_requests_cnt(self, username, reponame, repo_id):
         """Get repo's watchers by username, reponame"""
         retry = self.RETRY
         while retry > 0:
@@ -232,6 +235,8 @@ class GitHubCrawler(object):
             try:
                 pull_requests = self.gh.pull_requests.list(
                         state='closed', user=username, repo=reponame).all()
+                self.es_conn.partial_update(config.index_name, 'repos', repo_id,
+                    script='ctx._source.pull_requests = []', params=None)
                 pull_requests_cnt = {}
                 result = []
                 for pr in pull_requests:
@@ -239,6 +244,16 @@ class GitHubCrawler(object):
                         print username, reponame, pr.number
                         continue
                     head_owner_id = pr.head['user']['id']
+                    self.es_conn.partial_update(config.index_name, 'repos',
+                        repo_id, script='ctx._source.pull_requests += pr',
+                        params= {
+                            'pr': {
+                                'number': pr.number,
+                                'login': pr.head['user']['login'],
+                                'id': pr.head['user']['id']
+                            }
+                        }
+                    )
                     if head_owner_id not in pull_requests_cnt:
                         pull_requests_cnt[head_owner_id] = 0
                     pull_requests_cnt[head_owner_id] += 1
@@ -301,7 +316,7 @@ class GitHubCrawler(object):
 
                     # pull requests write
                     pull_requests_cnt = self.pull_requests_cnt(
-                            username, repo['name'])
+                            username, repo['name'], repo['id'])
                     for tup in pull_requests_cnt:
                         self.write(u'P|%d|%d|%d' %
                                 (repo['owner']['id'], tup[0], tup[1]))
