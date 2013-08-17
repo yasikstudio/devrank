@@ -24,9 +24,10 @@ public class DeveloperRankJob implements Tool {
   public int run(String[] args) throws Exception {
     Options options = new Options();
     options.addOption("h", "help", false, "Help");
-    options.addOption("w", "workers", true, "Number of workers");
     options.addOption("i", "inputPath", true, "Input Path");
     options.addOption("o", "outputPath", true, "Output Path");
+    options.addOption("w", "workers", true, "Number of workers");
+    options.addOption("s", "supersteps", true, "Number of supersteps");
 
     HelpFormatter formatter = new HelpFormatter();
     if (args.length == 0) {
@@ -41,11 +42,12 @@ public class DeveloperRankJob implements Tool {
     }
 
     int workers = Integer.parseInt(cmd.getOptionValue('w', "10"));
+    long supersteps = Long.parseLong(cmd.getOptionValue('s', "10"));
     String inputPath = cmd.getOptionValue("inputPath");
     String outputPath = cmd.getOptionValue("outputPath");
 
     String s = new SimpleDateFormat(ISO8601).format(new Date());
-    configuration.setLong("superstep", 10L);
+    configuration.setLong("superstep", supersteps);
 
     GiraphJob job = new GiraphJob(getConf(), "devrank-job-rank");
     job.setVertexClass(DeveloperRankVertex.class);
