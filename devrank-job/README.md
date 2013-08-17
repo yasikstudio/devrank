@@ -13,10 +13,10 @@ http://maven.apache.org/
 And, `devrank-job` needs apache-giraph-0.1.0 release version. You can install
 using follow commands.
 
-    wget http://mirror.apache-kr.org/incubator/giraph/giraph-0.1.0-incubating/giraph-0.1.0-incubating-src.tar.gz
-    tar -xvzf giraph-0.1.0-incubating-src.tar.gz
-    cd giraph-0.1.0-incubating-src
-    mvn install
+    git clone https://github.com/apache/giraph.git
+    cd giraph
+    git checkout tags/release-0.1.0
+    mvn install -Dmaven.test.skip=true
 
 
 Build
