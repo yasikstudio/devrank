@@ -22,11 +22,11 @@ var force = d3.layout.force()
     .charge(-900)
 	.linkDistance( 130 );
 
-d3.json("/static/dummy.json", function(error, graph) {
+d3.json("/social.json", function(error, graph) {
     var nodes = {};
     graph.links.forEach(function(link) {
-        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
-        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
+        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, gravatar_url: link.src_gravatar_url });
+        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, gravatar_url: link.tgt_gravatar_url });
     });
 
     force
@@ -72,7 +72,7 @@ var node = svg.append("g").selectAll("circle")
 	.style("fill", "#ffffff");
 
 	node.append('image')
-	.attr("xlink:href", function(d) { return $.gravatar(d.name).attr('src') })
+	.attr("xlink:href", function(d) { return d.gravatar_url; })
 	.attr("mask", "url(#mask_pic)")
 	.attr("x", -25)
 	.attr("y", -25)
@@ -87,7 +87,7 @@ var node = svg.append("g").selectAll("circle")
 
 function tick() {
 	node.attr("transform", function(d) {
-		if (d.index == 0){
+		if (d.index == -1){
 			return "translate( 100, 200)";
 		}else{
 			return "translate(" + d.x + "," + d.y + ")";
@@ -95,7 +95,7 @@ function tick() {
 	});
 
 	path.attr("d", function(d) {
-		if (d.source.index == 0){
+		if (d.source.index == -1){
 			d.source.x=100;
 			d.source.y=200;
 			var dx = d.target.x - d.source.x,
