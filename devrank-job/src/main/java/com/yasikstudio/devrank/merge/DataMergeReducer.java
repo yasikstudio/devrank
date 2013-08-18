@@ -27,9 +27,9 @@ public class DataMergeReducer extends Reducer<Text, UserRecord, Text, NullWritab
 
     user.setExists(existing);
 
-    if (existing) {
-      context.write(new Text(writeToString(user)), null);
-    }
+    //if (existing) {
+    context.write(new Text(writeToString(user)), null);
+    //}
   }
 
   private String writeToString(UserRecord user) {
