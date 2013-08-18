@@ -95,6 +95,86 @@ a {
     .fade;
 }
 
+// button, a.button {
+//     font-size:13px;
+//     background:@blue;
+//     padding:8px 15px;
+//     font-weight:bold;
+//     color:white;
+//     .rounded(3px);
+//     text-decoration:none;
+// }
+
+// button, a.button:hover {
+//     background:@black;
+// }
+
+
+.task:hover {
+    border:1px solid @blue;
+}
+.task {
+    .fade;
+    .drop-shadow(0px, 0px, 4px, 0.1);
+    background:white;
+    margin-top:10px;
+    margin-bottom:10px;
+    border:1px solid @lineDark;
+    header {
+        padding:@padding;
+    }
+
+    .icon {
+        .fade;
+       .opacity(0.3);
+    }
+    .icon:hover {
+        .opacity(1);
+    }
+
+    .info {
+        float:left;
+        min-height:40px;
+    }
+    .subject {
+        margin-top:5px;
+        font-size:15px;
+        font-weight:bold;
+        line-height:30px;
+    }
+    .owner {
+        font-size:11px;
+        color:@textLight;
+    }
+    .attendance {
+        float:right;
+    }
+
+    section {
+        clear:both;
+        padding:@padding;
+        line-height:140%;
+    }
+
+    footer {
+        border-top:1px solid @line;
+        background:@light;
+        clear:both;
+        .inner-shadow(0px, 0px, 5px, 0.05);
+    }
+
+    footer:after {
+        clear:both;
+    }
+}
+
+// Avatar
+.avatar {
+    float:left;
+    margin-right:@padding / 1;
+    margin-bottom:@padding / 1;
+}
+
 
 
 // d3
@@ -125,5 +205,3 @@ path.link.type1 {
 path.link.type3 {
   stroke-dasharray: 0,2 1;
 }
-
-

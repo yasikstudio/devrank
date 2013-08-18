@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'icecream.bibibig.views.home', name='home'),
     url(r'^social/$', 'icecream.bibibig.views.social', name='social'),
+    url(r'^social.json/$', 'icecream.bibibig.views.social_json', name='social_json'),
     # url(r'^icecream/', include('icecream.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
