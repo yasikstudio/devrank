@@ -8,11 +8,17 @@ import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.RecordWriter;
 
+import com.yasikstudio.devrank.util.ESClient;
+
 public class DeveloperRankVertexWriter extends
     TextVertexWriter<Text, UserVertexValue, FloatWritable> {
 
-  public DeveloperRankVertexWriter(RecordWriter<Text, Text> lineRecordWriter) {
+  private ESClient esClient;
+
+  public DeveloperRankVertexWriter(RecordWriter<Text, Text> lineRecordWriter,
+      ESClient esClient) {
     super(lineRecordWriter);
+    this.esClient = esClient;
   }
 
   @Override
@@ -20,15 +26,24 @@ public class DeveloperRankVertexWriter extends
       BasicVertex<Text, UserVertexValue, FloatWritable, ?> vertex)
       throws IOException, InterruptedException {
 
+    String uid = vertex.getVertexId().toString();
     UserVertexValue value = vertex.getVertexValue();
+    double followingValue = value.getFollowingValue();
+    double activityValue = value.getActivityValue();
 
     StringBuilder results = new StringBuilder();
-    results.append(vertex.getVertexId().toString());
+    results.append(uid);
     results.append(",");
-    results.append(String.format("%.30f", value.getFollowingValue()));
+    results.append(String.format("%.30f", followingValue));
     results.append(",");
-    results.append(String.format("%.30f", value.getActivityValue()));
+    results.append(String.format("%.30f", activityValue));
 
+    // send to ElasticSearch
+    if (esClient != null) {
+      esClient.update(uid, followingValue + activityValue);
+    }
+
+    // write to HDFS
     getRecordWriter().write(new Text(results.toString()), null);
   }
 

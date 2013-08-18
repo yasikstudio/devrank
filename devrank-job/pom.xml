@@ -1,10 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.yasikstudio.devrank</groupId>
 	<artifactId>devrank-job</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 	<packaging>jar</packaging>
 
 	<name>devrank-job</name>
@@ -53,10 +54,11 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.5</version>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.5</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>
