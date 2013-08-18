@@ -12,6 +12,9 @@ mappings['users'] = {
     },
     'following_users': {
         'type': 'nested'
+    },
+    'repos': {
+        'type': 'nested'
     }
 }
 

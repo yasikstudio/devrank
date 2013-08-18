@@ -8,14 +8,16 @@ import json
 import requests
 import re
 from requests.exceptions import HTTPError, ConnectionError
-from pygithub3.exceptions import NotFound
-
-from pygithub3 import Github
 from pyes import *
 from pyes.query import *
 from pyes.exceptions import *
+from time import localtime, strftime
 
 import config
+
+def debug(str):
+    if config.DEBUG:
+        print(str)
 
 class GitHubCrawler(object):
     """GitHub Crawler"""
@@ -30,7 +32,6 @@ class GitHubCrawler(object):
         self.password = config.password
         self.username_idx = 0
         self.username = self.usernames[0]
-        self.reconnect()
         self.visited = set()
         self.unvisited = collections.deque(self.userlist())
         self.out = None
@@ -70,7 +71,7 @@ class GitHubCrawler(object):
     def __index(self, index_type, index_id, data):
         retry = self.RETRY
         index_name = config.index_name
-        print('__index(%s, %s)' % (index_type, index_id))
+        debug('__index(%s, %s)' % (index_type, index_id))
         while retry > 0:
             retry -= 1
             try:
@@ -78,6 +79,23 @@ class GitHubCrawler(object):
                 return
             except NoServerAvailable:
                 print 'pyes Server NoServerAvailable. retry...'
+        raise HTTPError('pyes failed')
+
+    def __update(self, index_type, index_id, script, params=None):
+        retry = self.RETRY
+        index_name = config.index_name
+        debug('__update(%s, %s)' % (index_type, index_id))
+        while retry > 0:
+            retry -= 1
+            try:
+                self.es_conn.partial_update(index_name, index_type, index_id,
+                    script=script, params=params)
+                return
+            except NoServerAvailable:
+                print 'pyes Server NoServerAvailable. retry...'
+            except DocumentMissingException:
+                print('document missing (%s, %s, %s, %s)' %
+                    (index_type, index_id, script, params))
         raise HTTPError('pyes failed')
 
     def __link_header_parse(self, link_header):
@@ -96,13 +114,7 @@ class GitHubCrawler(object):
         self.username_idx += 1
         self.username_idx %= len(self.username)
         self.username = self.usernames[self.username_idx]
-        print 'toggle username : %s' % self.username
-
-    def reconnect(self):
-        """Reconnect to GitHub login"""
-
-        # using id and password
-        self.gh = Github(login=self.username, password=self.password)
+        debug('toggle username : %s' % self.username)
 
     def userlist(self):
         """Get users from file at first time"""
@@ -124,7 +136,7 @@ class GitHubCrawler(object):
         result = self.__get(path='users/%s' % username, etag=etag)
         status_code = result.status_code
         if status_code == 304:
-            print 'cached %s' % username
+            debug('cached %s' % username)
         else:
             user_dict = result.json
             user_dict['ETag'] = result.headers['ETag']
@@ -144,128 +156,174 @@ class GitHubCrawler(object):
 
     def followers(self, username, user_id):
         """Get followers list by username"""
-        retry = self.RETRY
-        while retry > 0:
-            retry -= 1
-            try:
-                users = self.gh.users.followers.list(username).all()
-
-                # put followers to es
-                self.es_conn.partial_update(config.index_name, 'users', user_id,
-                    script='ctx._source.follower_users = []', params=None)
-                for user in users:
-                    self.es_conn.partial_update(config.index_name, 'users',
-                        user_id, script='ctx._source.follower_users += user',
-                        params= {
-                            'user': {
-                                'login': user.login,
-                                'id': user.id
-                            }
-                        }
-                    )
-                return users
-            except (HTTPError, ConnectionError) as e:
-                self.reconnect()
-        raise HTTPError('API failed')
+        path = 'users/%s/followers' % username
+        url = None
+        etag = None # TODO: applied
+        followers = []
+        users = []
+        while path != None or url != None:
+            debug('followers(%s) path=%s, url=%s' % (username, path, url))
+            res = self.__get(path=path, url=url, etag=etag)
+            path = url = None
+            for user in res.json:
+                followers.append(user)
+                users.append({
+                    'id': user['id'],
+                    'login': user['login'],
+                    'avatar_url': user['avatar_url'],
+                    'gravatar_id': user['gravatar_id'],
+                    'url': user['url']
+                })
+            link = self.__link_header_parse(res.headers['link'])
+            if link != None and 'next' in link:
+                url = link['next']
+        self.__update('users', user_id,
+            'ctx._source.follower_users = users', { 'users': users })
+        return followers
 
     def followings(self, username, user_id):
         """Get followings list by username"""
-        retry = self.RETRY
-        while retry > 0:
-            retry -= 1
-            try:
-                users = self.gh.users.followers.list_following(username).all()
+        path = 'users/%s/following' % username
+        url = None
+        etag = None # TODO: applied
+        followings = []
+        users = []
+        while path != None or url != None:
+            debug('followings(%s) path=%s, url=%s' % (username, path, url))
+            res = self.__get(path=path, url=url, etag=etag)
+            path = url = None
+            for user in res.json:
+                followings.append(user)
+                users.append({
+                    'id': user['id'],
+                    'login': user['login'],
+                    'avatar_url': user['avatar_url'],
+                    'gravatar_id': user['gravatar_id'],
+                    'url': user['url']
+                })
+            link = self.__link_header_parse(res.headers['link'])
+            if link != None and 'next' in link:
+                url = link['next']
+        self.__update('users', user_id,
+            'ctx._source.following_users = users', { 'users': users })
+        return followings
 
-                # put followings to es
-                self.es_conn.partial_update(config.index_name, 'users', user_id,
-                    script='ctx._source.following_users = []', params=None)
-                for user in users:
-                    self.es_conn.partial_update(config.index_name, 'users',
-                        user_id, script='ctx._source.following_users += user',
-                        params= {
-                            'user': {
-                                'login': user.login,
-                                'id': user.id
-                            }
-                        }
-                    )
-                return users
-            except (HTTPError, ConnectionError) as e:
-                self.reconnect()
-        raise HTTPError('API failed')
-
-    def repos(self, username):
+    def repos(self, username, user_id):
         """Get repos list by username"""
         path = 'users/%s/repos' % username
         url = None
         etag = None # TODO: applied
         repos = []
+        users_repos = []
         while path != None or url != None:
-            print 'repos(%s) path=%s, url=%s' % (username, path, url)
+            debug('repos(%s) path=%s, url=%s' % (username, path, url))
             res = self.__get(path=path, url=url, etag=etag)
-            path = None
-            url = None
+            path = url = None
             for repo in res.json:
                 self.__index('repos', repo['id'], repo)
+                users_repos.append({
+                    'id': repo['id'],
+                    'name': repo['name'],
+                    'fork': repo['fork'],
+                    'description': repo['description'],
+                    'language': repo['language']
+                })
                 repos.append(repo)
             link = self.__link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
+        self.__update('users', user_id, 'ctx._source.repos = repos', {
+            'repos': users_repos
+        })
         return repos
     
-    def watchers(self, username, reponame):
+    def watchers(self, username, reponame, repo_id):
         """Get repo's watchers by username, reponame"""
-        retry = self.RETRY
-        while retry > 0:
-            retry -= 1
-            try:
-                users = self.gh.repos.watchers.list(username, reponame).all()
-                return users
-            except (HTTPError, ConnectionError) as e:
-                self.reconnect()
-            except NotFound:
-                return []
-        raise HTTPError('API failed')
+        path = 'repos/%s/%s/subscribers' % (username, reponame)
+        url = None
+        etag = None # TODO: applied
+        watchers = []
+        while path != None or url != None:
+            debug('watchers(%s) path=%s, url=%s' % (username, path, url))
+            res = self.__get(path=path, url=url, etag=etag)
+            path = url = None
+            for user in res.json:
+                watchers.append({
+                    'id': user['id'],
+                    'login': user['login'],
+                    'avatar_url': user['avatar_url'],
+                    'gravatar_id': user['gravatar_id'],
+                    'url': user['url']
+                })
+            link = self.__link_header_parse(res.headers['link'])
+            if link != None and 'next' in link:
+                url = link['next']
+        self.__update('repos', repo_id, 'ctx._source.subscribers = watchers', {
+            'watchers': watchers
+        })
+        return watchers
+
+    def stargazers(self, username, reponame, repo_id):
+        """Get repo's stargazers by username, reponame"""
+        path = 'repos/%s/%s/stargazers' % (username, reponame)
+        url = None
+        etag = None # TODO: applied
+        stargazers = []
+        while path != None or url != None:
+            debug('stargazers(%s) path=%s, url=%s' % (username, path, url))
+            res = self.__get(path=path, url=url, etag=etag)
+            path = url = None
+            for user in res.json:
+                stargazers.append({
+                    'id': user['id'],
+                    'login': user['login'],
+                    'avatar_url': user['avatar_url'],
+                    'gravatar_id': user['gravatar_id'],
+                    'url': user['url']
+                })
+            link = self.__link_header_parse(res.headers['link'])
+            if link != None and 'next' in link:
+                url = link['next']
+        self.__update('repos', repo_id, 'ctx._source.stargazers = stargazers', {
+            'stargazers': stargazers
+        })
+        return stargazers
 
     def pull_requests_cnt(self, username, reponame, repo_id):
-        """Get repo's watchers by username, reponame"""
-        retry = self.RETRY
-        while retry > 0:
-            retry -= 1
-            try:
-                pull_requests = self.gh.pull_requests.list(
-                        state='closed', user=username, repo=reponame).all()
-                self.es_conn.partial_update(config.index_name, 'repos', repo_id,
-                    script='ctx._source.pull_requests = []', params=None)
-                pull_requests_cnt = {}
-                result = []
-                for pr in pull_requests:
-                    if pr.head['user'] == None:
-                        print username, reponame, pr.number
-                        continue
-                    head_owner_id = pr.head['user']['id']
-                    self.es_conn.partial_update(config.index_name, 'repos',
-                        repo_id, script='ctx._source.pull_requests += pr',
-                        params= {
-                            'pr': {
-                                'number': pr.number,
-                                'login': pr.head['user']['login'],
-                                'id': pr.head['user']['id']
-                            }
-                        }
-                    )
-                    if head_owner_id not in pull_requests_cnt:
-                        pull_requests_cnt[head_owner_id] = 0
-                    pull_requests_cnt[head_owner_id] += 1
-                for head_owner_id in pull_requests_cnt:
-                    cnt = pull_requests_cnt[head_owner_id]
-                    result.append((head_owner_id, cnt))
-                return result
-            except (HTTPError, ConnectionError) as e:
-                self.reconnect()
-            except NotFound:
-                return []
-        raise HTTPError('API failed')
+        """Get repo's pull_requests by username, reponame"""
+        path = 'repos/%s/%s/pulls?state=closed' % (username, reponame)
+        url = None
+        etag = None # TODO: applied
+        pull_requests_cnt = {}
+        result = []
+        prs = []
+        while path != None or url != None:
+            debug('pull_requests(%s) path=%s, url=%s' % (username, path, url))
+            res = self.__get(path=path, url=url, etag=etag)
+            path = url = None
+            for pr in res.json:
+                if pr['head']['user'] == None:
+                    print 'pass pr', username, reponame, pr['number']
+                    continue
+                head_owner_id = pr['head']['user']['id']
+                prs.append({
+                    'number': pr['number'],
+                    'login': pr['head']['user']['login'],
+                    'id': pr['head']['user']['id']
+                })
+                if head_owner_id not in pull_requests_cnt:
+                    pull_requests_cnt[head_owner_id] = 0
+                pull_requests_cnt[head_owner_id] += 1
+            link = self.__link_header_parse(res.headers['link'])
+            if link != None and 'next' in link:
+                url = link['next']
+        self.__update('repos', repo_id, 'ctx._source.pull_requests = prs', {
+            'prs': prs
+        })
+        for head_owner_id in pull_requests_cnt:
+            cnt = pull_requests_cnt[head_owner_id]
+            result.append((head_owner_id, cnt))
+        return result
 
     def crawl(self):
         """Crawling start"""
@@ -300,7 +358,7 @@ class GitHubCrawler(object):
                 followings = []
 
             # my repos
-            repos = self.repos(username)
+            repos = self.repos(username, user_id)
             fork_repo_owner_ids = []
             pull_requests = []
             for repo in repos:
@@ -308,11 +366,19 @@ class GitHubCrawler(object):
                     fork_repo_owner_ids.append(str(repo['owner']['id']))
                 else:
                     # watcher write
-                    watchers = self.watchers(username, repo['name'])
+                    watchers = self.watchers(username, repo['name'], repo['id'])
                     for watcher in watchers:
-                        if watcher.id != repo['owner']['id']:
+                        if watcher['id'] != repo['owner']['id']:
                             self.write(u'W|%d|%d' %
-                                    (watcher.id, repo['owner']['id']))
+                                    (watcher['id'], repo['owner']['id']))
+
+                    # stargazer write
+                    stargazers = self.stargazers(username,
+                        repo['name'], repo['id'])
+                    for stargazer in stargazers:
+                        if stargazer['id'] != repo['owner']['id']:
+                            self.write(u'S|%d|%d' %
+                                    (stargazer['id'], repo['owner']['id']))
 
                     # pull requests write
                     pull_requests_cnt = self.pull_requests_cnt(
@@ -322,20 +388,21 @@ class GitHubCrawler(object):
                                 (repo['owner']['id'], tup[0], tup[1]))
 
             # write to file
-            followings_id = ','.join([str(u.id) for u in followings])
+            followings_id = ','.join([str(u['id']) for u in followings])
             fork_repo_owner_ids = ','.join(fork_repo_owner_ids)
             self.write(u'U|%d|%s|%s' %
                     (user_id, followings_id, fork_repo_owner_ids))
 
             # print progress
-            if cnt % 10 == 0:
-                print('progress: %d, rate-limit: %s' %
-                        (cnt, self.gh.remaining_requests))
+            print('[%s] username: %s, progress: %d, rate-limit: %s' %
+                (strftime("%Y-%m-%d %H:%M:%S", localtime()), username, cnt,
+                self.remaining_requests))
+            self.es_conn.refresh()
 
             # append new users if not in visited
             if depth + 1 < self.MAXDEPTH:
-                self.append(depth, [str(u.login) for u in followers])
-                self.append(depth, [str(u.login) for u in followings])
+                self.append(depth, [str(u['login']) for u in followers])
+                self.append(depth, [str(u['login']) for u in followings])
 
     def append(self, depth, users):
         """Append users to unvisited list if not visited"""
@@ -347,26 +414,6 @@ class GitHubCrawler(object):
         if not self.out:
             self.out = open('gh.log', 'w') # truncate mode
         self.out.write(msg + '\n')
-
-    def request_token(self, scopes, client_id, client_secret):
-        """GitHub access token request."""
-        authorizations_request_url = 'https://api.github.com/authorizations'
-        scope_dicts = scopes.split(',')
-        params = {
-            'note': 'github_token_requestor',
-            'scopes': scope_dicts,
-            'client_id': client_id,
-            'client_secret': client_secret
-        }
-        r = requests.post(authorizations_request_url,
-                          auth=(self.username, self.password),
-                          data=json.dumps(params))
-        result = r.json
-        if 'token' in result:
-            return result['token']
-        else:
-            print('API rate limit exceeded for %s' % self.username)
-            raise KeyboardInterrupt
 
     def flush(self):
         if self.out:
