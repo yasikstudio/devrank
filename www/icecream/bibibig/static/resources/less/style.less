@@ -124,7 +124,6 @@ a {
         padding:@padding;
     }
 
-
     .icon {
         .fade;
        .opacity(0.3);
@@ -136,17 +135,6 @@ a {
     .info {
         float:left;
         min-height:40px;
-    }
-    .date {
-        display:inline-block;
-        color:#999999;
-        background-color:@background;
-        padding:2px 5px;
-        font-size:10px;
-        .rounded(3px);
-        .border();
-        margin-top:5px;
-        font-weight:bold;
     }
     .subject {
         margin-top:5px;
@@ -173,89 +161,6 @@ a {
         background:@light;
         clear:both;
         .inner-shadow(0px, 0px, 5px, 0.05);
-
-        ul.comment-list {
-            list-style-type:none;
-            padding:@padding/2;
-            margin:0;
-
-            li {
-                position:relative;
-                overflow:visible;
-                margin-bottom:10px;
-                border-bottom:1px solid @line;
-
-                .avatar-comment {
-                    top:2px;
-                    position:absolute;
-                }
-                .bubble {
-                    .rounded(10px);
-                    .border;
-                    overflow:visible;
-                    margin-left:35px;
-                    padding:@padding/3;
-                    background:white;
-                }
-                .content {
-                    .wordwrap;
-                }
-                .comment-name {
-                    font-weight:bold;
-                }
-                .comment-date {
-                    font-size:11px;
-                    color:@textLight;
-                }
-            }
-        }
-        .comment-form {
-            .fade;
-            border-top:1px solid @lineDark;
-            background:@line;
-            form, p {
-                padding:0;
-                margin:0;
-            }
-
-            textarea {
-                width:100%;
-                max-width:100%;
-                .boxsizingBorder;
-                padding:@padding/2;
-                padding-right:80px;
-                height:65px;
-                border:0;
-                margin:0;
-                .rounded(0px);
-                overflow:hidden;
-            }
-
-            form {
-                position:relative;
-            }
-
-            p.submit {
-                right:10px;
-                top:10px;
-                position:absolute;
-
-                input {
-                    .fade;
-                    font-size:11px;
-                    border:1px solid @line;
-                    background:@light;
-                    .rounded(2px);
-                    padding:5px 10px;
-                }
-
-                input:hover {
-                    color:white;
-                    border:1px solid @blue;
-                    background:@blueLight;
-                }
-            }
-        }
     }
 
     footer:after {
@@ -265,35 +170,10 @@ a {
 
 // Avatar
 .avatar {
-    width:50px;
-    height:50px;
-    margin-right:@padding / 1;
-    .rounded(28px);
-    border:1px solid @lineLight;
-    padding:3px;
-    background:white;
-}
-
-.avatar-small {
-    width:25px;
-    height:25px;
-    .rounded(14px);
-    padding:1px;
-    margin-right:@padding/4;
-}
-.avatar-owner {
     float:left;
-    .avatar
+    margin-right:@padding / 1;
+    margin-bottom:@padding / 1;
 }
-
-.avatar-attendance {
-    .avatar-small
-}
-
-.avatar-comment {
-    .avatar-small
-}
-
 
 
 

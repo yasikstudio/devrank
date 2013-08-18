@@ -12,18 +12,17 @@ def home(request):
 
         for _r in r:
             _r.update({u"source":_r["_source"]})
-
             if u"devrank_score" in _r[u"source"].keys():
                 value = float(_r[u"source"][u"devrank_score"]) * 1000000
                 _r["source"].update({u"devrank_score":value})
             else:
                 _r["source"].update({u"devrank_score":0})
-
             _r.pop(u"_source",None)
 
         var = RequestContext(request, {
                 'page_title': u'Home',
                 'results': r,
+                'query':request.POST['query'],
                 })
         return render_to_response('result_list.html', var)
     else:
