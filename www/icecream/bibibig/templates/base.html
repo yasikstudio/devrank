@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 
     <script src="{{ STATIC_URL }}resources/js/less-1.3.3.min.js"></script>
+    <script src="{{ STATIC_URL }}resources/js/social.js"></script>
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap/js/bootstrap.min.js"></script>
@@ -54,8 +55,6 @@
             </div>
         </form>
 
-        <a class="btn" href="/social">social link (just test btn) </a>
-
         <div id="option" class="option">
             <input type="radio">option1..</input>
             <input type="radio">option2..</input>
@@ -66,6 +65,19 @@
     <section>
         {% block content %} {% endblock %}
     </section>
+
+    <script>
+        $('.github_id_form').submit(function() {
+            var id = $(this).attr('id');
+            var login = id.split('-')[0];
+            var my_login = $(this).find('input#login_id').val();
+            $('#' + id).html('');
+            var width = $('#' + id).parent().width();
+            var height = $('#' + id).parent().height();
+            social_rel(my_login + '|' + login, '#' + id, width, height);
+            return false;
+        });
+    </script>
 
     <footer>
         <div class='container'>

@@ -30,7 +30,7 @@ class ESClient(object):
     "sort": [
         { "devrank_score": "desc" }
     ],
-    "size": 50
+    "size": 10
 }
         ''' % (query)
 
@@ -61,7 +61,25 @@ class ESClient(object):
         return r[0]['_source']['avatar_url']
 
     def social_search(self, users):
-        queryDSL = u'''
+        user_queryURI = 'github/users/_search'
+        user_queryDSL = u'''
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "term": {
+                        "users.login": "%s"
+                    }
+                }
+            ]
+        }
+    }
+}
+        '''
+
+        repo_queryURI = 'github/repos/_search'
+        repo_queryDSL = u'''
 {
     "query": {
         "filtered": {
@@ -99,6 +117,9 @@ class ESClient(object):
         links = []
 
         for user in users:
+            avatar_url = self.get_gravatar_url(user)
+            gravatar_url[user] = avatar_url
+
             ''' follower, following '''
             results = self.es.post(user_queryURI, data=user_queryDSL % user)
             for r in results['hits']['hits']:
@@ -108,7 +129,7 @@ class ESClient(object):
                         "source": user,
                         "target": target['login'],
                         "gravatar_url": None,
-                        "type": "type1"
+                        "type": "type3"
                     })
                     gravatar_url[target['login']] = target['avatar_url']
                 followers = r['_source']['follower_users']
@@ -117,7 +138,7 @@ class ESClient(object):
                         "source": source['login'],
                         "target": user,
                         "gravatar_url": None,
-                        "type": "type1"
+                        "type": "type3"
                     })
                     gravatar_url[source['login']] = source['avatar_url']
 
