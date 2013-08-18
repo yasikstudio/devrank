@@ -4,7 +4,7 @@ import rawes
 class ESClient(object):
 
     def __init__(self):
-        self.es = rawes.Elastic('http://jweb.kr:9200')
+        self.es = rawes.Elastic('http://devrank.yasikstudio.com:9200')
 
     def search(self, query):
         queryDSL = u'''
