@@ -34,6 +34,8 @@ public class DeveloperRankVertexWriter extends
     StringBuilder results = new StringBuilder();
     results.append(uid);
     results.append(",");
+    results.append(value.exists());
+    results.append(",");
     results.append(String.format("%.30f", followingValue));
     results.append(",");
     results.append(String.format("%.30f", activityValue));
