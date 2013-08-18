@@ -43,7 +43,7 @@ public class DeveloperRankJob implements Tool {
     long supersteps = Long.parseLong(cmd.getOptionValue('s', "10"));
     String inputPath = cmd.getOptionValue("inputPath");
     String outputPath = cmd.getOptionValue("outputPath");
-    String esAddress = cmd.getOptionValue("elasticSearch");
+    String esAddress = cmd.getOptionValue("elasticSearch", "");
 
     configuration.setLong("superstep", supersteps);
     configuration.set("elasticSearch", esAddress);

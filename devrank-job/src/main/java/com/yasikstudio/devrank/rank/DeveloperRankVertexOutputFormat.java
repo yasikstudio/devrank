@@ -22,7 +22,7 @@ public class DeveloperRankVertexOutputFormat extends
     Configuration conf = context.getConfiguration();
     String elasticSearchAddress = conf.get("elasticSearch");
     ESClient esClient = null;
-    if (elasticSearchAddress != null) {
+    if (elasticSearchAddress != null || "".equals(elasticSearchAddress)) {
       esClient = new ESClient(elasticSearchAddress);
     }
 
