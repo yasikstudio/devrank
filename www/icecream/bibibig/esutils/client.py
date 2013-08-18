@@ -7,7 +7,7 @@ class ESClient(object):
         self.es = rawes.Elastic('http://jweb.kr:9200')
 
     def search(self, query):
-        queryDSL = '''
+        queryDSL = u'''
 {
     "query": {
         "filtered": {
@@ -33,10 +33,10 @@ class ESClient(object):
 }
         ''' % (query)
         result = self.es.post('github/users/_search', data=queryDSL)
-        return result['hits']
+        return result['hits']['hits']
 
     def social_search(self, users):
-        queryDSL = '''
+        queryDSL = u'''
 {
     "query": {
         "filtered": {
