@@ -12,7 +12,7 @@
 @headerHeight: 70px;
 
 @gray:#999999;
-// @blue:#4082BC;
+@blue:#4082BC;
 @black:#333333;
 
 @brown:#776B5F;
@@ -54,21 +54,18 @@
 textarea, input, button {
     font: 13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
 }
+
 body {
 color:@fontBase;
 font: 13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
-border-top:5px solid @blue;
 background:url(/static/images/background.png);
 
+
     > header {
-        // background:rgba(255, 255, 255, 0.7);
         background:white;
         min-height:@headerHeight;
         line-height:@headerHeight;
-        border-bottom:1px solid @lineDark;
-        .box-shadow(0px 0px 4px rgba(0, 0, 0, 0.1));
-        margin:0px -20px;
-        padding:0 20px;
+        margin-bottom:30px;
     }
 
     > section {
@@ -95,6 +92,16 @@ a {
     .fade;
 }
 
+#search_query{
+    height:30px;
+    width:350px;
+}
+
+#btn_search{
+   height:40px;
+}
+
+
 .task:hover {
     border:1px solid @blue;
 }
@@ -105,6 +112,7 @@ a {
     margin-top:10px;
     margin-bottom:20px;
     border:1px solid @lineDark;
+
     header {
         padding:@padding;
     }

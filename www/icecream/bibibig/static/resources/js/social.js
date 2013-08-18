@@ -83,7 +83,7 @@ function social_rel(users, elid, width, height) {
         function tick() {
             node.attr("transform", function(d) {
                 if (d.index == 0){
-                    return "translate( 100, 200)";
+                    return "translate( 250, 200)";
                 }else{
                     return "translate(" + d.x + "," + d.y + ")";
                 }
@@ -91,7 +91,7 @@ function social_rel(users, elid, width, height) {
 
             path.attr("d", function(d) {
                 if (d.source.index == 0){
-                    d.source.x=100;
+                    d.source.x=250;
                     d.source.y=200;
                     var dx = d.target.x - d.source.x,
                     dy = d.target.y - d.source.y;
