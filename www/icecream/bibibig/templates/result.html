@@ -1,15 +1,36 @@
 
 <div class="task">
+
     <article>
         <header>
             <img class="img-circle avatar" src="http://www.gravatar.com/avatar/{{ result.source.gravatar_id }}?s=80"/>
 
             <div class="info">
+
                 <span class="owner">score:{{ result.source.devrank_score }} </span>
 
                 <span><a href="https://github.com/{{ result.source.login}}">github</a></span><br/>
+                <span><a href="#{{result.source.id}}" role="button" data-toggle="modal">social</a></span><br/>
 
-                <span ><a href="https://github.com/{{ result.source.login}}">social</a></span><br/>
+                <div id="{{result.source.id}}" class="modal hide fade modal-fullscreen" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-header">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" aria-hidden="true">
+                            <i class="icon-remove icon-white"></i>
+                            <span>Close</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="{{result.source.id}}-content">
+                        <div><h3>Enter your Github ID or Email</h3></div>
+                        <form method="post" align="center">
+                            {% csrf_token %}
+                            <div class="input-append">
+                                <input  style="width:240px;" type="text" id="login_id"> </input>
+                                <button type="submit" class="login btn" id="btn_login">ok</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <span class="subject">{{ result.source.login }}</span>
         </header>
 
