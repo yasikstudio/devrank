@@ -8,39 +8,51 @@ import rawes
 def home(request):
     es = rawes.Elastic('http://jweb.kr:9200')
 
-    #description
-    # print es.post('github/_search',data=""" {
+    # es.post('github/_search',data=""" {
     #               "query": {
     #                 "term": {
     #                   "login": "reeoss"
     #                 }
     #               }
     #             } """)
-    print es.post('github/_search',data="""
-                  {
-                      "query": {
-                        "filtered": {
-                          "query": { "term": { "language":"java"}},
-                          "filter": {
-                              "nested": {
-                              "path": "owner",
-                              "query": {
-                                "filtered": {
-                                  "query": { "match_all": {}},
-                                  "filter": {
-                                  "or":[
-                                  {"term": { "owner.login": "JSansalone" }},
-                                  {"term": { "owner.login": "kunny" }}
-                                  ]
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    } """)
+    # es.post('github/_search',data="""
+    #               {
+    #                   "query": {
+    #                     "filtered": {
+    #                       "query": { "term": { "language":"java"}},
+    #                       "filter": {
+    #                           "nested": {
+    #                           "path": "owner",
+    #                           "query": {
+    #                             "filtered": {
+    #                               "query": { "match_all": {}},
+    #                               "filter": {
+    #                               "or":[
+    #                               {"term": { "owner.login": "JSansalone" }},
+    #                               {"term": { "owner.login": "kunny" }}
+    #                               ]
+    #                               }
+    #                             }
+    #                           }
+    #                         }
+    #                       }
+    #                     }
+    #                   }
+    #                 } """)
 
+    search = 'repository'
+    query = '''
+    {
+        "query": {
+            "multi_match": {
+                "query": \"%s\" ,
+                "fields": [ "description", "language" ]
+            }
+        }
+    } ''' % (search)
+    result = es.post('github/_search',data=query)
+
+    print result['hits']['hits'][0]['_source']['language']
 
 
     var = RequestContext(request, {
