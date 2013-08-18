@@ -17,19 +17,19 @@ public class DataMergeReducer extends Reducer<Text, UserRecord, Text, NullWritab
   protected void reduce(Text key, Iterable<UserRecord> values, Context context)
       throws IOException, InterruptedException {
     UserRecord user = new UserRecord();
+    boolean existing = user.exists();
     user.setUid(key.toString());
-    boolean existing = user.isUser();
 
     for (UserRecord u : values) {
+      existing = existing || u.exists();
       MergeUtils.merge(user, u);
-      existing = existing || u.isUser();
     }
 
-    user.setUser(existing);
+    user.setExists(existing);
 
-    if (existing) {
-      context.write(new Text(writeToString(user)), null);
-    }
+    //if (existing) {
+    context.write(new Text(writeToString(user)), null);
+    //}
   }
 
   private String writeToString(UserRecord user) {

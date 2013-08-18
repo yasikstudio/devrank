@@ -10,7 +10,7 @@ import org.apache.hadoop.io.Writable;
 
 public class UserRecord implements Writable {
   private String uid;
-  private boolean user;
+  private boolean exists;
   private List<Weight> followings;
   private List<Weight> forks;
   private List<Weight> pulls;
@@ -19,7 +19,7 @@ public class UserRecord implements Writable {
 
   public UserRecord() {
     uid = "";
-    user = false;
+    exists = false;
     followings = new ArrayList<Weight>();
     forks = new ArrayList<Weight>();
     pulls = new ArrayList<Weight>();
@@ -30,7 +30,7 @@ public class UserRecord implements Writable {
   @Override
   public void readFields(DataInput input) throws IOException {
     uid = input.readUTF();
-    user = input.readBoolean();
+    exists = input.readBoolean();
     followings = readWeights(input);
     forks = readWeights(input);
     pulls = readWeights(input);
@@ -41,7 +41,7 @@ public class UserRecord implements Writable {
   @Override
   public void write(DataOutput output) throws IOException {
     output.writeUTF(uid);
-    output.writeBoolean(user);
+    output.writeBoolean(exists);
     writeWeights(output, followings);
     writeWeights(output, forks);
     writeWeights(output, pulls);
@@ -76,12 +76,12 @@ public class UserRecord implements Writable {
     this.uid = uid;
   }
 
-  public boolean isUser() {
-    return user;
+  public boolean exists() {
+    return exists;
   }
 
-  public void setUser(boolean user) {
-    this.user = user;
+  public void setExists(boolean exists) {
+    this.exists = exists;
   }
 
   public List<Weight> getFollowings() {
