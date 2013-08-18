@@ -33,7 +33,7 @@ public class DataMergeMapper extends
       // U|uid|follow_id1,follow_id2,follow_id3|fork_id4,fork_id5,fork_id6
       String[] followings = data[2].split(",");
       String[] forks = data[3].split(",");
-      user.setUser(true);
+      user.setExists(true);
       user.setFollowings(newWeightList(followings, 1));
       user.setForks(newWeightList(forks, 1));
     } else if (type == 'P' && data.length == 4) {
