@@ -1,6 +1,5 @@
 
 <div class="task">
-
     <article>
         <header>
             <img class="img-circle avatar" src="http://www.gravatar.com/avatar/{{ result.source.gravatar_id }}?s=80"/>
@@ -33,10 +32,12 @@
 
                 <span class="subject">{{ result.source.login }}</span>
 
-                <span>publicRepos:{{ result.source.public_repos }}</span>
-                <span>followers:{{ result.source.followers}}</span>
-                <span>following:{{ result.source.following}}</span>
-        </header>
+                <div>
+                PublicRepos<span class="badge">{{ result.source.public_repos }}</span>
+                Followers<span class="badge badge-important">{{ result.source.followers}}</span>
+                Following<span class="badge">{{ result.source.following}}</span>
+                </div>
+            </header>
 
         <footer>
         </footer>
