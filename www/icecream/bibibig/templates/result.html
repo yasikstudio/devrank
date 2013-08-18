@@ -1,16 +1,9 @@
-
 <div class="task">
     <article>
         <header>
             <img class="img-circle avatar" src="http://www.gravatar.com/avatar/{{ result.source.gravatar_id }}?s=80"/>
 
             <div class="info">
-
-                <span class="owner">score:{{ result.source.devrank_score }} </span>
-
-                <span><a href="https://github.com/{{ result.source.login}}">github</a></span><br/>
-                <span><a href="#{{result.source.login}}" role="button" data-toggle="modal">social</a></span><br/>
-
                 <div id="{{result.source.login}}" class="modal hide fade modal-fullscreen" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-header">
                         <button type="button" class="btn btn-danger" data-dismiss="modal" aria-hidden="true">
@@ -19,7 +12,7 @@
                         </button>
                     </div>
                     <div class="modal-body" id="{{result.source.login}}-content">
-                        <div><h3>Enter your Github ID or Email</h3></div>
+                        <div><h3>Enter your Github ID</h3></div>
                         <form class="github_id_form" id="{{result.source.login}}-content" method="post" align="center">
                             {% csrf_token %}
                             <div class="input-append">
@@ -30,12 +23,29 @@
                     </div>
                 </div>
 
-                <span class="subject">{{ result.source.login }}</span>
+                <span class="subject">
+                <a href="https://github.com/{{ result.source.login}}">
+                    {{ result.source.login }}</a></span>
+
+
+                <a class="social" href="#{{result.source.login}}" role="button" data-toggle="modal">[Social Graph]</a>
 
                 <div>
-                PublicRepos<span class="badge">{{ result.source.public_repos }}</span>
-                Followers<span class="badge badge-important">{{ result.source.followers}}</span>
-                Following<span class="badge">{{ result.source.following}}</span>
+                    <span class="devrank"> {{ result.source.devrank_score|floatformat:"-2" }} </span>
+                </div>
+
+                <div class="labels" >
+                    <div class="label">PublicRepos
+                    <span class="badge badge-warning public_repo">{{ result.source.public_repos }}</span>
+                    </div>
+
+                    <div class="label">Followers
+                    <span class="badge badge-important followers">{{ result.source.followers}}</span>
+                    </div>
+
+                    <div class="label">Following
+                    <span class="badge badge-info following">{{ result.source.following}}</span>
+                    </div>
                 </div>
             </header>
 

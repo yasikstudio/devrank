@@ -39,6 +39,7 @@ function social_rel(users, elid, width, height) {
             .attr("markerWidth", 7)
             .attr("markerHeight", 7)
             .attr("orient", "auto")
+            .attr("fill","#999999")
             .append("path")
             .attr("d", "M0,-5L5,0L0,6");
 
@@ -76,6 +77,7 @@ function social_rel(users, elid, width, height) {
             .attr("dy", 35)
             .attr("text-anchor", "middle")
             .style("font-size", '12px')
+            .style("fill", '#ffffff')
             .text(function(d) { return d.name; });
 
         function tick() {

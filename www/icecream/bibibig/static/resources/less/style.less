@@ -95,21 +95,6 @@ a {
     .fade;
 }
 
-// button, a.button {
-//     font-size:13px;
-//     background:@blue;
-//     padding:8px 15px;
-//     font-weight:bold;
-//     color:white;
-//     .rounded(3px);
-//     text-decoration:none;
-// }
-
-// button, a.button:hover {
-//     background:@black;
-// }
-
-
 .task:hover {
     border:1px solid @blue;
 }
@@ -118,7 +103,7 @@ a {
     .drop-shadow(0px, 0px, 4px, 0.1);
     background:white;
     margin-top:10px;
-    margin-bottom:10px;
+    margin-bottom:20px;
     border:1px solid @lineDark;
     header {
         padding:@padding;
@@ -137,23 +122,48 @@ a {
         min-height:40px;
     }
     .subject {
-        margin-top:5px;
-        font-size:15px;
+        font-size:30px;
         font-weight:bold;
-        line-height:30px;
     }
-    .owner {
-        font-size:11px;
-        color:@textLight;
+    .subject:hover {
+        background-color:yellow;
     }
-    .attendance {
-        float:right;
+    a:link{
+        text-decoration:none;
     }
 
-    section {
-        clear:both;
-        padding:@padding;
-        line-height:140%;
+    .social{
+        font-size:13px;
+        font-weight:normal;
+        color:@textLight;
+    }
+
+    .social:hover{
+        background-color:yellow;
+    }
+
+    .devrank{
+        font-size:20px;
+        font-weight:normal;
+    }
+
+    .labels{
+        margin-top:20px;
+        .label{
+            font-size:15px;
+            font-weight:normal;
+            background:white;
+            color:black;
+        }
+        .public_repo{
+            background:#efb8ed;
+        }
+        .followers{
+            background:#f4c413;
+        }
+        .following{
+            background:#6dcfd6;
+        }
     }
 
     footer {
@@ -168,7 +178,12 @@ a {
     }
 }
 
+
+
+
+
 // Avatar
+
 .avatar {
     float:left;
     margin-right:@padding / 1;
@@ -176,32 +191,22 @@ a {
 }
 
 
-
 // d3
-.node circle {
-  stroke: #000;
-  stroke-width: 1.5px;
-}
-
-.node text {
-  font: 10px sans-serif;
-  pointer-events: none;
-}
-
 path.link {
-  fill: none;
-  stroke: #666;
-  stroke-width: 1.5px;
+    fill: none;
+    stroke: white;
+    stroke-width: 0.1px;
 }
 
 marker#type1 {
-  fill: green;
+    fill: green;
 }
 
 path.link.type1 {
-  stroke: green;
+    stroke: green;
 }
 
 path.link.type3 {
-  stroke-dasharray: 0,2 1;
+    stroke: gray;
+    stroke-dasharray: 0,10 1;
 }
