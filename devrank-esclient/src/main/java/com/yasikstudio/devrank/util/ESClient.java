@@ -27,7 +27,8 @@ public class ESClient {
     try {
       return post(url, data);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("id=" + id + ", devrank=" + devrank + ", url="
+          + url);
     }
   }
 

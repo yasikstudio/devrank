@@ -2,14 +2,13 @@ package com.yasikstudio.devrank.util;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class ESLauncher {
   private static final String USAGE =
       "Usage: java jar esclient-xxx-with-dependencies.jar [hostname] [filename]";
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws Exception {
     if (args.length != 2) {
       usageWithExit();
     }
@@ -21,7 +20,7 @@ public class ESLauncher {
   }
 
   private static void updateRanks(ESClient es, BufferedReader r)
-      throws IOException {
+      throws Exception {
     String line = null;
     while ((line = r.readLine()) != null) {
       String[] data = line.split(",");
@@ -30,7 +29,18 @@ public class ESLauncher {
       double actValue = Double.parseDouble(data[2]);
       double v = folValue + actValue;
       System.out.print(String.format("%s : %.30f => ", uid, v));
-      String result = es.update(uid, v);
+      String result = null;
+      int retry = 5;
+      while (retry > 0) {
+        try {
+          result = es.update(uid, v);
+        } catch (Exception e) {
+          if (retry <= 0) {
+            throw e;
+          }
+        }
+        retry--;
+      }
       System.out.println(result);
     }
   }
