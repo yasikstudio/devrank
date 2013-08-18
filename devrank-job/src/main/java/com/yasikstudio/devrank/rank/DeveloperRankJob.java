@@ -24,6 +24,8 @@ public class DeveloperRankJob implements Tool {
     options.addOption("o", "outputPath", true, "Output Path");
     options.addOption("w", "workers", true, "Number of workers");
     options.addOption("s", "supersteps", true, "Number of supersteps");
+    options.addOption("e", "elasticSearch", true, "address of ElasticSearch "
+        + "(ex: http://localhost:9200");
 
     HelpFormatter formatter = new HelpFormatter();
     if (args.length == 0) {
@@ -41,7 +43,10 @@ public class DeveloperRankJob implements Tool {
     long supersteps = Long.parseLong(cmd.getOptionValue('s', "10"));
     String inputPath = cmd.getOptionValue("inputPath");
     String outputPath = cmd.getOptionValue("outputPath");
+    String esAddress = cmd.getOptionValue("elasticSearch", "");
+
     configuration.setLong("superstep", supersteps);
+    configuration.set("elasticSearch", esAddress);
 
     GiraphJob job = new GiraphJob(getConf(), "devrank-job-rank");
     job.setVertexClass(DeveloperRankVertex.class);

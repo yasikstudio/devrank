@@ -5,6 +5,8 @@ from django.shortcuts import *
 from django.views.generic.base import View
 from esutils.client import ESClient
 
+import json
+
 def home(request):
     if request.method == 'POST':
         c = ESClient()
@@ -34,3 +36,14 @@ def social(request):
             'page_title': u'social graph',
             })
     return render_to_response('social.html', var)
+
+def social_json(request):
+    c = ESClient()
+    users = request.GET.get('users', '').split('|')
+    if users == '':
+        users = []
+    print users
+    data = {
+        "links": c.social_search(users)
+    }
+    return HttpResponse(json.dumps(data), content_type="application/json")
