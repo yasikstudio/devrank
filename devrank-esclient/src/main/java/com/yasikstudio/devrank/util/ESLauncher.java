@@ -25,28 +25,32 @@ public class ESLauncher {
     while ((line = r.readLine()) != null) {
       String[] data = line.split(",");
       String uid = data[0];
-      double folValue = Double.parseDouble(data[1]);
-      double actValue = Double.parseDouble(data[2]);
+      boolean exists = Boolean.parseBoolean(data[1]);
+      double folValue = Double.parseDouble(data[2]);
+      double actValue = Double.parseDouble(data[3]);
       double v = folValue + actValue;
-      System.out.print(String.format("%s : %.30f => ", uid, v));
-      String result = null;
-      int retry = 20;
-      while (retry > 0) {
-        try {
-          result = es.update(uid, v);
-        } catch (Exception e) {
-          if (retry <= 0) {
-            throw e;
-          } else {
-            try {
-              Thread.sleep(100);
-            } catch (Throwable t) {
+
+      if (exists) {
+        System.out.print(String.format("%s : %.30f => ", uid, v));
+        String result = null;
+        int retry = 20;
+        while (retry > 0) {
+          try {
+            result = es.update(uid, v);
+          } catch (Exception e) {
+            if (retry <= 0) {
+              throw e;
+            } else {
+              try {
+                Thread.sleep(100);
+              } catch (Throwable t) {
+              }
             }
           }
+          retry--;
         }
-        retry--;
+        System.out.println(result);
       }
-      System.out.println(result);
     }
   }
 

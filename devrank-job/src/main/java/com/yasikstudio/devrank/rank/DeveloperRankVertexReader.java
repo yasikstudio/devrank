@@ -11,7 +11,6 @@ import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.RecordReader;
-import org.hsqldb.lib.StringUtil;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -28,34 +27,42 @@ public class DeveloperRankVertexReader extends
   public BasicVertex<Text, UserVertexValue, FloatWritable, Message> getCurrentVertex()
       throws IOException, InterruptedException {
 
-    BasicVertex<Text, UserVertexValue, FloatWritable, Message> vertex = BspUtils
-        .<Text, UserVertexValue, FloatWritable, Message> createVertex(getContext()
-            .getConfiguration());
+    BasicVertex<Text, UserVertexValue, FloatWritable, Message> vertex =
+        BspUtils
+            .<Text, UserVertexValue, FloatWritable, Message> createVertex(getContext()
+                .getConfiguration());
 
     // input values:
-    // id|followings...|forks...|pull...|star...|watch...
-    // 999212|14953:1,931534:1|1445542:1,999212:10|999212:1,145585:1||931534:2,1589355:1,575576:1,1206239:1,71561:2,333745:1
-    // 999255|||||333745:1
+    // id|true|followings...|forks...|pull...|star...|watch...
+    // 999212|true|14953:1,931534:1|1445542:1,999212:10|999212:1,145585:1||931534:2,1589355:1,575576:1,1206239:1,71561:2,333745:1
+    // 999255|false|||||333745:1
 
     // read, parse and setup.
     Text line = getRecordReader().getCurrentValue();
-    String[] items = line.toString().split("\\|", -1);
-    Text uid = new Text(items[0]);
-    Map<String, Integer> followings = parseEdges(items[1]);
-    Map<String, Integer> activities = parseEdges(items[2], items[3], items[4],
-        items[5]);
 
-    // setup initialized vertex value
-    UserVertexValue vertexValue = new UserVertexValue(followings, activities);
+    try {
+      String[] items = line.toString().split("\\|", -1);
+      Text uid = new Text(items[0]);
+      boolean exists = Boolean.parseBoolean(items[1]);
+      Map<String, Integer> followings = parseEdges(items[2]);
+      Map<String, Integer> activities =
+          parseEdges(items[3], items[4], items[5], items[6]);
 
-    // setup edges
-    Set<String> ids = Sets.newHashSet();
-    ids.addAll(followings.keySet());
-    ids.addAll(activities.keySet());
-    Map<Text, FloatWritable> edges = generateEdges(ids);
+      // setup initialized vertex value
+      UserVertexValue vertexValue =
+          new UserVertexValue(exists, followings, activities);
 
-    // initialize vertex
-    vertex.initialize(uid, vertexValue, edges, null);
+      // setup edges
+      Set<String> ids = Sets.newHashSet();
+      ids.addAll(followings.keySet());
+      ids.addAll(activities.keySet());
+      Map<Text, FloatWritable> edges = generateEdges(ids);
+
+      // initialize vertex
+      vertex.initialize(uid, vertexValue, edges, null);
+    } catch (Throwable t) {
+      throw new IllegalArgumentException(line.toString(), t);
+    }
 
     return vertex;
   }
@@ -79,7 +86,7 @@ public class DeveloperRankVertexReader extends
     Map<String, Integer> map = Maps.newHashMap();
     for (String category : data) {
       for (String item : category.split(",")) {
-        if (!StringUtil.isEmpty(item)) {
+        if (item != null && !"".equals(item)) {
           String[] idAndCount = item.split(":", 2);
           String id = idAndCount[0];
           int count = Integer.parseInt(idAndCount[1]);

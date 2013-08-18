@@ -27,9 +27,7 @@ public class DataMergeReducer extends Reducer<Text, UserRecord, Text, NullWritab
 
     user.setExists(existing);
 
-    //if (existing) {
     context.write(new Text(writeToString(user)), null);
-    //}
   }
 
   private String writeToString(UserRecord user) {
@@ -42,6 +40,7 @@ public class DataMergeReducer extends Reducer<Text, UserRecord, Text, NullWritab
 
     StringBuilder out = new StringBuilder();
     out.append(user.getUid()).append(FIELD_SEP);
+    out.append(user.exists()).append(FIELD_SEP);
     appendWeightList(out, user.getFollowings()).append(FIELD_SEP);
     appendWeightList(out, user.getForks()).append(FIELD_SEP);
     appendWeightList(out, user.getPulls()).append(FIELD_SEP);

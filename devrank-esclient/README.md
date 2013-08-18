@@ -8,9 +8,9 @@ You can build devrank-esclient-java using Maven. just `mvn package`. It's done.
 
     mvn package
 
-Installation
-------------
+Run
+---
 
-You can also install devrank-esclient-java using Maven.
+You can send existing data to `ElasticSearch`.
 
-    mvn install -DskipTests
+    java -jar target/devrank-esclient-0.2.0-jar-with-dependencies.jar localhost:9200 part-m-00001

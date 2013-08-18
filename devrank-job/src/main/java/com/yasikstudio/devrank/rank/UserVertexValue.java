@@ -11,17 +11,19 @@ import org.apache.hadoop.io.Writable;
 import com.google.common.collect.Maps;
 
 public class UserVertexValue implements Writable {
+  private boolean exists;
   private Map<String, Integer> followings;
   private Map<String, Integer> activities;
   private double followingValue;
   private double activityValue;
 
   public UserVertexValue() {
-    this(new HashMap<String, Integer>(), new HashMap<String, Integer>());
+    this(false, new HashMap<String, Integer>(), new HashMap<String, Integer>());
   }
 
-  public UserVertexValue(Map<String, Integer> followings,
+  public UserVertexValue(boolean exists, Map<String, Integer> followings,
       Map<String, Integer> activities) {
+    this.exists = exists;
     this.followings = followings;
     this.activities = activities;
     this.followingValue = 0;
@@ -30,6 +32,7 @@ public class UserVertexValue implements Writable {
 
   @Override
   public void readFields(DataInput input) throws IOException {
+    exists = input.readBoolean();
     followings = readMap(input);
     activities = readMap(input);
     followingValue = input.readDouble();
@@ -38,6 +41,7 @@ public class UserVertexValue implements Writable {
 
   @Override
   public void write(DataOutput output) throws IOException {
+    output.writeBoolean(exists);
     writeMap(output, followings);
     writeMap(output, activities);
     output.writeDouble(followingValue);
@@ -62,6 +66,14 @@ public class UserVertexValue implements Writable {
       output.writeUTF(item.getKey());
       output.writeInt(item.getValue().intValue());
     }
+  }
+
+  public boolean exists() {
+    return exists;
+  }
+
+  public void setExists(boolean exists) {
+    this.exists = exists;
   }
 
   public Map<String, Integer> getFollowings() {
