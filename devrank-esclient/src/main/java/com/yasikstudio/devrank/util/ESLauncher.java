@@ -39,7 +39,7 @@ public class ESLauncher {
             throw e;
           } else {
             try {
-              Thread.sleep(1000);
+              Thread.sleep(100);
             } catch (Throwable t) {
             }
           }

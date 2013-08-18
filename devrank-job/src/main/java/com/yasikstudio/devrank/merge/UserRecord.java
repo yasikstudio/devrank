@@ -10,39 +10,43 @@ import org.apache.hadoop.io.Writable;
 
 public class UserRecord implements Writable {
   private String uid;
+  private boolean user;
   private List<Weight> followings;
   private List<Weight> forks;
   private List<Weight> pulls;
   private List<Weight> stars;
-  private List<Weight> watches;
+  private List<Weight> watchs;
 
   public UserRecord() {
     uid = "";
+    user = false;
     followings = new ArrayList<Weight>();
     forks = new ArrayList<Weight>();
     pulls = new ArrayList<Weight>();
     stars = new ArrayList<Weight>();
-    watches = new ArrayList<Weight>();
+    watchs = new ArrayList<Weight>();
   }
 
   @Override
   public void readFields(DataInput input) throws IOException {
     uid = input.readUTF();
+    user = input.readBoolean();
     followings = readWeights(input);
     forks = readWeights(input);
     pulls = readWeights(input);
     stars = readWeights(input);
-    watches = readWeights(input);
+    watchs = readWeights(input);
   }
 
   @Override
   public void write(DataOutput output) throws IOException {
     output.writeUTF(uid);
+    output.writeBoolean(user);
     writeWeights(output, followings);
     writeWeights(output, forks);
     writeWeights(output, pulls);
     writeWeights(output, stars);
-    writeWeights(output, watches);
+    writeWeights(output, watchs);
   }
 
   private List<Weight> readWeights(DataInput input) throws IOException {
@@ -70,6 +74,14 @@ public class UserRecord implements Writable {
 
   public void setUid(String uid) {
     this.uid = uid;
+  }
+
+  public boolean isUser() {
+    return user;
+  }
+
+  public void setUser(boolean user) {
+    this.user = user;
   }
 
   public List<Weight> getFollowings() {
@@ -105,10 +117,10 @@ public class UserRecord implements Writable {
   }
 
   public List<Weight> getWatchs() {
-    return watches;
+    return watchs;
   }
 
   public void setWatchs(List<Weight> watchs) {
-    this.watches = watchs;
+    this.watchs = watchs;
   }
 }
