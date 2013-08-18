@@ -30,13 +30,18 @@ public class ESLauncher {
       double v = folValue + actValue;
       System.out.print(String.format("%s : %.30f => ", uid, v));
       String result = null;
-      int retry = 5;
+      int retry = 20;
       while (retry > 0) {
         try {
           result = es.update(uid, v);
         } catch (Exception e) {
           if (retry <= 0) {
             throw e;
+          } else {
+            try {
+              Thread.sleep(1000);
+            } catch (Throwable t) {
+            }
           }
         }
         retry--;
