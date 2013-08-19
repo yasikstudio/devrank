@@ -15,15 +15,16 @@
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/applepie.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/d3.v3.min.js"></script>
 
-    {% block head %}{% endblock %}
+    {% block head %}
+    {% endblock %}
+
 </head>
 <body>
+
     <header>
-        <div class='span2'>
-            <a href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
-        </div>
-        <div class="span10">
-            Developer Rank analysis system is based activity of <a href="http://github.com">Github.</a>
+        <div align="center" id="logo_panel">
+            <a href='/'><img id="logo_pic" style="position:relative;display:none" src='{{ STATIC_URL }}images/logo.png'></a>
+            <div id="logo_desc" style="position:relative;display:none">Developer Rank analysis system is based activity of <a href="http://github.com">Github.</a> </div>
         </div>
     </header>
 
@@ -31,7 +32,7 @@
     <div class='container' style="padding-top: 20px">
         <form method="post" align="center">
             {% csrf_token %}
-            <div class="input-append">
+            <div class="input-append" id="search_panel" style="position:relative;display:none">
                 <input  placeholder="Project Keyword" name='query' type="text" id="search_query" class="search" autocomplete="off"> </input>
                 <button type="submit" class="search btn" id="btn_search">Search</button>
             </div>

@@ -55,6 +55,7 @@ textarea, input, button {
     font: 13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
 }
 
+
 body {
 color:@fontBase;
 font: 13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
@@ -62,10 +63,15 @@ background:url(/static/images/background.png);
 
 
     > header {
-        background:white;
-        min-height:@headerHeight;
-        line-height:@headerHeight;
-        margin-bottom:30px;
+        background:url(/static/images/logo_bg.png) no-repeat center top fixed;
+        margin:-20px;
+        padding:10px;
+        #logo_panel{
+            min-height:@headerHeight;
+            line-height:@headerHeight;
+            margin-bottom:50px;
+            padding-top:100px;
+        }
     }
 
     > section {

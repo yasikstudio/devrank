@@ -22,7 +22,7 @@ def home(request):
             _r.pop(u"_source",None)
 
         var = RequestContext(request, {
-                'page_title': u'Home',
+                'page_title': u'Devrank',
                 'results': r,
                 'query':request.POST['query'],
                 })
