@@ -6,10 +6,26 @@
             $('#logo_pic').animate({ height:100, opacity: 'show'},{duration: 1000 });
             $('#logo_desc').fadeIn(2000);
             $('#search_panel').animate({ opacity: 'show'},'slow');
+
+            $('#btn_search').on("click", function(){
+
+                $('#logo_pic').animate({ top:-80, height:60 },{duration: 600 });
+                $('#logo_desc').animate({ top:-100},{duration: 1000 });
+                $('#search_panel').animate({ top:-150}, {duration: 1000 });
+                $('#result_panel').animate({ top:-100}, {duration: 1000 });
+
+                $('#result_panel').load('/search/'+$('#search_query').val());
+
+            });
+
+
         });
     </script>
 {% endblock %}
 
 {% block content %}
+
+<div id='result_panel' style="position:relative;">
+</div>
 
 {% endblock %}

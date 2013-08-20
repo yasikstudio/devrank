@@ -29,14 +29,11 @@
     </header>
 
 
-    <div class='container' style="padding-top: 20px">
-        <form method="post" align="center">
-            {% csrf_token %}
-            <div class="input-append" id="search_panel" style="position:relative;display:none">
-                <input  placeholder="Project Keyword" name='query' type="text" id="search_query" class="search" autocomplete="off"> </input>
-                <button type="submit" class="search btn" id="btn_search">Search</button>
-            </div>
-        </form>
+    <div class='container' align="center" style="padding-top: 20px">
+        <div class="input-append" id="search_panel" style="position:relative;display:none">
+            <input  placeholder="Project Keyword" name='search' type="text" id="search_query" class="search" autocomplete="off"> </input>
+            <button type="submit" class="search btn" id="btn_search">Search</button>
+        </div>
     </div>
 
     <section>

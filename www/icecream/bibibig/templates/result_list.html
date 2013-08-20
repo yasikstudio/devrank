@@ -1,29 +1,17 @@
-{% extends "home.html" %}
-
-{% block head %}
 <script type="text/javascript">
-    $(document).ready(function (){
-        $('#search_query').val("{{query}}")
-        $('#logo_pic').show();
-        $('#logo_desc').show();
-        $('#search_panel').show();
-        $('#logo_pic').height(100)
+    // $(document).ready(function (){
+    //     $('#search_query').val("{{query}}")
+    //     $('#logo_pic').show();
+    //     $('#logo_desc').show();
+    //     $('#search_panel').show();
+    //     $('#logo_pic').height(100)
 
-        $('#logo_pic').animate({ top:-80, height:60 },{duration: 600 });
-        $('#logo_desc').animate({ top:-100},{duration: 1000 });
-        $('#search_panel').animate({ top:-150}, {duration: 1000 });
-        $('#result_panel').animate({ top:-150}, {duration: 1000 });
-
-    });
+    // });
 </script>
 
 <script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.js"></script>
-<link href="{{ STATIC_URL }}resources/bootstrap-modal-fullscreen.css" rel="stylesheet" /> {% endblock %}
+<link href="{{ STATIC_URL }}resources/bootstrap-modal-fullscreen.css" rel="stylesheet" />
 
-{% block content %}
-    <div id='result_panel' style="position:relative;">
-        {% for result in results %}
-          {% include "result.html" %}
-        {% endfor %}
-    </div>
-{% endblock %}
+{% for result in results %}
+  {% include "result.html" %}
+{% endfor %}
