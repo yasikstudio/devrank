@@ -40,7 +40,6 @@ def social_json(request):
     users = request.GET.get('users', '').split('|')
     if users == '':
         users = []
-    print users
     data = {
         "links": c.social_search(users)
     }
