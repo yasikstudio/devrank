@@ -4,4 +4,7 @@
 *.pid
 .DS_Store
 *.db
-env/
+bin
+include
+lib
+local

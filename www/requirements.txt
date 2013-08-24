@@ -1,8 +1,2 @@
-virtualenv==1.9.1
 Django==1.5.1
-django-gravatar==0.1.0
-pytz==2013b
 rawes==0.5.3
-requests==1.2.3
-urllib3==1.6
-wsgiref==0.1.2

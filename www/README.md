@@ -1,7 +1,13 @@
-virtualenv & pip requirement
-====
-Django==1.5.1
-wsgiref==0.1.2
+devrank-www
+===============
 
+This is a devrank front-end web based django by YasikStudio.
 
+Install dependencies (global)
+-----------------------------
+
+    virtualenv .
+    source bin/activate
+    pip install -r requirements.txt
+    python manager.py runserver
 
