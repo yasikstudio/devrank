@@ -31,8 +31,8 @@
 
         <dependency>
             <groupId>org.apache.giraph</groupId>
-            <artifactId>giraph</artifactId>
-            <version>0.1</version>
+            <artifactId>giraph-core</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>

@@ -10,13 +10,13 @@ Prerequisites
 You needs Apache Maven 3.0.4 or higher. Download it at follow link.
 http://maven.apache.org/
 
-And, `devrank-job` needs apache-giraph-0.1.0 release version. You can install
+And, `devrank-job` needs apache-giraph-1.0.0 release version. You can install
 using follow commands.
 
-    git clone https://github.com/apache/giraph.git
+    wget http://apache.mirror.cdnetworks.com/giraph/giraph-1.0.0/giraph-1.0.0.tar.gz
+	tar xvzf giraph-1.0.0.tar.gz
     cd giraph
-    git checkout tags/release-0.1.0
-    mvn install -Dmaven.test.skip=true
+	mvn install -DskipTests
 
 
 Build
@@ -30,16 +30,7 @@ You can build devrank-job using Maven. just `mvn package`. It's done.
 Getting input data
 ------------------
 
-You can get data using `devrank-crawler`.
-
-    ./ghcrawler.py
-
-Or, you can get test data.
-
-    wget http://static.jong10.net/jong10/data/gh_20130302_test.log
-
-
-And, upload data to HDFS.
+You need to upload crawled data to HDFS.
 
     hadoop fs -mkdir /user/YOUR_LINUX_ID/test1/input
     hadoop fs -put gh.log /user/YOUR_LINUX_ID/test1/input/input.log
@@ -56,7 +47,7 @@ How to run this
 
 You needs installed Hadoop cluster. (You can use pseudo-distributed mode)
 
-    hadoop jar devrank-0.0.1-jar-with-dependencies.jar -w 1 -i /user/YOUR_LINUX_ID/test1/input/input.log -o /user/YOUR_LINUX_ID/test1/output
+    hadoop jar devrank-0.3.0-jar-with-dependencies.jar -w 1 -i /user/YOUR_LINUX_ID/test1/input/input.log -o /user/YOUR_LINUX_ID/test1/output
 
 
 Getting output
