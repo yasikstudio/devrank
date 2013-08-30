@@ -18,3 +18,6 @@ target
 .project
 .settings
 .classpath
+
+#mac
+.DS_Store
