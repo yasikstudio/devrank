@@ -6,6 +6,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.giraph.conf.GiraphConfiguration;
+import org.apache.giraph.io.formats.GiraphFileInputFormat;
 import org.apache.giraph.job.GiraphJob;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -50,7 +51,7 @@ public class DeveloperRankJob implements Tool {
     giraphConf.setVertexClass(DeveloperRankVertex.class);
     giraphConf.setVertexInputFormatClass(DeveloperRankVertexInputFormat.class);
     giraphConf.setVertexOutputFormatClass(DeveloperRankVertexOutputFormat.class);
-    FileInputFormat.addInputPath(job.getInternalJob(), new Path(inputPath));
+    GiraphFileInputFormat.addVertexInputPath(job.getConfiguration(), new Path(inputPath));
     FileOutputFormat.setOutputPath(job.getInternalJob(), new Path(outputPath));
     giraphConf.setWorkerConfiguration(workers, workers, 100.0f);
     return job.run(true) ? 0 : -1;
