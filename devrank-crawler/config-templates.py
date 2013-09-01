@@ -1,7 +1,10 @@
 # copy this file to config.py
 
 # your github id, password
-username = ''
+username = [ '' ]
 password = ''
-client_id = ''
-client_secret = ''
+
+es_host = ''
+index_name = ''
+
+DEBUG = False
