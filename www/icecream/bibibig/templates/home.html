@@ -1,31 +1,57 @@
 {% extends "base.html" %}
 
 {% block head %}
-    <script>
-        $(document).ready(function (){
-            $('#logo_pic').animate({ height:100, opacity: 'show'},{duration: 1000 });
-            $('#logo_desc').fadeIn(2000);
-            $('#search_panel').animate({ opacity: 'show'},'slow');
+<script>
+	$(document).ready(function (){
+		$('#logo_pic').animate({ height:100, opacity: 'show'},{duration: 1000 });
+		$('#logo_desc').fadeIn(2000);
+		$('#search_panel').animate({ opacity: 'show'},'slow');
 
-            $('#btn_search').on("click", function(){
+		$('#btn_search').on("click", function(){
+			$('#logo_pic').animate({ top:-80, height:60 },{duration: 600 });
+			$('#logo_desc').animate({ top:-100},{duration: 1000 });
+			$('#search_panel').animate({ top:-150}, {duration: 1000 });
+			$('#result_panel').animate({ top:-100}, {duration: 1000 });
 
-                $('#logo_pic').animate({ top:-80, height:60 },{duration: 600 });
-                $('#logo_desc').animate({ top:-100},{duration: 1000 });
-                $('#search_panel').animate({ top:-150}, {duration: 1000 });
-                $('#result_panel').animate({ top:-100}, {duration: 1000 });
-
-                $('#result_panel').load('/search/'+$('#search_query').val());
-
-            });
-
-
-        });
-    </script>
+			$('#result_panel').load('/search/'+$('#search_query').val());
+		});
+	});
+</script>
 {% endblock %}
 
-{% block content %}
 
-<div id='result_panel' style="position:relative;">
-</div>
+{% block body %}
+	<header>
+	<div align="center" id="logo_panel">
+		<a href='/'><img id="logo_pic" style="position:relative;display:none" src='{{ STATIC_URL }}images/logo.png'></a>
+		<div id="logo_desc" style="position:relative;display:none">Developer Rank analysis system is based activity of <a href="http://github.com">Github.</a> </div>
+	</div>
+	</header>
 
+
+	<div class='container' align="center" style="padding-top: 20px">
+		<div class="input-append" id="search_panel" style="position:relative;display:none">
+			<input  placeholder="Project Keyword" name='search' type="text" id="search_query" class="search" autocomplete="off"> </input>
+			<button type="submit" class="search btn" id="btn_search">Search</button>
+		</div>
+	</div>
+
+	<section>
+	<div id='result_panel' style="position:relative;">
+	</div>
+	</section>
+
+	<script>
+		$('.github_id_form').submit(function() {
+			var id = $(this).attr('id');
+			var login = id.split('-')[0];
+			var my_login = $(this).find('input#login_id').val();
+			$('#' + id).html('');
+			var width = $('#' + id).parent().width();
+			var height = $('#' + id).parent().height();
+			social_rel(my_login + '|' + login, '#' + id, width, height);
+			return false;
+		});
+	</script>
 {% endblock %}
+

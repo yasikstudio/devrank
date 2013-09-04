@@ -6,7 +6,8 @@ from icecream.bibibig.views import *
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', home.as_view(), name='home'),
+    url(r'^$', intro.as_view() ),
+    url(r'^home$', home.as_view() ),
     url(r'^search/(?P<search>\w+)/?$', search.as_view()),
     url(r'^social.json/$', social_json, name='social_json'),
     # url(r'^icecream/', include('icecream.foo.urls')),

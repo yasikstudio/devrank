@@ -1,20 +1,18 @@
 @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 @import url(http://fonts.googleapis.com/earlyaccess/nanumbrushscript.css);
 @import "/static/resources/less/elements.less";
-// LESS
+
+@fontBase:13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
+@padding:20px;
 
 @line: #E5E5E5;
 @lineLight: @line + #111111;
 @lineDark: @line - #111111;
-@background: #FAFAFA;
-@fontBase: #555555;
-
-@headerHeight: 70px;
+@fontBaseColor: #555555;
 
 @gray:#999999;
 @blue:#4082BC;
 @black:#333333;
-
 @brown:#776B5F;
 @orange:#E55C38;
 @red:#CF4E4E;
@@ -22,12 +20,9 @@
 @green:#4DAF7C;
 @blue:#5F90B0;
 @blueLight:@blue + #222222;
-
-
 @text:#333333;
 @textLight:#AAAAAA;
 
-@padding:20px;
 
 .fade {
     .transition-duration(0.15s);
@@ -55,43 +50,69 @@ textarea, input, button {
     font: 13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
 }
 
+body{
+    color:@fontBaseColor;
+    font:@fontBase;
+    background:url(/static/images/background.png);
+}
 
-body {
-color:@fontBase;
-font: 13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
-background:url(/static/images/background.png);
+.container{
+	max-width:1200px;
+	margin-left:auto;
+	margin-right:auto;
+	position:relative;
+}
+
+#head{
+	margin-bottom:100px;
+	margin-top:10px;
+
+}
+
+#index{
+	overflow:hidden;
+	#splash{
+		background:white;
+		margin-top: 30px;
+		margin-bottom:40px;
+
+		#value-prop{
+			position:relative;
+			padding-top:40px;
+			padding-bottom: 50px;
+
+		#copy{
+			width:600px;
+		}
+
+		#laptop{
+			top:-70px;
+			left:600px;
+			width:863px;
+			height:525px;
+			position:absolute;
+			background:url(/static/images/laptop.png) 50% 0px no-repeat;
+			}
+		}
+
+	}
+}
 
 
-    > header {
-        background:url(/static/images/logo_bg.png) no-repeat center top fixed;
-        margin:-20px;
-        padding:10px;
-        #logo_panel{
-            min-height:@headerHeight;
-            line-height:@headerHeight;
-            margin-bottom:50px;
-            padding-top:100px;
-        }
-    }
 
-    > section {
-        padding-top:10px;
-        padding-bottom:10px;
-    }
+hr {
+    margin:0px;
+    background-color:@line;
+    border-bottom:3px solid #FAFAFA;
+    border-top:none;
+    height:.1px;
+    width:700px;
+    display: none;
+}
 
-    hr {
-        margin:0px;
-        background-color:@line;
-        border-bottom:3px solid #FAFAFA;
-        border-top:none;
-        height:1px;
-        display: none;
-    }
-
-    > footer .container {
-        color:@gray;
-        text-align:center;
-    }
+footer .container {
+    color:@gray;
+    text-align:center;
 }
 
 a {

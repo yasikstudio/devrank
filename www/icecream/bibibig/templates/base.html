@@ -1,66 +1,48 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <title>{{page_title}}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/js/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet/less" type="text/css" media="all" href="{{ STATIC_URL }}resources/less/style.less" />
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <head>
+        <title>{{page_title}}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/bootstrap/css/bootstrap.min.css" media="screen" title="no title" charset="utf-8"/>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/bootstrap/css/bootstrap-responsive.min.css" media="screen" title="no title" charset="utf-8"/>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/bootstrap/css/font-awesome.min.css" media="screen" title="no title" charset="utf-8"/>
 
-    <script src="{{ STATIC_URL }}resources/js/less-1.3.3.min.js"></script>
-    <script src="{{ STATIC_URL }}resources/js/social.js"></script>
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}resources/js/applepie.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}resources/js/d3.v3.min.js"></script>
+<!--[if IE 7]>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/bootstrap/css/font-awesome-ie7.min.css">
+<![endif]-->
+<!--[if IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
 
-    {% block head %}
-    {% endblock %}
+        <link rel="stylesheet/less" type="text/css" media="all" href="{{ STATIC_URL }}resources/less/style.less" />
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 
-</head>
-<body>
+        <script src="{{ STATIC_URL }}resources/js/less-1.3.3.min.js"></script>
+        <script src="{{ STATIC_URL }}resources/js/social.js"></script>
+        <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}resources/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}resources/js/applepie.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}resources/js/d3.v3.min.js"></script>
 
-    <header>
-        <div align="center" id="logo_panel">
-            <a href='/'><img id="logo_pic" style="position:relative;display:none" src='{{ STATIC_URL }}images/logo.png'></a>
-            <div id="logo_desc" style="position:relative;display:none">Developer Rank analysis system is based activity of <a href="http://github.com">Github.</a> </div>
-        </div>
-    </header>
+        {% block head %}
+        {% endblock %}
+    </head>
 
-
-    <div class='container' align="center" style="padding-top: 20px">
-        <div class="input-append" id="search_panel" style="position:relative;display:none">
-            <input  placeholder="Project Keyword" name='search' type="text" id="search_query" class="search" autocomplete="off"> </input>
-            <button type="submit" class="search btn" id="btn_search">Search</button>
-        </div>
-    </div>
-
-    <section>
-        {% block content %} {% endblock %}
-    </section>
-
-    <script>
-        $('.github_id_form').submit(function() {
-            var id = $(this).attr('id');
-            var login = id.split('-')[0];
-            var my_login = $(this).find('input#login_id').val();
-            $('#' + id).html('');
-            var width = $('#' + id).parent().width();
-            var height = $('#' + id).parent().height();
-            social_rel(my_login + '|' + login, '#' + id, width, height);
-            return false;
-        });
-    </script>
+    <body>
+		<div id="content">
+			{% block body %}
+			{% endblock %}
+		</div>
+    </body>
 
     <footer>
-        <div class='container'>
-            <div class='row-fluid'>
-                <div class='span12'>
-                    <p>&copy; YasikStudio 2013</p>
-                </div>
+    <div class='container'>
+        <div class='row-fluid'>
+            <div class='span12'>
+                <p>&copy; YasikStudio 2013</p>
             </div>
         </div>
+    </div>
     </footer>
-</body>
 </html>
