@@ -53,7 +53,6 @@ textarea, input, button {
 body{
     color:@fontBaseColor;
     font:@fontBase;
-    background:url(/static/images/background.png);
 }
 
 .container{
@@ -64,38 +63,105 @@ body{
 }
 
 #head{
-	margin-bottom:100px;
-	margin-top:10px;
-
+	margin-bottom:50px;
+	margin-top:50px;
+	img{
+		width:200px;
+	}
 }
 
 #index{
-	overflow:hidden;
-	#splash{
-		background:white;
-		margin-top: 30px;
-		margin-bottom:40px;
+    overflow:hidden;
+	padding-bottom: 50px;
 
-		#value-prop{
-			position:relative;
-			padding-top:40px;
-			padding-bottom: 50px;
+    #splash{
+		background:url(/static/images/background.png);
+		//background:url(/static/images/background2.png);
+        margin-top: 30px;
+        margin-bottom:40px;
 
-		#copy{
-			width:600px;
-		}
+        #value-prop{
+            position:relative;
+            padding-top:40px;
 
-		#laptop{
-			top:-70px;
-			left:600px;
-			width:863px;
-			height:525px;
-			position:absolute;
-			background:url(/static/images/laptop.png) 50% 0px no-repeat;
-			}
-		}
+            #copy{
+				padding:@padding;
+            }
 
+            #laptop{
+                top:-70px;
+                left:600px;
+                width:863px;
+                height:525px;
+                position:absolute;
+                background:url(/static/images/laptop.png) 50% 0px no-repeat;
+            }
+        }
+
+    }
+}
+
+
+#info{
+    margin-top:100px;
+    text-align:center;
+    margin-bottom:100px;
+
+    .hero{
+        margin-top:30px;
+        padding-bottom:30px;
+    }
+	.subline{
+		margin-top:20px;
+		font-size:15px;
 	}
+    .hero-tail{
+        background-image: -webkit-gradient(radial, 50% 0%, 0, 50% 0%, 65, color-stop(0%, rgba(0,0,0,0.08)), color-stop(65%, transparent));
+        background-image: -webkit-radial-gradient(top, rgba(0,0,0,0.08) 0%, transparent 65%);
+        background-image: -moz-radial-gradient(top, rgba(0,0,0,0.08) 0%, transparent 65%);
+        background-image: -o-radial-gradient(top, rgba(0,0,0,0.08) 0%, transparent 65%);
+        background-image: radial-gradient(top, rgba(0,0,0,0.08) 0%,transparent 65%);
+        width:100%;
+        height:10px;
+        bottom:-10px;
+        left:0px;
+        margin-bottom:50px;
+    }
+
+
+    .feature{
+        text-align:center;
+    }
+
+	@radius-img:80px;
+    img{
+        display: block;
+        margin: 0px auto;
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+        -webkit-border-radius: @radius-img;
+        -moz-border-radius: @radius-img;
+        -ms-border-radius: @radius-img;
+        -o-border-radius: @radius-img;
+        border-radius: @radius-img;
+        margin-bottom: 10px;
+        border: 10px solid white;
+        -webkit-box-shadow: 0px 1px 2px rgba(0,0,0,0.3),inset 0px 3px 8px rgba(0,0,0,0.3);
+        -moz-box-shadow: 0px 1px 2px rgba(0,0,0,0.3),inset 0px 3px 8px rgba(0,0,0,0.3);
+        box-shadow: 0px 1px 2px rgba(0,0,0,0.3),inset 0px 3px 8px rgba(0,0,0,0.3);
+    }
+
+
+    blockquote{
+        border:none;
+		padding-top:20px;
+		p{
+			padding:0px;
+			margin:0px;
+			font-size:13px;
+		}
+    }
 }
 
 
