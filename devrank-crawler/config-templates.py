@@ -4,7 +4,6 @@
 username = [ '' ]
 password = ''
 
-es_host = ''
-index_name = ''
+DB_CONN_STRING = 'mysql://username:pass@host:3306/db'
 
 DEBUG = False

@@ -10,6 +10,7 @@ Install dependencies (global)
     virtualenv .
 	source bin/activate
     pip install -r requirements.txt
+    pip install -r ../devrank-sqlclient/requirements.txt
 
 
 Settings

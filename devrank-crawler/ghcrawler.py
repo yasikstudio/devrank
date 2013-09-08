@@ -1,18 +1,21 @@
 #!/usr/bin/env python
 
-import sys
 import logging
 from logging.handlers import RotatingFileHandler
-import collections
-import json
+
+import sys
+sys.path.append('../devrank-sqlclient')
+
+import collections, json, re
+
 import requests
-import re
-import sqlsoup
 from requests.exceptions import HTTPError, ConnectionError
-from pyes import *
-from pyes.query import *
-from pyes.exceptions import *
+
+import datetime
 from time import localtime, strftime
+
+from models import *
+from client import *
 
 import config
 
@@ -36,9 +39,9 @@ class GitHubCrawler(object):
         self.visited = set()
         self.unvisited = collections.deque(self.userlist())
         self.out = None
-        self.es_conn = ES(config.es_host)
         self.remaining_requests = 0
-        self.db = sqlsoup.SQLSoup(config.db_conn_string)
+        self.db = DevRankDB(config.DB_CONN_STRING)
+        self.db.connect()
 
     def __get(self, url=None, path=None, etag=None):
         retry = self.RETRY
@@ -61,6 +64,9 @@ class GitHubCrawler(object):
                     # RateLimit
                     self.toggle_username()
                     continue
+                elif result.status_code == 404:
+                    # Not Found
+                    return result
                 else:
                     print result.status_code
                     print result.json
@@ -69,36 +75,6 @@ class GitHubCrawler(object):
                 print 'HTTPError. retry...'
                 print url, path
         raise HTTPError('API failed')
-
-    def __index(self, index_type, index_id, data):
-        retry = self.RETRY
-        index_name = config.index_name
-        debug('__index(%s, %s)' % (index_type, index_id))
-        while retry > 0:
-            retry -= 1
-            try:
-                self.es_conn.index(data, index_name, index_type, index_id)
-                return
-            except NoServerAvailable:
-                print 'pyes Server NoServerAvailable. retry...'
-        raise HTTPError('pyes failed')
-
-    def __update(self, index_type, index_id, script, params=None):
-        retry = self.RETRY
-        index_name = config.index_name
-        debug('__update(%s, %s)' % (index_type, index_id))
-        while retry > 0:
-            retry -= 1
-            try:
-                self.es_conn.partial_update(index_name, index_type, index_id,
-                    script=script, params=params)
-                return
-            except NoServerAvailable:
-                print 'pyes Server NoServerAvailable. retry...'
-            except DocumentMissingException:
-                print('document missing (%s, %s, %s, %s)' %
-                    (index_type, index_id, script, params))
-        raise HTTPError('pyes failed')
 
     def __link_header_parse(self, link_header):
         result = {}
@@ -128,17 +104,20 @@ class GitHubCrawler(object):
 
     def user(self, username):
         """Get user by username"""
+        s = self.db.makesession()
+
         etag = None
         user_dict = {}
+        user = User()
+        crawled_at = None
 
-        user_tbl = self.db.users
-        columns = user_tbl.c.keys()
-        q = user_tbl.filter(user_tbl.login == username)
+        q = s.query(User).filter_by(login=username)
         if q.count() == 1:
-            user = q.first().__dict__
-            for column in columns:
-                user_dict[column] = user[column]
-            etag = user_dict['ETag']
+            user = q.first()
+            for column in user.columns():
+                user_dict[column] = getattr(user, column)
+            etag = user.etag
+            user_dict['type'] = 'User'
         result = self.__get(path='users/%s' % username, etag=etag)
         status_code = result.status_code
         if status_code == 304:
@@ -146,22 +125,18 @@ class GitHubCrawler(object):
         else:
             user_dict = result.json
             user_dict['ETag'] = result.headers['ETag']
-            self.__index('users', user_dict['id'], user_dict)
+            if user_dict['type'] == 'User':
+                user = user.from_dict(user_dict)
+                user.crawled_at = datetime.datetime.utcnow()
+                user = s.merge(user)
+                s.commit()
         if user_dict['type'] == 'User':
-            return user_dict
-        return None
-
-    def user_id_from_es(self, username):
-        user_dict = {}
-        q = FilteredQuery(MatchAllQuery(), TermFilter('login', username))
-        results = self.es_conn.search(q)
-        if results.total == 1:
-            user_dict = results[0]
-            return user_dict['id']
+            return user
         return None
 
     def followers(self, username, user_id):
         """Get followers list by username"""
+        s = self.db.makesession()
         path = 'users/%s/followers' % username
         url = None
         etag = None # TODO: applied
@@ -173,22 +148,16 @@ class GitHubCrawler(object):
             path = url = None
             for user in res.json:
                 followers.append(user)
-                users.append({
-                    'id': user['id'],
-                    'login': user['login'],
-                    'avatar_url': user['avatar_url'],
-                    'gravatar_id': user['gravatar_id'],
-                    'url': user['url']
-                })
+                s.merge(Follower(user['id'], user_id))
             link = self.__link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
-        self.__update('users', user_id,
-            'ctx._source.follower_users = users', { 'users': users })
+        s.commit()
         return followers
 
     def followings(self, username, user_id):
         """Get followings list by username"""
+        s = self.db.makesession()
         path = 'users/%s/following' % username
         url = None
         etag = None # TODO: applied
@@ -200,22 +169,16 @@ class GitHubCrawler(object):
             path = url = None
             for user in res.json:
                 followings.append(user)
-                users.append({
-                    'id': user['id'],
-                    'login': user['login'],
-                    'avatar_url': user['avatar_url'],
-                    'gravatar_id': user['gravatar_id'],
-                    'url': user['url']
-                })
+                s.merge(Follower(user_id, user['id']))
             link = self.__link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
-        self.__update('users', user_id,
-            'ctx._source.following_users = users', { 'users': users })
+        s.commit()
         return followings
 
     def repos(self, username, user_id):
         """Get repos list by username"""
+        s = self.db.makesession()
         path = 'users/%s/repos' % username
         url = None
         etag = None # TODO: applied
@@ -226,25 +189,20 @@ class GitHubCrawler(object):
             res = self.__get(path=path, url=url, etag=etag)
             path = url = None
             for repo in res.json:
-                self.__index('repos', repo['id'], repo)
-                users_repos.append({
-                    'id': repo['id'],
-                    'name': repo['name'],
-                    'fork': repo['fork'],
-                    'description': repo['description'],
-                    'language': repo['language']
-                })
+                repo_obj = Repo().from_dict(repo)
+                repo_obj.crawled_at = datetime.datetime.utcnow()
+                repo_obj.owner_id = user_id
+                s.merge(repo_obj)
                 repos.append(repo)
             link = self.__link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
-        self.__update('users', user_id, 'ctx._source.repos = repos', {
-            'repos': users_repos
-        })
+        s.commit()
         return repos
     
     def watchers(self, username, reponame, repo_id):
         """Get repo's watchers by username, reponame"""
+        s = self.db.makesession()
         path = 'repos/%s/%s/subscribers' % (username, reponame)
         url = None
         etag = None # TODO: applied
@@ -254,23 +212,17 @@ class GitHubCrawler(object):
             res = self.__get(path=path, url=url, etag=etag)
             path = url = None
             for user in res.json:
-                watchers.append({
-                    'id': user['id'],
-                    'login': user['login'],
-                    'avatar_url': user['avatar_url'],
-                    'gravatar_id': user['gravatar_id'],
-                    'url': user['url']
-                })
+                s.merge(Watcher(user['id'], repo_id))
+                watchers.append(user)
             link = self.__link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
-        self.__update('repos', repo_id, 'ctx._source.subscribers = watchers', {
-            'watchers': watchers
-        })
+        s.commit()
         return watchers
 
     def stargazers(self, username, reponame, repo_id):
         """Get repo's stargazers by username, reponame"""
+        s = self.db.makesession()
         path = 'repos/%s/%s/stargazers' % (username, reponame)
         url = None
         etag = None # TODO: applied
@@ -280,56 +232,32 @@ class GitHubCrawler(object):
             res = self.__get(path=path, url=url, etag=etag)
             path = url = None
             for user in res.json:
-                stargazers.append({
-                    'id': user['id'],
-                    'login': user['login'],
-                    'avatar_url': user['avatar_url'],
-                    'gravatar_id': user['gravatar_id'],
-                    'url': user['url']
-                })
+                s.merge(Stargazer(user['id'], repo_id))
+                stargazers.append(user)
             link = self.__link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
-        self.__update('repos', repo_id, 'ctx._source.stargazers = stargazers', {
-            'stargazers': stargazers
-        })
+        s.commit()
         return stargazers
 
-    def pull_requests_cnt(self, username, reponame, repo_id):
-        """Get repo's pull_requests by username, reponame"""
-        path = 'repos/%s/%s/pulls?state=closed' % (username, reponame)
+    def contributors(self, username, reponame, repo_id):
+        """Get repo's contributors by username, reponame"""
+        s = self.db.makesession()
+        path = 'repos/%s/%s/contributors' % (username, reponame)
         url = None
         etag = None # TODO: applied
-        pull_requests_cnt = {}
-        result = []
-        prs = []
-        while path != None or url != None:
-            debug('pull_requests(%s) path=%s, url=%s' % (username, path, url))
-            res = self.__get(path=path, url=url, etag=etag)
-            path = url = None
-            for pr in res.json:
-                if pr['head']['user'] == None:
-                    print 'pass pr', username, reponame, pr['number']
-                    continue
-                head_owner_id = pr['head']['user']['id']
-                prs.append({
-                    'number': pr['number'],
-                    'login': pr['head']['user']['login'],
-                    'id': pr['head']['user']['id']
-                })
-                if head_owner_id not in pull_requests_cnt:
-                    pull_requests_cnt[head_owner_id] = 0
-                pull_requests_cnt[head_owner_id] += 1
-            link = self.__link_header_parse(res.headers['link'])
-            if link != None and 'next' in link:
-                url = link['next']
-        self.__update('repos', repo_id, 'ctx._source.pull_requests = prs', {
-            'prs': prs
-        })
-        for head_owner_id in pull_requests_cnt:
-            cnt = pull_requests_cnt[head_owner_id]
-            result.append((head_owner_id, cnt))
-        return result
+        contributors = []
+        debug('contributors(%s) path=%s, url=%s' % (username, path, url))
+        res = self.__get(path=path, url=url, etag=etag)
+        if res.status_code == 404:
+            return []
+        path = url = None
+        for user in res.json:
+            if username != user['login']:
+                s.merge(Contributor(repo_id, user['id'], user['contributions']))
+                contributors.append(user)
+        s.commit()
+        return contributors
 
     def crawl(self):
         """Crawling start"""
@@ -346,10 +274,10 @@ class GitHubCrawler(object):
 
             # my_user_id
             #user_id = self.user_id(username)
-            user_dict = self.user(username)
-            if user_dict == None:
+            user = self.user(username)
+            if user == None:
                 continue
-            user_id = user_dict['id']
+            user_id = user.id
 
             # follower -> me. just append without logging
             if depth + 1 < self.MAXDEPTH:
@@ -366,7 +294,7 @@ class GitHubCrawler(object):
             # my repos
             repos = self.repos(username, user_id)
             fork_repo_owner_ids = []
-            pull_requests = []
+            contributions = []
             for repo in repos:
                 if repo['fork']:
                     fork_repo_owner_ids.append(str(repo['owner']['id']))
@@ -386,12 +314,13 @@ class GitHubCrawler(object):
                             self.write(u'S|%d|%d' %
                                     (stargazer['id'], repo['owner']['id']))
 
-                    # pull requests write
-                    pull_requests_cnt = self.pull_requests_cnt(
+                    # contributions write
+                    contributions = self.contributors(
                             username, repo['name'], repo['id'])
-                    for tup in pull_requests_cnt:
+                    for cont in contributions:
                         self.write(u'P|%d|%d|%d' %
-                                (repo['owner']['id'], tup[0], tup[1]))
+                                (repo['owner']['id'], cont['id'],
+                                 cont['contributions']))
 
             # write to file
             followings_id = ','.join([str(u['id']) for u in followings])
@@ -403,7 +332,6 @@ class GitHubCrawler(object):
             print('[%s] username: %s, progress: %d, rate-limit: %s' %
                 (strftime("%Y-%m-%d %H:%M:%S", localtime()), username, cnt,
                 self.remaining_requests))
-            self.es_conn.refresh()
 
             # append new users if not in visited
             if depth + 1 < self.MAXDEPTH:
