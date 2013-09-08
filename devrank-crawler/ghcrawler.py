@@ -7,6 +7,7 @@ import collections
 import json
 import requests
 import re
+import sqlsoup
 from requests.exceptions import HTTPError, ConnectionError
 from pyes import *
 from pyes.query import *
@@ -37,6 +38,7 @@ class GitHubCrawler(object):
         self.out = None
         self.es_conn = ES(config.es_host)
         self.remaining_requests = 0
+        self.db = sqlsoup.SQLSoup(config.db_conn_string)
 
     def __get(self, url=None, path=None, etag=None):
         retry = self.RETRY
@@ -128,10 +130,14 @@ class GitHubCrawler(object):
         """Get user by username"""
         etag = None
         user_dict = {}
-        q = FilteredQuery(MatchAllQuery(), TermFilter('login', username))
-        results = self.es_conn.search(q)
-        if results.total == 1:
-            user_dict = results[0]
+
+        user_tbl = self.db.users
+        columns = user_tbl.c.keys()
+        q = user_tbl.filter(user_tbl.login == username)
+        if q.count() == 1:
+            user = q.first().__dict__
+            for column in columns:
+                user_dict[column] = user[column]
             etag = user_dict['ETag']
         result = self.__get(path='users/%s' % username, etag=etag)
         status_code = result.status_code
