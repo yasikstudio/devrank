@@ -3,7 +3,6 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import RequestContext, Context
 from django.shortcuts import *
 from django.views.generic.base import View
-from esutils.client import ESClient
 
 import json
 
