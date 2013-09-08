@@ -9,3 +9,5 @@ include
 lib
 local
 env
+.Python
+icecream/settings.py

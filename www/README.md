@@ -9,5 +9,5 @@ Install dependencies (global)
     virtualenv .
     source bin/activate
     pip install -r requirements.txt
-    python manager.py runserver
+    ./manager.py runserver
 
