@@ -29,8 +29,20 @@ class ReprMixin(object):
         classy = type(self).__name__
         return classy + args
 
+class DevRankMixin(object):
 
-class User(ReprMixin, Base):
+    def columns(self):
+        for col in self.__table__.c:
+            yield col.name
+
+    def from_dict(self, obj_dict):
+        for key in obj_dict:
+            lower_key = key.lower()
+            if hasattr(self, lower_key):
+                setattr(self, lower_key, obj_dict[key])
+        return self
+
+class User(ReprMixin, DevRankMixin, Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
@@ -63,7 +75,7 @@ class User(ReprMixin, Base):
         pass
 
 
-class Follower(ReprMixin, Base):
+class Follower(ReprMixin, DevRankMixin, Base ):
     __tablename__ = 'followings'
 
     src_id = Column(Integer, primary_key=True)
@@ -74,7 +86,7 @@ class Follower(ReprMixin, Base):
         self.dest_id = dest_id
 
 
-class Friendship(ReprMixin, Base):
+class Friendship(ReprMixin, DevRankMixin, Base ):
     __tablename__ = 'friendship'
 
     owner_id = Column(Integer, primary_key=True)
@@ -84,7 +96,7 @@ class Friendship(ReprMixin, Base):
         self.owner_id = owner_id
         self.friend_id = friend_id
 
-class Repo(ReprMixin, Base):
+class Repo(ReprMixin, DevRankMixin, Base ):
     __tablename__ = 'repos'
 
     id = Column(Integer, primary_key=True)
@@ -111,17 +123,17 @@ class Repo(ReprMixin, Base):
         #TODO
         pass
 
-class Watcher(ReprMixin, Base):
+class Watcher(ReprMixin, DevRankMixin, Base ):
     __tablename__ = 'watchers'
 
-    stargazer_id = Column(Integer, primary_key=True)
+    watcher_id = Column(Integer, primary_key=True)
     repo_id = Column(Integer, primary_key=True)
 
-    def __init__(self, stargazer_id, repo_id):
-        self.stargazer_id = stargazer_id
+    def __init__(self, watcher_id, repo_id):
+        self.watcher_id = watcher_id
         self.repo_id = repo_id
 
-class Stargazer(ReprMixin, Base):
+class Stargazer(ReprMixin, DevRankMixin, Base ):
     __tablename__ = 'stargazers'
 
     stargazer_id = Column(Integer, primary_key=True)
@@ -131,7 +143,7 @@ class Stargazer(ReprMixin, Base):
         self.stargazer_id = stargazer_id
         self.repo_id = repo_id
 
-class Contributor(ReprMixin, Base):
+class Contributor(ReprMixin, DevRankMixin, Base ):
     __tablename__ = 'contributors'
 
     repo_id = Column(Integer, primary_key=True)
@@ -143,7 +155,7 @@ class Contributor(ReprMixin, Base):
         self.contributor_id = contributor_id
         self.contributions = contributions
 
-class Org(ReprMixin, Base):
+class Org(ReprMixin, DevRankMixin, Base ):
     __tablename__ = 'orgs'
 
     org_id = Column(Integer, primary_key=True)
