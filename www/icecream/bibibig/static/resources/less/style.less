@@ -1,8 +1,14 @@
 @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 @import url(http://fonts.googleapis.com/earlyaccess/nanumbrushscript.css);
+
+@import url(http://fonts.googleapis.com/css?family=Poiret+One);
+@import url(http://fonts.googleapis.com/css?family=Rock+Salt);
 @import "/static/resources/less/elements.less";
 
-@fontBase:13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
+
+@fontBase:13px  Helvetica, 'Nanum Gothic', arial, freesans, clean, sans-serif;
+@fontHead1:50px 'Poiret One';
+@fontHead2:13px 'Rock Salt';
 @padding:20px;
 
 @line: #E5E5E5;
@@ -86,8 +92,11 @@ body{
             padding-top:40px;
 
             #copy{
+				> h1 { font:@fontHead1 }
 				padding:@padding;
-            }
+				letter-spacing:-1px;
+				word-spacing:5px;
+			}
 
             #laptop{
                 top:-70px;
@@ -98,19 +107,19 @@ body{
                 background:url(/static/images/laptop.png) 50% 0px no-repeat;
             }
         }
-
     }
 }
 
 
 #social{
-	padding-top:100px;
 	margin-top:100px;
 	margin-bottom:100px;
 	padding-bottom:100px;
 	background:url(/static/images/background2.png);
+	border-bottom:10px solid @line;
 
-	.head{
+	#head{
+		font:@fontHead2;
 		text-align:center;
 		line-height:250%;
 		> p{
@@ -118,27 +127,25 @@ body{
 			word-spacing:10px;
 		}
 	}
+
 	.content{
-		#socialimg{
-		}
 		.socialtext{
-			>p {
-				margin:0 auto;
-				float:none;
-
-				text-align:left;
-				line-height:250%;
-				letter-spacing:1px;
-				word-spacing:2px;
-			}
-
+			padding-left:50px;
+			margin-top:140px;
+			text-align:left;
+			line-height:250%;
+			letter-spacing:1px;
+			word-spacing:2px;
+			padding-bottom:50px;
 		}
 	}
 }
 
-#info{
+#formula{
+    border-bottom:1px solid @blue;
     text-align:center;
     margin-bottom:100px;
+	padding-bottom:100px;
 
     .hero{
         margin-top:30px;
@@ -164,6 +171,7 @@ body{
 
 
     .feature{
+		margin-top:50px;
         text-align:center;
     }
 
@@ -198,6 +206,12 @@ body{
     }
 }
 
+
+#preview{
+	margin-top:100px;
+    border-bottom:1px solid @blue;
+	text-align:center;
+}
 
 
 hr {
