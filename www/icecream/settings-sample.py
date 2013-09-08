@@ -10,10 +10,13 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+SQLALCHEMY = 'mysql://username:password@hostname:3306/database'
+
+# DO NOT use Django ORM
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'devrank',                    # Or path to database file if using sqlite3.
+        'ENGINE': '', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': '',                    # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
