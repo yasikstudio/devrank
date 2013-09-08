@@ -70,6 +70,7 @@ body{
 	}
 }
 
+
 #index{
     overflow:hidden;
 	padding-bottom: 50px;
@@ -102,19 +103,52 @@ body{
 }
 
 
+#social{
+	padding-top:100px;
+	margin-top:100px;
+	margin-bottom:100px;
+	padding-bottom:100px;
+	background:url(/static/images/background2.png);
+
+	.head{
+		text-align:center;
+		line-height:250%;
+		> p{
+			letter-spacing:8px;
+			word-spacing:10px;
+		}
+	}
+	.content{
+		#socialimg{
+		}
+		.socialtext{
+			>p {
+				margin:0 auto;
+				float:none;
+
+				text-align:left;
+				line-height:250%;
+				letter-spacing:1px;
+				word-spacing:2px;
+			}
+
+		}
+	}
+}
+
 #info{
-    margin-top:100px;
     text-align:center;
     margin-bottom:100px;
 
     .hero{
         margin-top:30px;
         padding-bottom:30px;
+		.subline{
+			margin-top:20px;
+			font-size:15px;
+		}
     }
-	.subline{
-		margin-top:20px;
-		font-size:15px;
-	}
+
     .hero-tail{
         background-image: -webkit-gradient(radial, 50% 0%, 0, 50% 0%, 65, color-stop(0%, rgba(0,0,0,0.08)), color-stop(65%, transparent));
         background-image: -webkit-radial-gradient(top, rgba(0,0,0,0.08) 0%, transparent 65%);
@@ -137,8 +171,8 @@ body{
     img{
         display: block;
         margin: 0px auto;
-        width: 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
         overflow: hidden;
         -webkit-border-radius: @radius-img;
         -moz-border-radius: @radius-img;
