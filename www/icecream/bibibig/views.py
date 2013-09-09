@@ -11,14 +11,13 @@ class intro(View):
     def get(self, request, *args, **kwargs):
         var = RequestContext(request, {'page_title': u'Devrank', })
         return render_to_response('intro.html', var)
-    def post(self, request, *args, **kwargs):
-        var = RequestContext(request, {'page_title': u'Devrank', })
-        return render_to_response('home.html', var)
 
-class home(View):
-    def get(self, request, *args, **kwargs):
+def home(request):
+    if request.user.is_authenticated():
         var = RequestContext(request, {'page_title': u'Devrank', })
         return render_to_response('home.html', var)
+    else:
+        return HttpResponseRedirect('/')
 
 class search(View):
     def get(self, request, *args, **kwargs):

@@ -17,6 +17,8 @@ DATABASES = {
     'default': {
         'ENGINE': '', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': '',                    # Or path to database file if using sqlite3.
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': 'test.db',
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
@@ -125,6 +127,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'icecream.bibibig',
+    'social_auth',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -159,3 +162,17 @@ LOGGING = {
         },
     }
 }
+
+GITHUB_APP_ID=''
+GITHUB_API_SECRET=''
+
+LOGIN_URL          = '/'
+LOGIN_REDIRECT_URL = '/home'
+#LOGIN_ERROR_URL    = '/login-error/'
+
+SOCIAL_AUTH_USER_MODEL = 'bibibig.DevUser'
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.contrib.github.GithubBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
