@@ -13,34 +13,25 @@
 
 {% block body %}
 
-<div class="hidden-phone">
-    <div id="search_head" >
-        <a href='/'><img id="logo_pic" src='{{ STATIC_URL }}images/logo.png'></a>
-        <div>Developer Rank analysis system is based of <a href="http://github.com">Github.</a> </div>
-    </div>
+<div class='container'>
+    <div class='row-fluid'>
+
+            <div id="search_head" class="span12">
+                <a href='/'><img id="logo_pic" src='{{ STATIC_URL }}images/logo.png'></a>
+                <div>Developer Rank analysis system is based of <a href="http://github.com">Github.</a> </div>
+            </div>
 
 
-    <div id='search-form'>
-        <div class="input-append">
-            <input  placeholder="Enter Keyword" name='search' type="text" id="search_query" class="search" autocomplete="off"> </input>
-            <button type="submit" class="search btn" id="btn_search">Search</button>
-       </div>
-    </div>
-</div>
+            <div id='search-form' class="span12">
+                <div class="input-append">
+                    <input  placeholder="Enter Keyword" name='search' type="text" id="search_query" class="search" autocomplete="off"> </input>
+                    <button type="submit" class="search btn" id="btn_search">Search</button>
+               </div>
+            </div>
 
-<div class="visible-phone">
-
-    <div id="search_head" >
-        <a href='/'><img id="logo_pic" src='{{ STATIC_URL }}images/logo.png'></a>
-    </div>
-
-    <div id='search-form'>
-        <div class="input-append">
-            <input  placeholder="Enter Keyword" name='search' type="text" id="search_query" class="search" autocomplete="off"> </input>
-            <button type="submit" class="search btn" id="btn_search">Search</button>
-       </div>
     </div>
 </div>
+
 
 <div id='result_panel'>
 </div>
