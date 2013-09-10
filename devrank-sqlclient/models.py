@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, Float
 from sqlalchemy import String, Integer, Boolean, Text, DateTime
 from sqlalchemy.orm import relationship, backref
 
@@ -58,6 +58,7 @@ class User(ReprMixin, DevRankMixin, Base):
     company = Column(String(45))
     hireable = Column(Boolean)
     crawled_at = Column(DateTime)
+    devrank_score = Column(Float)
 
     def __init__(self):
         pass
