@@ -8,6 +8,7 @@ bin
 include
 lib
 local
+build
 env
 .Python
 icecream/settings.py
