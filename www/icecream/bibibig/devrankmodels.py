@@ -13,10 +13,20 @@ class DevRankModel(object):
         self.db = DevRankDB(SQLALCHEMY)
         self.db.connect()
 
-    def get_gravatar_url(self, user):
-        s = self.db.makesession()
-        u = s.query(User).filter(User.login==user).first()
+    def _get_gravatar_url(self, session, user):
+        u = session.query(User).filter(User.login==user).first()
         return u and u.avatar_url or None
+
+    def _get_users_by_login(self, session, users):
+        '''[ (login, id, avatar_url), (login, id, avatar_url) ... ]'''
+        return session.query(User.login, User.id, User.avatar_url) \
+                      .filter(User.login.in_(users)).all()
+
+    def _get_followings(self, session, users):
+        return session.query(Follower) \
+                      .join(User, or_(User.id == Follower.src_id, \
+                                      User.id == Follower.dest_id)) \
+                      .filter(User.login.in_(users)).all()
 
     def search(self, query):
         s = self.db.makesession()
@@ -50,45 +60,31 @@ class DevRankModel(object):
                       .filter(Follower.dest_id == login_id).scalar()
 
     def social_search(self, users):
-        my_avatar_url = self.get_gravatar_url(users[0])
-        if my_avatar_url == None:
+        s = self.db.makesession()
+
+        if len(users) == 0:
             return []
 
-        # TODO not coded yet.
-        """
-        gravatar_url = {}
-        gravatar_url[users[0]] = my_avatar_url
+        matchedusers = self._get_users_by_login(s, users)
+        gravatars = dict((x[0], x[2]) for x in matchedusers)
+        id_to_login = dict((x[1], x[0]) for x in matchedusers)
+        followings = self._get_followings(s, users)
+
         links = []
-
-        for user in users:
-            avatar_url = self.get_gravatar_url(user)
-            gravatar_url[user] = avatar_url
-
-            ''' follower, following '''
-            results = self.es.post(user_queryURI, data=user_queryDSL % user)
-            for r in results['hits']['hits']:
-                followings = r['_source']['following_users']
-                for target in followings:
-                    links.append({
-                        "source": user,
-                        "target": target['login'],
-                        "gravatar_url": None,
-                        "type": "type3"
-                    })
-                    gravatar_url[target['login']] = target['avatar_url']
-                followers = r['_source']['follower_users']
-                for source in followers:
-                    links.append({
-                        "source": source['login'],
-                        "target": user,
-                        "gravatar_url": None,
-                        "type": "type3"
-                    })
-                    gravatar_url[source['login']] = source['avatar_url']
-
-        for link in links:
-            link['src_gravatar_url'] = gravatar_url[link['source']]
-            link['tgt_gravatar_url'] = gravatar_url[link['target']]
-        """
-
+        for f in followings:
+            if (f.src_id in id_to_login) and (f.dest_id in id_to_login):
+                login_src = id_to_login[f.src_id]
+                login_dest = id_to_login[f.dest_id]
+                if (login_src in gravatars) and (login_dest in gravatars):
+                    links.append({'source': login_src,
+                                  'target': login_dest,
+                                  'src_gravatar_url': gravatars[login_src],
+                                  'tgt_gravatar_url': gravatars[login_dest],
+                                  'type': 'type3'})
+                else:
+                    # TODO check this problem..
+                    print('No gravatar: %s or %s' % (login_src, login_dest))
+            else:
+                # TODO check this problem..
+                print('No id_to_login: %s or %s' % (f.src_id, f.dest_id))
         return links

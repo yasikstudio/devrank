@@ -49,9 +49,8 @@ class search(View):
 
 def social_json(request):
     c = DevRankModel()
-    users = request.GET.get('users', '').split('|')
-    if users == '':
-        users = []
+    usersparam = request.GET.get('users', None)
+    users = usersparam and usersparam.split('|') or []
     data = {
         "links": c.social_search(users)
     }
