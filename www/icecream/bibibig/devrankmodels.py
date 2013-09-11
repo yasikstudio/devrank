@@ -24,8 +24,8 @@ class DevRankModel(object):
         q = s.query(User).join(Repo, User.id == Repo.owner_id) \
              .filter(or_(Repo.description.like(likequery), \
                          Repo.language.like(likequery))) \
-             .order_by(User.devrank_score.desc())
-             .limit(20)
+             .order_by(User.devrank_score.desc()) \
+             .limit(20) \
              .all()
         return q
 
