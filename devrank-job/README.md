@@ -14,9 +14,9 @@ And, `devrank-job` needs apache-giraph-1.0.0 release version. You can install
 using follow commands.
 
     wget http://apache.mirror.cdnetworks.com/giraph/giraph-1.0.0/giraph-1.0.0.tar.gz
-	tar xvzf giraph-1.0.0.tar.gz
+    tar xvzf giraph-1.0.0.tar.gz
     cd giraph
-	mvn install -DskipTests
+    mvn install -DskipTests
 
 
 Build
