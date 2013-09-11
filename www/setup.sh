@@ -4,7 +4,7 @@
 rm -rf bin include lib .Python
 
 # setup virtualenv
-virtualenv --distribute .
+virtualenv .
 source bin/activate
 
 # install packages with pip
