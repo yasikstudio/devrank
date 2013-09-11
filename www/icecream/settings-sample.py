@@ -11,6 +11,8 @@ ADMINS = (
 MANAGERS = ADMINS
 
 SQLALCHEMY = 'mysql://username:password@hostname:3306/database'
+GITHUB_APP_ID = ''
+GITHUB_API_SECRET = ''
 
 # DO NOT use Django ORM
 DATABASES = {
@@ -125,7 +127,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'icecream.bibibig',
-    #'social_auth',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -160,17 +161,4 @@ LOGGING = {
         },
     }
 }
-
-#GITHUB_APP_ID=''
-#GITHUB_API_SECRET=''
-
-#LOGIN_URL          = '/'
-#LOGIN_REDIRECT_URL = '/home'
-#LOGIN_ERROR_URL    = '/login-error/'
-
-#SOCIAL_AUTH_USER_MODEL = 'bibibig.DevUser'
-#AUTHENTICATION_BACKENDS = (
-#    'social_auth.backends.contrib.github.GithubBackend',
-#    'django.contrib.auth.backends.ModelBackend',
-#)
 

@@ -10,7 +10,8 @@ urlpatterns = patterns('',
     url(r'^home$', home ),
     url(r'^search/(?P<search>\w+)/?$', search.as_view()),
     url(r'^social.json/$', social_json, name='social_json'),
-    url(r'', include('social_auth.urls')),
+    url(r'^oauth/$', oauth),
+    url(r'^login/github/$', login_github),
     # url(r'^icecream/', include('icecream.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
