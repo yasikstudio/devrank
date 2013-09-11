@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, ForeignKey, Float
-from sqlalchemy import String, Integer, Boolean, Text, DateTime
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.declarative import *
+from sqlalchemy import *
+from sqlalchemy.orm import *
 
 Base = declarative_base()
 

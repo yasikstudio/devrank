@@ -24,20 +24,10 @@ class search(View):
     def get(self, request, *args, **kwargs):
         if 'search' in kwargs:
             c = DevRankModel()
-            r = c.search(kwargs['search'])
-
-            for _r in r:
-                _r.update({u"source":_r["_source"]})
-                if u"devrank_score" in _r[u"source"].keys():
-                    value = float(_r[u"source"][u"devrank_score"]) * 1000000
-                    _r["source"].update({u"devrank_score":value})
-                else:
-                    _r["source"].update({u"devrank_score":0})
-                _r.pop(u"_source",None)
-
+            users = c.search(kwargs['search'])
             var = RequestContext(request, {
                     'page_title': u'Devrank',
-                    'results': r,
+                    'results': users,
                     'query':kwargs['search'],
                     })
             return render_to_response('result_list.html', var)
