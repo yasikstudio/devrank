@@ -26,25 +26,26 @@ class intro(View):
         var = RequestContext(request, {'page_title': u'Devrank', })
         return render_to_response('intro.html', var)
 
-def home(request):
-    #TODO confirm authenticated.
-    #if request.user.is_authenticated():
-    var = RequestContext(request, {'page_title': u'Devrank', })
-    return render_to_response('home.html', var)
-    #else:
-    #    return HttpResponseRedirect('/')
-
-class search(View):
+class home(View):
     def get(self, request, *args, **kwargs):
-        if 'search' in kwargs:
+        if u'q' in request.GET.keys():
             c = DevRankModel()
-            users = c.search(kwargs['search'])
+            users = c.search(request.GET.get(u'q'))
             var = RequestContext(request, {
                     'page_title': u'Devrank',
                     'results': users,
-                    'query':kwargs['search'],
+                    'query':request.GET.get(u'q'),
                     })
             return render_to_response('result_list.html', var)
+
+
+        #TODO confirm authenticated.
+        #if request.user.is_authenticated():
+        var = RequestContext(request, {'page_title': u'Devrank', })
+        return render_to_response('home.html', var)
+        #else:
+        #    return HttpResponseRedirect('/')
+
 
 
 def social_json(request):

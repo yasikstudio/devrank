@@ -3,9 +3,6 @@
 {% block head %}
 <script>
     $(document).ready(function (){
-        $('#btn_search').on("click", function(){
-            $('#result_panel').load('/search/'+$('#search_query').val());
-        });
     });
 </script>
 {% endblock %}
@@ -22,31 +19,17 @@
             </div>
 
 
-            <div id='search-form' class="span12">
-                <div class="input-append">
-                    <input  placeholder="Enter Keyword" name='search' type="text" id="search_query" class="search" autocomplete="off"> </input>
-                    <button type="submit" class="search btn" id="btn_search">Search</button>
-               </div>
-            </div>
-
+            <form method="get" action="/home">
+                <div id='search-form' class="span12">
+                    <div class="input-append">
+                        <input  placeholder="Enter Keyword" name='q' type="text" id="search_query" class="search" autocomplete="off"> </input>
+                        <button type="submit" class="search btn" id="btn_search">Search</button>
+                   </div>
+                </div>
+            </form>
     </div>
 </div>
 
 
-<div id='result_panel'>
-</div>
-
-<script>
-    $('.github_id_form').submit(function() {
-        var id = $(this).attr('id');
-        var login = id.split('-')[0];
-        var my_login = $(this).find('input#login_id').val();
-        $('#' + id).html('');
-        var width = $('#' + id).parent().width();
-        var height = $('#' + id).parent().height();
-        social_rel(my_login + '|' + login, '#' + id, width, height);
-        return false;
-    });
-</script>
 {% endblock %}
 

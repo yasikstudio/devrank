@@ -7,9 +7,9 @@ from icecream.bibibig.views import *
 
 urlpatterns = patterns('',
     url(r'^$', intro.as_view() ),
-    url(r'^home$', home ),
-    url(r'^search/(?P<search>\w+)/?$', search.as_view()),
+    url(r'^home$', home.as_view()),
     url(r'^social.json/$', social_json, name='social_json'),
+
     url(r'^oauth/$', oauth),
     url(r'^login/github/$', login_github),
     # url(r'^icecream/', include('icecream.foo.urls')),

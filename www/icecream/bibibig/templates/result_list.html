@@ -1,6 +1,55 @@
-<script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.js"></script>
-<link href="{{ STATIC_URL }}resources/bootstrap-modal-fullscreen.css" rel="stylesheet" />
+{% extends "base.html" %}
 
-{% for result in results %}
-  {% include "result.html" %}
-{% endfor %}
+{% block head %}
+    <script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.js"></script>
+    <link href="{{ STATIC_URL }}resources/bootstrap-modal-fullscreen.css" rel="stylesheet" />
+{% endblock %}
+
+{% block body %}
+
+<div class='container'>
+    <div class='row-fluid'>
+
+        <div id="head" class="span6">
+            <div class="container">
+                <a href='/'><img id="logo_pic" src='{{ STATIC_URL }}images/logo.png'></a>
+            </div>
+        </div>
+
+
+        <div class="span6">
+            <form method="get" action="/home">
+                <div id='search-form_result'>
+                    <div class="input-append">
+                        <input  placeholder="Enter Keyword" name='q' type="text" id="search_query" class="search" autocomplete="off"> </input>
+                        <button type="submit" class="search btn" id="btn_search">Search</button>
+                   </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+<div class='container'>
+    <div id='result_panel'>
+        {% for result in results %}
+          {% include "result.html" %}
+        {% endfor %}
+    </div>
+</div>
+
+    <script>
+        $('.github_id_form').submit(function() {
+            var id = $(this).attr('id');
+            var login = id.split('-')[0];
+            var my_login = $(this).find('input#login_id').val();
+            $('#' + id).html('');
+            var width = $('#' + id).parent().width();
+            var height = $('#' + id).parent().height();
+            social_rel(my_login + '|' + login, '#' + id, width, height);
+            return false;
+        });
+    </script>
+{% endblock %}
