@@ -21,10 +21,9 @@ You can create `client_id` and `client_secret` at here:
 https://github.com/settings/applications/new
 
     # config.py (copied from config-templates.py)
-    username = 'jong10'
+    username = ['jong10','jong11']
     password = 'abcdefghijklmn'
-    client_id = 'xxxxxxxxxxxxxxxxx'
-    client_secret = 'xxxxxxxxxxxxxxxxxxxx'
+    DB_CONN_STRING = 'mysql://username:pass@host:3306/db'
 
 
 Set first userlist to `userlist.txt' file.
