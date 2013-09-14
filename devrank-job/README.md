@@ -15,7 +15,7 @@ using follow commands.
 
     wget http://apache.mirror.cdnetworks.com/giraph/giraph-1.0.0/giraph-1.0.0.tar.gz
     tar xvzf giraph-1.0.0.tar.gz
-    cd giraph
+    cd giraph-1.0.0
     mvn install -DskipTests
 
 
