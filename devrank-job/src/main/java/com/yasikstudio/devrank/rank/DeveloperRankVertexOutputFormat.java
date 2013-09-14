@@ -24,18 +24,15 @@ public class DeveloperRankVertexOutputFormat extends
         throws IOException, InterruptedException {
 
       String uid = vertex.getId().toString();
-      UserVertexValue value = vertex.getValue();
-      double followingValue = value.getFollowingValue();
-      double activityValue = value.getActivityValue();
+      UserVertexValue vertexValue = vertex.getValue();
+      double devrankValue = vertexValue.getValue();
 
       StringBuilder results = new StringBuilder();
       results.append(uid);
       results.append(",");
-      results.append(value.exists());
+      results.append(vertexValue.exists());
       results.append(",");
-      results.append(String.format("%.30f", followingValue));
-      results.append(",");
-      results.append(String.format("%.30f", activityValue));
+      results.append(String.format("%.30f", devrankValue));
 
       // write to HDFS
       getRecordWriter().write(new Text(results.toString()), null);
