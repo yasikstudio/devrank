@@ -3,34 +3,48 @@
 {% block head %}
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.js"></script>
     <link href="{{ STATIC_URL }}resources/bootstrap-modal-fullscreen.css" rel="stylesheet" />
+    <script type="text/javascript">
+		$(document).ready(function (){
+			$('#search_query').val("{{query}}")
+		});
+	</script>
 {% endblock %}
 
 {% block body %}
 
-<div class='container'>
-    <div class='row-fluid'>
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class='container'>
+			<div class="row-fluid">
+				<div class="span6">
+					<a class="brand" href='/'>
+						<img id="logo_pic" src='{{ STATIC_URL }}images/logo.png'>
+					</a>
+				</div>
+				<div class="span6">
+					<div class="nav">
+						{% if login == True %}
+							<form id="search-form" class="navbar-search pull-left" method="get" action="/home">
+								<div class="input-append">
+									<input  placeholder="Enter Keyword" name='q' type="text" id="search_query" class="search" autocomplete="off"> </input>
+									<button type="submit" class="search btn" id="btn_search">Search</button>
+							   </div>
+							</form>
+							<button class="btn btn-danger"> <a href="/logout">Logout</a></button>
+						{% else %}
+							<button class="btn btn-info">
+								<a href="/login/github">
+									<i class="icon-github icon-1x"></i> Login
+								</a>
+							</button>
+						{% endif %}
+					</div>
+				</div>
+			</div>
 
-        <div id="head" class="span6">
-            <div class="container">
-                <a href='/'><img id="logo_pic" src='{{ STATIC_URL }}images/logo.png'></a>
-            </div>
-        </div>
-
-
-        <div class="span6">
-            <form method="get" action="/home">
-                <div id='search-form_result'>
-                    <div class="input-append">
-                        <input  placeholder="Enter Keyword" name='q' type="text" id="search_query" class="search" autocomplete="off"> </input>
-                        <button type="submit" class="search btn" id="btn_search">Search</button>
-                   </div>
-                </div>
-            </form>
-        </div>
-
-    </div>
+		</div>
+	</div>
 </div>
-
 
 <div class='container'>
     <div id='result_panel'>
