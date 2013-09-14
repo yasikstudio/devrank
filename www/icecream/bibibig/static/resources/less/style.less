@@ -76,33 +76,6 @@ body {
     }
 }
 
-
-.navbar-inner .nav {
-	padding-top:10px;
-	font-size:15px;
-}
-
-.navbar-inner {
-	padding:@padding - 10;
- }
-
- .brand > #logo_pic { width:200px; }
-
- .nav {
-
-	 > button {
-		height:40px;
-		margin-left:20px;
-	 }
-	 > #search-form {
-		#btn_search { height:40px; }
-		#search_query {
-			min-width:250px;
-			height:30px;
-		}
-	}
-}
-
 #search_head {
     text-align:center;
     margin-left:auto;
@@ -111,14 +84,22 @@ body {
     margin-bottom:50px;
     margin-top:200px;
 }
-#search-form {
+
+#result_search_head{
+    #search_head;
+    margin-top:10px;
+    margin-bottom:10px;
+    > a > img { width:300px; }
+}
+
+#search-bt{
     text-align:center;
     margin-left:auto;
     margin-right:auto;
-
-    #btn_search { height:40px; }
-    #search_query { min-width:280px; height:30px; }
 }
+
+#btn_search { height:40px; }
+#search_query { min-width:280px; height:30px; }
 
 #index {
     overflow:hidden;
@@ -139,6 +120,7 @@ body {
                 padding:@padding;
                 letter-spacing:-1px;
                 word-spacing:5px;
+                > a { letter-spacing:1px;}
             }
 
             #laptop {

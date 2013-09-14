@@ -34,7 +34,6 @@ class home(View):
                     'page_title': u'Devrank',
                     'results': users,
                     'query':request.GET.get(u'q'),
-                    #TODO
                     'login':True,
                     })
             return render_to_response('result_list.html', var)
