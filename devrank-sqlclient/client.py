@@ -79,7 +79,25 @@ def dump(s, f):
 
 
 def update_score(s, f):
-    pass
+    try:
+        count = 0
+        while True:
+            line = f.readline()
+            if line == '':
+                break
+            uid, exists, score = line.strip().split(',')
+            if exists == 'true':
+                score = float(score)
+                s.query(User).update({'devrank_score': score})
+                count += 1
+                if count % 100 == 0:
+                    print('%d rows updated' % count)
+        s.commit()
+        print('Updating %d rows completed.' % count)
+    except:
+        s.rollback()
+        print('Rollbacked.')
+        raise
 
 
 if __name__ == '__main__':
