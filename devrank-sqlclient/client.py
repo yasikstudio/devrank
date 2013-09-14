@@ -59,7 +59,7 @@ def dump(s, f):
                            Repo.id == Contributor.repo_id, \
                            Contributor.contributor_id == me.id))
         for u, r, c in rs:
-            f.write('P|%s|%s|%s' % (me.id, u.id, c.contributions))
+            f.write('P|%s|%s|%s\n' % (me.id, u.id, c.contributions))
 
         # S|uid|owner_uid
         rs = s.query(User, Repo, Stargazer) \
@@ -67,7 +67,7 @@ def dump(s, f):
                            Repo.id == Stargazer.repo_id, \
                            Stargazer.stargazer_id == me.id))
         for u, r, star in rs:
-            f.write('S|%s|%s' % (me.id, u.id))
+            f.write('S|%s|%s\n' % (me.id, u.id))
 
         # W|uid|owner_uid
         rs = s.query(User, Repo, Watcher) \
@@ -75,7 +75,7 @@ def dump(s, f):
                            Repo.id == Watcher.repo_id, \
                            Watcher.watcher_id == me.id))
         for u, r, w in rs:
-            f.write('W|%s|%s' % (me.id, u.id))
+            f.write('W|%s|%s\n' % (me.id, u.id))
 
 
 def update_score(s, f):
