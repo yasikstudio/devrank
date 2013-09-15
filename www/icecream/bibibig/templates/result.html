@@ -10,25 +10,16 @@
                             <i class="icon-remove icon-white"></i>
                             <span>Close</span>
                         </button>
-                    </div>
-                    <div class="modal-body" id="{{result.login}}-content">
-                        <div><h3>Enter your Github ID</h3></div>
-                        <form class="github_id_form" id="{{result.login}}-content" method="post" align="center">
-                            {% csrf_token %}
-                            <div class="input-append">
-                                <input  style="width:240px;" type="text" id="login_id"> </input>
-                                <button type="submit" class="login btn" id="btn_login">ok</button>
-                            </div>
-                        </form>
+                        <div id="social-content"></div>
                     </div>
                 </div>
 
                 <span class="subject">
-                <a href="https://github.com/{{ result.login}}">
+                <a href="https://github.com/{{result.login}}">
                     {{ result.login }}</a></span>
 
 
-                <a class="social" href="#{{result.login}}" role="button" data-toggle="modal">[Social Graph]</a>
+                <a id="social-graph" class="social" href="#{{result.login}}" role="button" data-toggle="modal">[Social Graph]</a>
 
                 <div>
                     <span class="devrank"> {{ result.devrank_score|floatformat:"-2" }} </span>

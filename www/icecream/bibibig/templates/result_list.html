@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
 {% block head %}
+    <script src="{{ STATIC_URL }}resources/js/social.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}resources/js/d3.v3.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.js"></script>
-	<link href="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.css" rel="stylesheet" />
+    <link href="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.css" rel="stylesheet" />
     <script type="text/javascript">
         $(document).ready(function (){
             $('#search_query').val("{{query}}")
@@ -19,23 +21,31 @@
                 <a href='/'><img id="logo_pic" src='{{ STATIC_URL }}images/logo.png'></a>
             </div>
 
-            <div id="search-bt">
             {% if login == True %}
-                <form method="get" action="/home">
-                    <div id='search-form' class="span12">
-                        <div class="input-append">
-                            <input  placeholder="Enter Keyword" name='q' type="text" id="search_query" class="search" autocomplete="off"> </input>
-                            <button type="submit" class="search btn" id="btn_search">Search</button>
-                       </div>
+            <form id="search-bt">
+                <div id='search-form' class="span12">
+                    <div class="input-append">
+                        <input  placeholder="Enter Keyword" name='q' type="text" id="search_query" class="search" autocomplete="off"> </input>
+                        <button type="submit" class="search btn" id="btn_search">Search</button>
                     </div>
-                </form>
+                </div>
+            </form>
+            <script>
+                $("#search-bt").submit(function(e){
+                    e.preventDefault();
+                    var $form = $( this ),
+                    q = $form.find( 'input[name="q"]' ).val(),
+                    url = '/home?';
+                    window.location = url+'m={{who}}&q='+q;
+                });
+            </script>
             {% else %}
+            <div id="search-bt">
                 <a class="btn btn-large btn-info" href="/login/github">
-                    <i class="icon-github icon-1x"></i> Login
+                    <i class="icon-github icon-1x"></i>Login
                 </a>
             </div>
-
-        {% endif %}
+            {% endif %}
     </div>
 </div>
 
@@ -43,21 +53,25 @@
 <div class='container'>
     <div id='result_panel'>
         {% for result in results %}
+        {{ result }}
           {% include "result.html" %}
         {% endfor %}
     </div>
 </div>
-
     <script>
-        $('.github_id_form').submit(function() {
-            var id = $(this).attr('id');
-            var login = id.split('-')[0];
-            var my_login = $(this).find('input#login_id').val();
-            $('#' + id).html('');
-            var width = $('#' + id).parent().width();
-            var height = $('#' + id).parent().height();
-            social_rel(my_login + '|' + login, '#' + id, width, height);
-            return false;
-        });
+        $("#social-graph").on("click",
+            function(d){
+                var my_login = "{{who}}";
+                var login = ($(this).attr('href')).split('#')[1];
+                var id = 'social-content';
+                var width = 800;
+                var height = 500;
+
+                //test user
+                    var my_login = "jongyeol";
+                    var login = "jweb";
+                //end test user
+                social_rel(my_login + '|' + login, '#' + id, width, height);
+            });
     </script>
 {% endblock %}

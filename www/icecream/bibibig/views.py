@@ -15,10 +15,12 @@ def login_github(request):
 
 def oauth(request):
     o = OAuthManager()
+    c = DevRankModel()
     o.callback_response(request.get_full_path())
-    user = json.loads(o.getUser())
-    var = RequestContext(request, {'page_title': u'Devrank', })
-    return render_to_response('home.html', var)
+    user = json.loads(o.getUser())['login']
+    c.oauth(user)
+    return HttpResponseRedirect('/home?m='+user)
+
 
 class intro(View):
     def get(self, request, *args, **kwargs):
@@ -27,16 +29,32 @@ class intro(View):
 
 class home(View):
     def get(self, request, *args, **kwargs):
-        if u'q' in request.GET.keys():
+        if u'q' in request.GET.keys() and \
+            u'm' in request.GET.keys():
             c = DevRankModel()
+            user = request.GET.get(u'm')
+            if not c.check_oauth(user):
+                user = ''
+
             users = c.search(request.GET.get(u'q'))
             var = RequestContext(request, {
                     'page_title': u'Devrank',
                     'results': users,
                     'query':request.GET.get(u'q'),
-                    'login':True,
+                    'login': True,
+                    'who' : user,
                     })
             return render_to_response('result_list.html', var)
+        elif u'm' in request.GET.keys():
+            c = DevRankModel()
+            user = request.GET.get(u'm')
+            if not c.check_oauth(user):
+                user = ''
+            var = RequestContext(request, {
+                'page_title': u'Devrank',
+                'who' : user,
+                })
+            return render_to_response('home.html', var)
         return HttpResponseRedirect('/')
 
 def social_json(request):

@@ -88,3 +88,19 @@ class DevRankModel(object):
                 # TODO check this problem..
                 print('No id_to_login: %s or %s' % (f.src_id, f.dest_id))
         return links
+
+    def check_oauth(self, user):
+        s = self.db.makesession()
+        r = s.query(Member).filter(Member.login == user).scalar()
+        if r == None:
+            return False
+        else:
+            return True
+
+    def oauth(self, user):
+        if not self.check_oauth(user):
+            s.add(Member(user))
+            s.commit()
+            return True
+        else:
+            return False
