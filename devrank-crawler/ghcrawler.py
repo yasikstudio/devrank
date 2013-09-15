@@ -3,6 +3,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
+import os
 import sys
 sys.path.append('../devrank-sqlclient')
 
@@ -12,7 +13,7 @@ import requests
 from requests.exceptions import HTTPError, ConnectionError
 
 import datetime
-from time import localtime, strftime
+from time import localtime, strftime, sleep
 
 from models import *
 from client import *
@@ -26,19 +27,16 @@ def debug(str):
 class GitHubCrawler(object):
     """GitHub Crawler"""
 
-    USERLIST = 'userlist.txt'
-    MAXDEPTH = 5
     RETRY = 3
+    MAX_TASK_TYPE = 5
 
-    def __init__(self):
+    def __init__(self, crawler_id):
         """Initializer for GitHubCrawler."""
+        self.crawler_id = crawler_id
         self.usernames = config.usernames
         self.password = config.password
         self.username_idx = 0
         self.username = self.usernames[0]
-        self.visited = set()
-        self.unvisited = collections.deque(self.userlist())
-        self.out = None
         self.remaining_requests = 0
         self.db = DevRankDB(config.DB_CONN_STRING)
         self.db.connect()
@@ -104,13 +102,12 @@ class GitHubCrawler(object):
 
     def user(self, username):
         """Get user by username"""
-        s = self.db.makesession()
-
         etag = None
         user_dict = {}
         user = User()
         crawled_at = None
 
+        s = self.db.makesession()
         q = s.query(User).filter_by(login=username)
         if q.count() == 1:
             user = q.first()
@@ -128,20 +125,22 @@ class GitHubCrawler(object):
             if user_dict['type'] == 'User':
                 user = user.from_dict(user_dict)
                 user.crawled_at = datetime.datetime.utcnow()
-                user = s.merge(user)
+                s = self.db.makesession()
+                s.merge(user)
                 s.commit()
+        s.close()
         if user_dict['type'] == 'User':
             return user
         return None
 
     def followers(self, username, user_id):
         """Get followers list by username"""
-        s = self.db.makesession()
         path = 'users/%s/followers' % username
         url = None
         etag = None # TODO: applied
         followers = []
         users = []
+        s = self.db.makesession()
         while path != None or url != None:
             debug('followers(%s) path=%s, url=%s' % (username, path, url))
             res = self.__get(path=path, url=url, etag=etag)
@@ -153,16 +152,17 @@ class GitHubCrawler(object):
             if link != None and 'next' in link:
                 url = link['next']
         s.commit()
+        s.close()
         return followers
 
     def followings(self, username, user_id):
         """Get followings list by username"""
-        s = self.db.makesession()
         path = 'users/%s/following' % username
         url = None
         etag = None # TODO: applied
         followings = []
         users = []
+        s = self.db.makesession()
         while path != None or url != None:
             debug('followings(%s) path=%s, url=%s' % (username, path, url))
             res = self.__get(path=path, url=url, etag=etag)
@@ -174,16 +174,17 @@ class GitHubCrawler(object):
             if link != None and 'next' in link:
                 url = link['next']
         s.commit()
+        s.close()
         return followings
 
     def repos(self, username, user_id):
         """Get repos list by username"""
-        s = self.db.makesession()
         path = 'users/%s/repos' % username
         url = None
         etag = None # TODO: applied
         repos = []
         users_repos = []
+        s = self.db.makesession()
         while path != None or url != None:
             debug('repos(%s) path=%s, url=%s' % (username, path, url))
             res = self.__get(path=path, url=url, etag=etag)
@@ -192,21 +193,42 @@ class GitHubCrawler(object):
                 repo_obj = Repo().from_dict(repo)
                 repo_obj.crawled_at = datetime.datetime.utcnow()
                 repo_obj.owner_id = user_id
+                if repo_obj.fork:
+                    fork_owner_id = self.fork(username, repo_obj.name)
+                    repo_obj.fork_owner_id = fork_owner_id
                 s.merge(repo_obj)
                 repos.append(repo)
             link = self.__link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
         s.commit()
+        s.close()
         return repos
+
+    def fork(self, username, reponame):
+        """Get repo's fork parent owner's id"""
+        etag = None # TODO: applied
+
+        result = self.__get(path='repos/%s/%s' % (username, reponame),
+                            etag=etag)
+        status_code = result.status_code
+        if status_code == 304:
+            debug('cached %s/%s' % (username, reponame))
+        elif status_code == 200:
+            repo = result.json
+            return repo['parent']['owner']['id']
+        else:
+            # TODO: Error handling
+            return None
+        return None
     
     def watchers(self, username, reponame, repo_id):
         """Get repo's watchers by username, reponame"""
-        s = self.db.makesession()
         path = 'repos/%s/%s/subscribers' % (username, reponame)
         url = None
         etag = None # TODO: applied
         watchers = []
+        s = self.db.makesession()
         while path != None or url != None:
             debug('watchers(%s) path=%s, url=%s' % (username, path, url))
             res = self.__get(path=path, url=url, etag=etag)
@@ -218,15 +240,16 @@ class GitHubCrawler(object):
             if link != None and 'next' in link:
                 url = link['next']
         s.commit()
+        s.close()
         return watchers
 
     def stargazers(self, username, reponame, repo_id):
         """Get repo's stargazers by username, reponame"""
-        s = self.db.makesession()
         path = 'repos/%s/%s/stargazers' % (username, reponame)
         url = None
         etag = None # TODO: applied
         stargazers = []
+        s = self.db.makesession()
         while path != None or url != None:
             debug('stargazers(%s) path=%s, url=%s' % (username, path, url))
             res = self.__get(path=path, url=url, etag=etag)
@@ -238,11 +261,11 @@ class GitHubCrawler(object):
             if link != None and 'next' in link:
                 url = link['next']
         s.commit()
+        s.close()
         return stargazers
 
     def contributors(self, username, reponame, repo_id):
         """Get repo's contributors by username, reponame"""
-        s = self.db.makesession()
         path = 'repos/%s/%s/contributors' % (username, reponame)
         url = None
         etag = None # TODO: applied
@@ -252,81 +275,94 @@ class GitHubCrawler(object):
         if res.status_code == 404:
             return []
         path = url = None
+        s = self.db.makesession()
         for user in res.json:
             if username != user['login']:
                 s.merge(Contributor(repo_id, user['id'], user['contributions']))
                 contributors.append(user)
         s.commit()
+        s.close()
         return contributors
+
+    def dequeue(self):
+        while True:
+            s = self.db.makesession()
+            select_qry = '''
+            SELECT
+                Q.login,
+                CASE WHEN Q.task_type IN (2, 3, 4) THEN 3
+                     ELSE Q.task_type
+                END AS `qtype`,
+                Q.task_type
+            FROM queue AS Q
+            WHERE Q.assignee IS NULL
+            ORDER BY qtype, Q.task_id
+            LIMIT 1
+            '''
+            result = s.execute(select_qry)
+            row = result.fetchone()
+            if row == None:
+                return (None, None)
+
+            login = row['login']
+            task_type = row['task_type']
+
+            update_qry = '''
+            UPDATE queue SET
+                assignee = :assignee,
+                assigned_dt = now()
+            WHERE
+                    login = :login
+                AND assignee IS NULL
+            '''
+            result = s.execute(update_qry, {
+                'assignee': self.crawler_id,
+                'login': login
+            })
+            if result.rowcount != 1:
+                sleep(1)
+                continue
+            s.commit()
+            s.close()
+            return (login, task_type)
+
+    def queue(self, username, depth):
+        s = self.db.makesession()
+        s.add(TaskQueue(username, depth))
+        s.commit()
+        s.close()
 
     def crawl(self):
         """Crawling start"""
         cnt = 0
-        while len(self.unvisited) > 0:
-            username, depth = self.unvisited.popleft()
-
-            if username in self.visited:
+        while True:
+            username, task_type = self.dequeue()
+            if username == None:
+                sleep(config.CRAWLER_IDLE_TIME)
                 continue
 
-            # check visited
-            self.visited.add(username)
             cnt += 1
 
             # my_user_id
-            #user_id = self.user_id(username)
             user = self.user(username)
             if user == None:
                 continue
             user_id = user.id
 
-            # follower -> me. just append without logging
-            if depth + 1 < self.MAXDEPTH:
-                followers = self.followers(username, user_id)
-            else:
-                followers = []
-
-            # me -> following
-            if depth + 1 < self.MAXDEPTH:
-                followings = self.followings(username, user_id)
-            else:
-                followings = []
+            # followers / followings
+            followers = self.followers(username, user_id)
+            followings = self.followings(username, user_id)
 
             # my repos
             repos = self.repos(username, user_id)
-            fork_repo_owner_ids = []
             contributions = []
             for repo in repos:
-                if repo['fork']:
-                    fork_repo_owner_ids.append(str(repo['owner']['id']))
-                else:
-                    # watcher write
+                if not repo['fork']:
                     watchers = self.watchers(username, repo['name'], repo['id'])
-                    for watcher in watchers:
-                        if watcher['id'] != repo['owner']['id']:
-                            self.write(u'W|%d|%d' %
-                                    (watcher['id'], repo['owner']['id']))
-
-                    # stargazer write
                     stargazers = self.stargazers(username,
                         repo['name'], repo['id'])
-                    for stargazer in stargazers:
-                        if stargazer['id'] != repo['owner']['id']:
-                            self.write(u'S|%d|%d' %
-                                    (stargazer['id'], repo['owner']['id']))
-
-                    # contributions write
                     contributions = self.contributors(
                             username, repo['name'], repo['id'])
-                    for cont in contributions:
-                        self.write(u'P|%d|%d|%d' %
-                                (repo['owner']['id'], cont['id'],
-                                 cont['contributions']))
-
-            # write to file
-            followings_id = ','.join([str(u['id']) for u in followings])
-            fork_repo_owner_ids = ','.join(fork_repo_owner_ids)
-            self.write(u'U|%d|%s|%s' %
-                    (user_id, followings_id, fork_repo_owner_ids))
 
             # print progress
             print('[%s] username: %s, progress: %d, rate-limit: %s' %
@@ -334,28 +370,28 @@ class GitHubCrawler(object):
                 self.remaining_requests))
 
             # append new users if not in visited
-            if depth + 1 < self.MAXDEPTH:
-                self.append(depth, [str(u['login']) for u in followers])
-                self.append(depth, [str(u['login']) for u in followings])
+            next_task_type = min(task_type + 1, self.MAX_TASK_TYPE)
+            self.append(next_task_type, [str(u['login']) for u in followers])
+            self.append(next_task_type, [str(u['login']) for u in followings])
 
-    def append(self, depth, users):
+            # TODO: add org's members
+            # TODO: friendship flag
+
+    def append(self, task_type, users):
         """Append users to unvisited list if not visited"""
-        self.unvisited.extend((u, depth) for u in users
-                              if u not in self.visited)
-
-    def write(self, msg):
-        """Write message to file"""
-        if not self.out:
-            self.out = open('gh.log', 'w') # truncate mode
-        self.out.write(msg + '\n')
-
-    def flush(self):
-        if self.out:
-            self.out.close()
-
+        for u in users:
+            s = self.db.makesession()
+            q = s.query(TaskQueue).filter_by(login=u)
+            if q.count() == 0:
+                s.add(TaskQueue(u, task_type))
+                s.commit()
+            s.close()
 
 if __name__ == '__main__':
-    c = GitHubCrawler()
+    hostname = os.uname()[1]
+    pid = os.getpid()
+    ghcrawler_id = 'gh_%s_%s' % (hostname.replace('.', '_'), pid)
+    c = GitHubCrawler(ghcrawler_id)
     try:
         c.crawl()
     except KeyboardInterrupt:
