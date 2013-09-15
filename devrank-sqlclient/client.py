@@ -50,13 +50,9 @@ def dump(s, f):
         # U|uid|follow_id1,follow_id2,follow_id3|fork_id4,fork_id5,fork_id6
         rs = s.query(Follower.dest_id).filter(Follower.src_id == me.id)
         followings = ','.join(str(x[0]) for x in rs)
-        # TODO need to change db schema. need original_uid
-        repos = ''
-        """
-        rs = s.query(Repo.original_uid) \
-              .filter(and_(Repo.owner_id == me.id, Repo.fork = True)))
+        rs = s.query(Repo.fork_owner_id) \
+              .filter(and_(Repo.fork_owner_id == me.id, Repo.fork == True))
         repos = ','.join(str(x[0]) for x in rs)
-        """
         f.write('U|%s|%s|%s\n' % (me.id, followings, repos))
 
         # P|uid|owner_uid|count
