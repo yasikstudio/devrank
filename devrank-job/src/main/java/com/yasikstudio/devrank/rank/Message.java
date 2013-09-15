@@ -7,46 +7,32 @@ import java.io.IOException;
 import org.apache.hadoop.io.Writable;
 
 public class Message implements Writable {
-  public static final int FOLLOWING = 0;
-  public static final int ACTIVITY = 1;
 
-  private int type;
-  private double devrank;
+  private double devrankValue;
 
   public Message() {
   }
 
-  public Message(int type, double devrank) {
-    this.type = type;
-    this.devrank = devrank;
+  public Message(double devrankValue) {
+    this.devrankValue = devrankValue;
   }
 
   @Override
   public void readFields(DataInput input) throws IOException {
-    type = input.readInt();
-    devrank = input.readDouble();
+    devrankValue = input.readDouble();
   }
 
   @Override
   public void write(DataOutput output) throws IOException {
-    output.writeInt(type);
-    output.writeDouble(devrank);
+    output.writeDouble(devrankValue);
   }
 
-  public int getType() {
-    return type;
+  public double getDevrankValue() {
+    return devrankValue;
   }
 
-  public void setType(int type) {
-    this.type = type;
-  }
-
-  public double getDevrank() {
-    return devrank;
-  }
-
-  public void setDevrank(double devrank) {
-    this.devrank = devrank;
+  public void setDevrank(double devrankValue) {
+    this.devrankValue = devrankValue;
   }
 
   @Override
@@ -54,9 +40,8 @@ public class Message implements Writable {
     final int prime = 31;
     int result = 1;
     long temp;
-    temp = Double.doubleToLongBits(devrank);
+    temp = Double.doubleToLongBits(devrankValue);
     result = prime * result + (int) (temp ^ (temp >>> 32));
-    result = prime * result + type;
     return result;
   }
 
@@ -69,16 +54,14 @@ public class Message implements Writable {
     if (getClass() != obj.getClass())
       return false;
     Message other = (Message) obj;
-    if (Double.doubleToLongBits(devrank) != Double
-        .doubleToLongBits(other.devrank))
-      return false;
-    if (type != other.type)
+    if (Double.doubleToLongBits(devrankValue) != Double
+        .doubleToLongBits(other.devrankValue))
       return false;
     return true;
   }
 
   @Override
   public String toString() {
-    return "Message [type=" + type + ", devrank=" + devrank + "]";
+    return "Message [devrankValue=" + devrankValue + "]";
   }
 }

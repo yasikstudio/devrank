@@ -7,9 +7,9 @@ devrank-sqlclient
 Setup
 -----
 
-	apt-get install python-dev libmysqlclient-dev (Ubuntu)
-	brew install mysql (Mac OS X)
-	
+    apt-get install python-dev libmysqlclient-dev (Ubuntu)
+    brew install mysql (Mac OS X)
+
     pip install -r ../devrank-sqlclient/requirements.txt
 
 How to use this

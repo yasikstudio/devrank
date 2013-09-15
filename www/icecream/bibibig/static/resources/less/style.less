@@ -56,27 +56,27 @@ textarea, input, button {
     font: 13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
 }
 
-body{
+body {
     color:@fontBaseColor;
     font:@fontBase;
 }
 
-.container{
+.container {
     max-width:1200px;
     margin-left:auto;
     margin-right:auto;
     position:relative;
 }
 
-#head{
+#head {
     margin-bottom:50px;
     margin-top:50px;
-    img{
+    img {
         width:200px;
     }
 }
 
-#search_head{
+#search_head {
     text-align:center;
     margin-left:auto;
     margin-right:auto;
@@ -84,38 +84,46 @@ body{
     margin-bottom:50px;
     margin-top:200px;
 }
- #search-form{
+
+#result_search_head{
+    #search_head;
+    margin-top:10px;
+    margin-bottom:10px;
+    > a > img { width:300px; }
+}
+
+#search-bt{
     text-align:center;
     margin-left:auto;
     margin-right:auto;
-
-    #btn_search{ height:40px; }
-    #search_query{ min-width:280px; height:30px; }
 }
 
+#btn_search { height:40px; }
+#search_query { min-width:280px; height:30px; }
 
-#index{
+#index {
     overflow:hidden;
     padding-bottom: 50px;
 
-    #splash{
+    #splash {
         background:url(/static/images/background.png);
         //background:url(/static/images/background2.png);
         margin-top: 30px;
         margin-bottom:40px;
 
-        #value-prop{
+        #value-prop {
             position:relative;
             padding-top:40px;
 
-            #copy{
+            #copy {
                 > h1 { font:@fontHead1 }
                 padding:@padding;
                 letter-spacing:-1px;
                 word-spacing:5px;
+                > a { letter-spacing:1px;}
             }
 
-            #laptop{
+            #laptop {
                 top:-70px;
                 left:600px;
                 width:863px;
@@ -128,25 +136,25 @@ body{
 }
 
 
-#social{
+#social {
     margin-top:100px;
     margin-bottom:100px;
     padding-bottom:100px;
     background:url(/static/images/background2.png);
     border-bottom:10px solid @line;
 
-    #head{
+    #head {
         font:@fontHead2;
         text-align:center;
         line-height:250%;
-        > p{
+        > p {
             letter-spacing:8px;
             word-spacing:10px;
             }
     }
 
-    .content{
-        .socialtext{
+    .content {
+        .socialtext {
             font-size:15px;
             padding-left:50px;
             margin-top:140px;
@@ -159,19 +167,19 @@ body{
     }
 }
 
-#formula{
+#formula {
     border-bottom:1px solid @blue;
     text-align:center;
     margin-bottom:100px;
     padding-bottom:100px;
 
-    .hero{
+    .hero {
         margin-top:30px;
         padding-bottom:30px;
-        .subline{ margin-top:20px; font-size:15px; }
+        .subline { margin-top:20px; font-size:15px; }
     }
 
-    .hero-tail{
+    .hero-tail {
         background-image: -webkit-gradient(radial, 50% 0%, 0, 50% 0%, 65, color-stop(0%, rgba(0,0,0,0.08)), color-stop(65%, transparent));
         background-image: -webkit-radial-gradient(top, rgba(0,0,0,0.08) 0%, transparent 65%);
         background-image: -moz-radial-gradient(top, rgba(0,0,0,0.08) 0%, transparent 65%);
@@ -185,10 +193,10 @@ body{
     }
 
 
-    .feature{ margin-top:50px; text-align:center; }
+    .feature { margin-top:50px; text-align:center; }
 
     @radius-img:380px;
-    img{
+    img {
         display: block;
         margin: 0px auto;
         width: 150px;
@@ -207,15 +215,15 @@ body{
     }
 
 
-    blockquote{
+    blockquote {
         border:none;
         padding-top:20px;
-        p{ padding:0px; margin:0px; font-size:13px; }
+        p { padding:0px; margin:0px; font-size:13px; }
     }
 }
 
 
-#preview{
+#preview {
     margin-top:100px;
     border-bottom:1px solid @blue;
     text-align:center;
@@ -237,9 +245,9 @@ footer .container {
     text-align:center;
 }
 
-a {
-    .fade;
-}
+a { .fade; }
+button > a:link { color:white; text-decoration:none; }
+a:link { text-decoration:none; }
 
 .task:hover {
     border:1px solid @blue;
@@ -276,40 +284,37 @@ a {
 .subject:hover {
     background-color:yellow;
 }
-a:link{
-    text-decoration:none;
-}
 
-.social{
+.social {
     font-size:13px;
     font-weight:normal;
     color:@textLight;
 }
 
-.social:hover{
+.social:hover {
     background-color:yellow;
 }
 
-.devrank{
+.devrank {
     font-size:20px;
     font-weight:normal;
 }
 
-.labels{
+.labels {
     margin-top:20px;
-    .label{
+    .label {
         font-size:15px;
         font-weight:normal;
         background:white;
         color:black;
     }
-    .public_repo{
+    .public_repo {
         background:#efb8ed;
     }
-    .followers{
+    .followers {
         background:#f4c413;
     }
-    .following{
+    .following {
         background:#6dcfd6;
     }
 }

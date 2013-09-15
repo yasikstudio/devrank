@@ -46,7 +46,8 @@ public class DeveloperRankJob implements Tool {
 
     configuration.setLong("superstep", supersteps);
 
-    GiraphJob job = new GiraphJob(getConf(), "devrank-job-rank");
+    String jobname = "devrank-job-rank-" + System.currentTimeMillis();
+    GiraphJob job = new GiraphJob(getConf(), jobname);
     GiraphConfiguration giraphConf = job.getConfiguration();
     giraphConf.setVertexClass(DeveloperRankVertex.class);
     giraphConf.setVertexInputFormatClass(DeveloperRankVertexInputFormat.class);

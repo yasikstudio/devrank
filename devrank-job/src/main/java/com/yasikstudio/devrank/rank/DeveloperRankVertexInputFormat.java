@@ -3,7 +3,6 @@ package com.yasikstudio.devrank.rank;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.edge.EdgeFactory;
@@ -16,27 +15,25 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
-public class DeveloperRankVertexInputFormat
-    extends TextVertexInputFormat<Text, UserVertexValue, FloatWritable> {
+public class DeveloperRankVertexInputFormat extends
+    TextVertexInputFormat<Text, UserVertexValue, FloatWritable> {
   @Override
-  public TextVertexReader createVertexReader(
-      InputSplit split, TaskAttemptContext context) throws IOException {
+  public TextVertexReader createVertexReader(InputSplit split,
+      TaskAttemptContext context) throws IOException {
     return new DeveloperRankVertexReader();
   }
 
-  public class DeveloperRankVertexReader extends
-      TextVertexInputFormat<Text, UserVertexValue,
-      FloatWritable>.TextVertexReader {
+  public class DeveloperRankVertexReader
+      extends
+      TextVertexInputFormat<Text, UserVertexValue, FloatWritable>.TextVertexReader {
 
     @Override
     public Vertex<Text, UserVertexValue, FloatWritable, ?> getCurrentVertex()
         throws IOException, InterruptedException {
 
-      // TODO: this getConf() is ok ?
-      Vertex<Text, UserVertexValue, FloatWritable, ?> vertex =
-          getConf().createVertex();
+      Vertex<Text, UserVertexValue, FloatWritable, ?> vertex = getConf()
+          .createVertex();
 
       // input values:
       // id|true|followings...|forks...|pull...|star...|watch...
@@ -50,19 +47,25 @@ public class DeveloperRankVertexInputFormat
         String[] items = line.toString().split("\\|", -1);
         Text uid = new Text(items[0]);
         boolean exists = Boolean.parseBoolean(items[1]);
-        Map<String, Integer> followings = parseEdges(items[2]);
-        Map<String, Integer> activities =
-            parseEdges(items[3], items[4], items[5], items[6]);
+        Map<String, Long> followings = parseEdge(items[2], 1);
+        Map<String, Long> forks = parseEdge(items[3], 1);
+        Map<String, Long> pulls = parseEdge(items[4], 1);
+        Map<String, Long> stars = parseEdge(items[5], 1);
+        Map<String, Long> watches = parseEdge(items[6], 1);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Long> allEdges = merge(followings, forks, pulls, stars,
+            watches);
+
+        long outEdges = sum(allEdges);
 
         // setup initialized vertex value
-        UserVertexValue vertexValue =
-            new UserVertexValue(exists, followings, activities);
+        // TODO
+//        UserVertexValue vertexValue = new UserVertexValue(exists, outEdges);
+        UserVertexValue vertexValue = new UserVertexValue(exists, outEdges, allEdges);
 
         // setup edges
-        Set<String> ids = Sets.newHashSet();
-        ids.addAll(followings.keySet());
-        ids.addAll(activities.keySet());
-        List<Edge<Text, FloatWritable>> edges = generateEdges(ids);
+        List<Edge<Text, FloatWritable>> edges = generateEdges(allEdges);
 
         // initialize vertex
         vertex.initialize(uid, vertexValue, edges);
@@ -73,42 +76,58 @@ public class DeveloperRankVertexInputFormat
       return vertex;
     }
 
-    @Override
-    public boolean nextVertex() throws IOException, InterruptedException {
-      return getRecordReader().nextKeyValue();
-    }
-
-    private List<Edge<Text, FloatWritable>> generateEdges(Set<String> ids) {
-      Map<Text, FloatWritable> data = Maps.newHashMap();
-      for (String targetId : ids.toArray(new String[0])) {
-        if (targetId != null && !"".equals(targetId)) {
-          data.put(new Text(targetId), new FloatWritable(1.0f));
+    private Map<String, Long> parseEdge(String data, long weight) {
+      Map<String, Long> map = Maps.newHashMap();
+      for (String item : data.split(",")) {
+        if (item != null && !"".equals(item)) {
+          String[] idAndCount = item.split(":", 2);
+          String id = idAndCount[0];
+          long count = Integer.parseInt(idAndCount[1]);
+          long prev = map.containsKey(id) ? map.get(id) : 0;
+          long current = count * weight;
+          map.put(id, prev + current);
         }
       }
+      return map;
+    }
+
+    private Map<String, Long> merge(Map<String, Long>... allEdges) {
+      Map<String, Long> merged = Maps.newHashMap();
+      for (Map<String, Long> edges : allEdges) {
+        for (Map.Entry<String, Long> item : edges.entrySet()) {
+          String key = item.getKey();
+          long oldValue = merged.containsKey(key) ? merged.get(key) : 0;
+          merged.put(key, oldValue + item.getValue());
+        }
+      }
+      return merged;
+    }
+
+    private long sum(Map<String, Long> edges) {
+      long sum = 0;
+      for (Map.Entry<String, Long> item : edges.entrySet()) {
+        sum += item.getValue();
+      }
+      return sum;
+    }
+
+    private List<Edge<Text, FloatWritable>> generateEdges(
+        Map<String, Long> allEdges) {
       List<Edge<Text, FloatWritable>> edges = Lists.newArrayList();
-      for (Map.Entry<Text, FloatWritable> entry : data.entrySet()) {
-        edges.add(EdgeFactory.create(entry.getKey(), entry.getValue()));
+      for (Map.Entry<String, Long> e : allEdges.entrySet()) {
+        edges.add(EdgeFactory.create(new Text(e.getKey()), new FloatWritable(
+            1.0f)));
+
+        // TODO
+//        edges.add(EdgeFactory.create(new Text(e.getKey()), new FloatWritable(
+//            (float) e.getValue())));
       }
       return edges;
     }
 
-    private Map<String, Integer> parseEdges(String... data) {
-      Map<String, Integer> map = Maps.newHashMap();
-      for (String category : data) {
-        for (String item : category.split(",")) {
-          if (item != null && !"".equals(item)) {
-            String[] idAndCount = item.split(":", 2);
-            String id = idAndCount[0];
-            int count = Integer.parseInt(idAndCount[1]);
-            if (map.containsKey(id)) {
-              map.put(id, map.get(id) + count);
-            } else {
-              map.put(id, count);
-            }
-          }
-        }
-      }
-      return map;
+    @Override
+    public boolean nextVertex() throws IOException, InterruptedException {
+      return getRecordReader().nextKeyValue();
     }
   }
 }

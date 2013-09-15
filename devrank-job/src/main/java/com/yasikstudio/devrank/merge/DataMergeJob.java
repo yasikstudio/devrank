@@ -40,7 +40,8 @@ public class DataMergeJob implements Tool {
     String inputPath = cmd.getOptionValue("inputPath");
     String outputPath = cmd.getOptionValue("outputPath");
 
-    Job job = new Job(getConf(), getClass().getName());
+    String jobname = "devrank-job-merge-" + System.currentTimeMillis();
+    Job job = new Job(getConf(), jobname);
     job.setJarByClass(DataMergeJob.class);
 
     job.setMapperClass(DataMergeMapper.class);

@@ -12,60 +12,42 @@ import com.google.common.collect.Maps;
 
 public class UserVertexValue implements Writable {
   private boolean exists;
-  private Map<String, Integer> followings;
-  private Map<String, Integer> activities;
-  private double followingValue;
-  private double activityValue;
+  private double value;
+  private long outEdges;
+  private Map<String, Long> allEdges;
 
   public UserVertexValue() {
-    this(false, new HashMap<String, Integer>(), new HashMap<String, Integer>());
+    this(false, 0, new HashMap<String, Long>());
   }
 
-  public UserVertexValue(boolean exists, Map<String, Integer> followings,
-      Map<String, Integer> activities) {
+  public UserVertexValue(boolean exists, long outEdges) {
     this.exists = exists;
-    this.followings = followings;
-    this.activities = activities;
-    this.followingValue = 0;
-    this.activityValue = 0;
+    this.value = 0;
+    this.outEdges = outEdges;
+  }
+
+  public UserVertexValue(boolean exists, long outEdges,
+      Map<String, Long> allEdges) {
+    this.exists = exists;
+    this.value = 0;
+    this.outEdges = outEdges;
+    this.allEdges = allEdges;
   }
 
   @Override
   public void readFields(DataInput input) throws IOException {
     exists = input.readBoolean();
-    followings = readMap(input);
-    activities = readMap(input);
-    followingValue = input.readDouble();
-    activityValue = input.readDouble();
+    value = input.readDouble();
+    outEdges = input.readLong();
+    allEdges = readMap(input);
   }
 
   @Override
   public void write(DataOutput output) throws IOException {
     output.writeBoolean(exists);
-    writeMap(output, followings);
-    writeMap(output, activities);
-    output.writeDouble(followingValue);
-    output.writeDouble(activityValue);
-  }
-
-  private Map<String, Integer> readMap(DataInput input) throws IOException {
-    Map<String, Integer> data = Maps.newHashMap();
-    int size = input.readInt();
-    for (int i = 0; i < size; i++) {
-      String key = input.readUTF();
-      int value = input.readInt();
-      data.put(key, value);
-    }
-    return data;
-  }
-
-  private void writeMap(DataOutput output, Map<String, Integer> data)
-      throws IOException {
-    output.writeInt(data.size());
-    for (Map.Entry<String, Integer> item : data.entrySet()) {
-      output.writeUTF(item.getKey());
-      output.writeInt(item.getValue().intValue());
-    }
+    output.writeDouble(value);
+    output.writeLong(outEdges);
+    writeMap(output, allEdges);
   }
 
   public boolean exists() {
@@ -76,35 +58,47 @@ public class UserVertexValue implements Writable {
     this.exists = exists;
   }
 
-  public Map<String, Integer> getFollowings() {
-    return followings;
+  public double getValue() {
+    return value;
   }
 
-  public void setFollowings(Map<String, Integer> followings) {
-    this.followings = followings;
+  public void setValue(double value) {
+    this.value = value;
   }
 
-  public Map<String, Integer> getActivities() {
-    return activities;
+  public long getOutEdges() {
+    return outEdges;
   }
 
-  public void setActivities(Map<String, Integer> activities) {
-    this.activities = activities;
+  public void setOutEdges(long outEdges) {
+    this.outEdges = outEdges;
   }
 
-  public double getFollowingValue() {
-    return followingValue;
+  public Map<String, Long> getAllEdges() {
+    return allEdges;
   }
 
-  public void setFollowingValue(double followingValue) {
-    this.followingValue = followingValue;
+  public void setAllEdges(Map<String, Long> allEdges) {
+    this.allEdges = allEdges;
   }
 
-  public double getActivityValue() {
-    return activityValue;
+  private Map<String, Long> readMap(DataInput input) throws IOException {
+    Map<String, Long> data = Maps.newHashMap();
+    int size = input.readInt();
+    for (int i = 0; i < size; i++) {
+      String key = input.readUTF();
+      long value = input.readLong();
+      data.put(key, value);
+    }
+    return data;
   }
 
-  public void setActivityValue(double activityValue) {
-    this.activityValue = activityValue;
+  private void writeMap(DataOutput output, Map<String, Long> data)
+      throws IOException {
+    output.writeInt(data.size());
+    for (Map.Entry<String, Long> item : data.entrySet()) {
+      output.writeUTF(item.getKey());
+      output.writeLong(item.getValue());
+    }
   }
 }

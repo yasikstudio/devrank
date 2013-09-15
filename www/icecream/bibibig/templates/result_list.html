@@ -2,32 +2,40 @@
 
 {% block head %}
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.js"></script>
-    <link href="{{ STATIC_URL }}resources/bootstrap-modal-fullscreen.css" rel="stylesheet" />
+	<link href="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.css" rel="stylesheet" />
+    <script type="text/javascript">
+        $(document).ready(function (){
+            $('#search_query').val("{{query}}")
+        });
+    </script>
 {% endblock %}
 
 {% block body %}
 
+
 <div class='container'>
     <div class='row-fluid'>
-
-        <div id="head" class="span6">
-            <div class="container">
+            <div id="result_search_head" class="span12">
                 <a href='/'><img id="logo_pic" src='{{ STATIC_URL }}images/logo.png'></a>
             </div>
-        </div>
 
+            <div id="search-bt">
+            {% if login == True %}
+                <form method="get" action="/home">
+                    <div id='search-form' class="span12">
+                        <div class="input-append">
+                            <input  placeholder="Enter Keyword" name='q' type="text" id="search_query" class="search" autocomplete="off"> </input>
+                            <button type="submit" class="search btn" id="btn_search">Search</button>
+                       </div>
+                    </div>
+                </form>
+            {% else %}
+                <a class="btn btn-large btn-info" href="/login/github">
+                    <i class="icon-github icon-1x"></i> Login
+                </a>
+            </div>
 
-        <div class="span6">
-            <form method="get" action="/home">
-                <div id='search-form_result'>
-                    <div class="input-append">
-                        <input  placeholder="Enter Keyword" name='q' type="text" id="search_query" class="search" autocomplete="off"> </input>
-                        <button type="submit" class="search btn" id="btn_search">Search</button>
-                   </div>
-                </div>
-            </form>
-        </div>
-
+        {% endif %}
     </div>
 </div>
 

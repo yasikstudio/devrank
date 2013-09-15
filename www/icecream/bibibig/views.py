@@ -17,9 +17,8 @@ def oauth(request):
     o = OAuthManager()
     o.callback_response(request.get_full_path())
     user = json.loads(o.getUser())
-    #TODO store user information for sqlalchemy.
-    print user['login']
-    return HttpResponseRedirect('/home')
+    var = RequestContext(request, {'page_title': u'Devrank', })
+    return render_to_response('home.html', var)
 
 class intro(View):
     def get(self, request, *args, **kwargs):
@@ -35,18 +34,10 @@ class home(View):
                     'page_title': u'Devrank',
                     'results': users,
                     'query':request.GET.get(u'q'),
+                    'login':True,
                     })
             return render_to_response('result_list.html', var)
-
-
-        #TODO confirm authenticated.
-        #if request.user.is_authenticated():
-        var = RequestContext(request, {'page_title': u'Devrank', })
-        return render_to_response('home.html', var)
-        #else:
-        #    return HttpResponseRedirect('/')
-
-
+        return HttpResponseRedirect('/')
 
 def social_json(request):
     c = DevRankModel()
