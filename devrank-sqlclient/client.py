@@ -21,7 +21,9 @@ class DevRankDB(object):
         Stargazer.metadata.create_all(self.engine)
         Contributor.metadata.create_all(self.engine)
         Org.metadata.create_all(self.engine)
-        self.session = sessionmaker(bind=self.engine, autocommit=False)
+        self.session = sessionmaker(bind=self.engine,    \
+                                        autoflush = False, \
+                                        autocommit = False)
 
     def connect(self):
         return self.engine.connect()

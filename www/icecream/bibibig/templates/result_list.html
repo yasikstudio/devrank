@@ -2,7 +2,7 @@
 
 {% block head %}
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.js"></script>
-    {# <link href="{{ STATIC_URL }}resources/bootstrap-modal-fullscreen.css" rel="stylesheet" /> #}
+	<link href="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.css" rel="stylesheet" />
     <script type="text/javascript">
         $(document).ready(function (){
             $('#search_query').val("{{query}}")
