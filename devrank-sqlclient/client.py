@@ -6,6 +6,8 @@ from sqlalchemy.orm import sessionmaker
 
 from models import *
 
+from time import sleep
+
 class DevRankDB(object):
 
     def __init__(self, conn_string):
@@ -19,6 +21,8 @@ class DevRankDB(object):
         Stargazer.metadata.create_all(self.engine)
         Contributor.metadata.create_all(self.engine)
         Org.metadata.create_all(self.engine)
+        TaskQueue.metadata.create_all(self.engine)
+        Member.metadata.create_all(self.engine)
         self.session = sessionmaker(bind=self.engine)
 
     def connect(self):
@@ -29,4 +33,3 @@ class DevRankDB(object):
 
     def close(self):
         pass
-

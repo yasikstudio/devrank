@@ -60,6 +60,7 @@ class User(ReprMixin, DevRankMixin, Base):
     devrank_score = Column(Float)
 
     def __init__(self):
+        self.devrank_score = 0.0
         pass
 
     def followers(self):
@@ -75,7 +76,7 @@ class User(ReprMixin, DevRankMixin, Base):
         pass
 
 
-class Follower(ReprMixin, DevRankMixin, Base ):
+class Follower(ReprMixin, DevRankMixin, Base):
     __tablename__ = 'followings'
 
     src_id = Column(Integer, primary_key=True)
@@ -86,7 +87,7 @@ class Follower(ReprMixin, DevRankMixin, Base ):
         self.dest_id = dest_id
 
 
-class Friendship(ReprMixin, DevRankMixin, Base ):
+class Friendship(ReprMixin, DevRankMixin, Base):
     __tablename__ = 'friendship'
 
     owner_id = Column(Integer, primary_key=True)
@@ -96,7 +97,7 @@ class Friendship(ReprMixin, DevRankMixin, Base ):
         self.owner_id = owner_id
         self.friend_id = friend_id
 
-class Repo(ReprMixin, DevRankMixin, Base ):
+class Repo(ReprMixin, DevRankMixin, Base):
     __tablename__ = 'repos'
 
     id = Column(Integer, primary_key=True)
@@ -104,6 +105,7 @@ class Repo(ReprMixin, DevRankMixin, Base ):
     name = Column(String(45))
     description = Column(Text)
     fork = Column(Boolean)
+    fork_owner_id = Column(Integer)
     language = Column(String(45))
     etag = Column(String(45))
     crawled_at = Column(DateTime)
@@ -123,7 +125,7 @@ class Repo(ReprMixin, DevRankMixin, Base ):
         #TODO
         pass
 
-class Watcher(ReprMixin, DevRankMixin, Base ):
+class Watcher(ReprMixin, DevRankMixin, Base):
     __tablename__ = 'watchers'
 
     watcher_id = Column(Integer, primary_key=True)
@@ -133,7 +135,7 @@ class Watcher(ReprMixin, DevRankMixin, Base ):
         self.watcher_id = watcher_id
         self.repo_id = repo_id
 
-class Stargazer(ReprMixin, DevRankMixin, Base ):
+class Stargazer(ReprMixin, DevRankMixin, Base):
     __tablename__ = 'stargazers'
 
     stargazer_id = Column(Integer, primary_key=True)
@@ -143,7 +145,7 @@ class Stargazer(ReprMixin, DevRankMixin, Base ):
         self.stargazer_id = stargazer_id
         self.repo_id = repo_id
 
-class Contributor(ReprMixin, DevRankMixin, Base ):
+class Contributor(ReprMixin, DevRankMixin, Base):
     __tablename__ = 'contributors'
 
     repo_id = Column(Integer, primary_key=True)
@@ -155,7 +157,7 @@ class Contributor(ReprMixin, DevRankMixin, Base ):
         self.contributor_id = contributor_id
         self.contributions = contributions
 
-class Org(ReprMixin, DevRankMixin, Base ):
+class Org(ReprMixin, DevRankMixin, Base):
     __tablename__ = 'orgs'
 
     org_id = Column(Integer, primary_key=True)
@@ -168,3 +170,24 @@ class Org(ReprMixin, DevRankMixin, Base ):
     def members(self):
         #TODO
         pass
+
+class Member(ReprMixin, DevRankMixin, Base):
+    __tablename__ = 'members'
+
+    login = Column(String(45), primary_key=True)
+
+    def __init__(self, login):
+        self.login = login
+
+class TaskQueue(ReprMixin, DevRankMixin, Base):
+    __tablename__ = 'queue'
+
+    task_id = Column(Integer, primary_key=True)
+    login = Column(String(45), unique=True)
+    task_type = Column(Integer)
+    assignee = Column(String(150))
+    assigned_dt = Column(DateTime)
+
+    def __init__(self, login, task_type):
+        self.login = login
+        self.task_type = task_type
