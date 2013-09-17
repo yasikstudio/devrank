@@ -1,0 +1,17 @@
+<script>
+    var id = 'social-content';
+    var width = 800;
+    var height = 500;
+    var query = "{{me}}|{{who.login}}";
+
+    //test query.
+    query = "jongyeol|jweb";
+
+    //social_rel(query, '#' + id, width, height);
+</script>
+
+<div class="detail-header">
+    {{who }}
+    <div class="title"> {{ who.login }} </div>
+    <div class="rank"> {{ who.devrank_score }} </div>
+</div>
