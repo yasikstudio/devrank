@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load devrank_filter %}
 
 {% block head %}
     <script src="{{ STATIC_URL }}resources/js/social.js"></script>
@@ -7,7 +8,23 @@
     <link href="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.css" rel="stylesheet" />
     <script type="text/javascript">
         $(document).ready(function (){
-            $('#search_query').val("{{query}}")
+            $('#search_query').val("{{query}}");
+            $(".task").on("click", function(d){
+                //$(".task").removeClass('active');
+                //$(this).addClass('active');
+                $.ajax({
+                    type:"GET",
+                    url:"/detail",
+                    data:{
+                            'm':'{{who}}',
+                            'w':$(this).attr('id'),
+                            'j':'{{results|jsonify|safe}}'
+                         },
+                    success:function(d){
+                        $("#detail-content").html(d);
+                    },
+                });
+            });
         });
     </script>
 {% endblock %}
@@ -51,27 +68,15 @@
 
 
 <div class='container'>
-    <div id='result_panel'>
-        {% for result in results %}
-        {{ result }}
-          {% include "result.html" %}
-        {% endfor %}
+    <div class='row-fluid'>
+        <div class="span4">
+            {% for result in results %}
+              {% include "result.html" %}
+            {% endfor %}
+        </div>
+        <div id="detail-content" class="span8">
+            okok.
+        </div>
     </div>
 </div>
-    <script>
-        $("#social-graph").on("click",
-            function(d){
-                var my_login = "{{who}}";
-                var login = ($(this).attr('href')).split('#')[1];
-                var id = 'social-content';
-                var width = 800;
-                var height = 500;
-
-                //test user
-                    var my_login = "jongyeol";
-                    var login = "jweb";
-                //end test user
-                social_rel(my_login + '|' + login, '#' + id, width, height);
-            });
-    </script>
 {% endblock %}

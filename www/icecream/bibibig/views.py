@@ -40,7 +40,7 @@ class home(View):
             var = RequestContext(request, {
                     'page_title': u'Devrank',
                     'results': users,
-                    'query':request.GET.get(u'q'),
+                    'query': request.GET.get(u'q'),
                     'login': True,
                     'who' : user,
                     })
@@ -56,6 +56,19 @@ class home(View):
                 })
             return render_to_response('home.html', var)
         return HttpResponseRedirect('/')
+
+class detail(View):
+    def get(self, request, *args, **kwargs):
+        me = request.GET.get('m', None)
+        who = request.GET.get('w', None)
+        j = json.loads(request.GET.get('j', None))
+
+        var = RequestContext(request, {
+            'page_title': u'Devrank',
+            'me': me,
+            'who': j[who],
+            })
+        return render_to_response('detail.html', var)
 
 def social_json(request):
     c = DevRankModel()

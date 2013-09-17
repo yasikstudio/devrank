@@ -249,54 +249,50 @@ a { .fade; }
 button > a:link { color:white; text-decoration:none; }
 a:link { text-decoration:none; }
 
+.avatar {
+    float:left;
+    margin-right:@padding / 1;
+    margin-bottom:@padding / 1;
+    .rounded(50px);
+    border:5px solid @lineLight;
+}
+
 .task:hover {
-    border:1px solid @blue;
+    background-color:#ecf0f1;
+    border-right:6px solid #e67e22;
+    //#95a5a6;
+    > .avatar{
+        border:5px solid white;
+    }
 }
 
 .task {
-    .fade;
-    .drop-shadow(0px, 0px, 4px, 0.1);
+    margin-left:auto;
+    margin-right:auto;
     background:white;
-    margin-top:10px;
-    margin-bottom:20px;
-    border:1px solid @lineDark;
+    height:100px;
+    padding-top:20px;
+    padding-bottom:10px;
+    padding-left:20px;
+    border-right:3px solid #95a5a6;
+    margin-bottom:5px;
 
-    header {
-        padding:@padding;
-}
-
-.icon {
-    .fade;
-    .opacity(0.3);
-}
-.icon:hover {
-    .opacity(1);
+.avatar {
+    .avatar;
+    border:5px solid @lineDark;
 }
 
 .info {
-    float:left;
-    min-height:40px;
+    margin-top:10px;
 }
-.subject {
-    font-size:30px;
+.userid {
+    font-size:35px;
     font-weight:bold;
 }
-.subject:hover {
-    background-color:yellow;
-}
 
-.social {
-    font-size:13px;
-    font-weight:normal;
-    color:@textLight;
-}
-
-.social:hover {
-    background-color:yellow;
-}
-
-.devrank {
-    font-size:20px;
+.rank {
+    margin-top:-10px;
+    font-size:18px;
     font-weight:normal;
 }
 
@@ -319,6 +315,7 @@ a:link { text-decoration:none; }
     }
 }
 
+/*
 footer {
     border-top:1px solid @line;
     background:@light;
@@ -329,6 +326,7 @@ footer {
 footer:after {
     clear:both;
 }
+ */
 }
 
 
@@ -336,13 +334,6 @@ footer:after {
 
 
 // Avatar
-
-.avatar {
-    float:left;
-    margin-right:@padding / 1;
-    margin-bottom:@padding / 1;
-}
-
 
 // d3
 path.link {
