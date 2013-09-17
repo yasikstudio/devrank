@@ -58,10 +58,10 @@ class home(View):
         return HttpResponseRedirect('/')
 
 class detail(View):
-    def get(self, request, *args, **kwargs):
-        me = request.GET.get('m', None)
-        who = request.GET.get('w', None)
-        j = json.loads(request.GET.get('j', None))
+    def post(self, request, *args, **kwargs):
+        me = request.POST.get('m', None)
+        who = request.POST.get('w', None)
+        j = json.loads(request.POST.get('j', None).replace('\r\n','\\r\\n'))
 
         var = RequestContext(request, {
             'page_title': u'Devrank',
