@@ -40,7 +40,7 @@ class home(View):
             detail_json = {}
             for value in details:
                 columns = [c.key for c in class_mapper(value.__class__).columns]
-                d = dict((c, u'%s' % (getattr(value, c))) for c in columns)
+                d = dict((c, '%s' % (getattr(value, c))) for c in columns)
                 detail_json.update({d['login']:d})
 
             var = RequestContext(request, {
