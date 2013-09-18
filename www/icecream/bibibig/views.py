@@ -68,6 +68,16 @@ class detail(View):
     def post(self, request, *args, **kwargs):
         data = request.POST['json']
         j = json.loads(data)
+        who = j[j['who']]
+
+        for key, value in who.iteritems():
+            if value == '':
+                who[key]='None';
+        if who['hireable'] == True:
+            who['hireable'] = "Can!"
+        else:
+            who['hireable'] = "Can't"
+
 
         var = RequestContext(request, {
             'page_title': u'Devrank',

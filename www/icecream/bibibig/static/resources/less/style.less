@@ -99,7 +99,7 @@ body {
 }
 
 #search { height:40px; }
-#query { min-width:280px; height:20px; }
+#query { min-width:200px; height:20px; }
 
 #index {
     overflow:hidden;
@@ -247,7 +247,10 @@ footer .container {
 
 a { .fade; }
 button > a:link { color:white; text-decoration:none; }
-a:link { text-decoration:none; }
+a:link { color:white; text-decoration:none; }
+a:visited {text-decoration: none; color: white;}
+a:active {text-decoration: none; color: #333333;}
+a:hover {text-decoration: none; color: #333333;}
 
 .avatar {
     float:left;
@@ -283,13 +286,11 @@ a:link { text-decoration:none; }
 .info { margin-top:20px; }
 .userid {
     font-size:35px;
-    font-weight:bold;
 }
 
 .rank {
     margin-top:-10px;
     font-size:18px;
-    font-weight:normal;
 }
 
 .labels {
@@ -325,11 +326,43 @@ footer:after {
  */
 }
 
+.detail-header{
+    padding:@padding;
+    margin:0px;
+    padding-top:100px;
+    background-color: #16a085;
+    .avatar{
+        margin-right:@padding / 1;
+        margin-bottom:@padding / 1;
+        .rounded(120px);
+        border:10px solid @lineLight;
+        float:none;
+    }
+    .info {
+        text-align:center;
+        margin-left:auto;
+        margin-right:auto;
+        color:white;
+    }
+}
+
+.detail{
+    padding:@padding;
+    margin:0px;
+    background-color:  #7f8c8d;//#ecf0f1;
+    font-size:20px;
+    color:white;
+}
+
+.social{
+    padding:@padding;
+    margin:0px;
+    background-color: #34495e;
+}
 
 
 
 
-// Avatar
 
 // d3
 path.link {
