@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load devrank_filter %}
 
 {% block head %}
     <script src="{{ STATIC_URL }}resources/js/social.js"></script>
@@ -8,18 +7,19 @@
     <link href="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.css" rel="stylesheet" />
     <script type="text/javascript">
         $(document).ready(function (){
+            data = JSON.parse('{{result_json|safe}}');
+            data['me']='{{me}}';
+
             $('#search_query').val("{{query}}");
             $(".task").on("click", function(d){
                 //$(".task").removeClass('active');
                 //$(this).addClass('active');
+                data['who']=$(this).attr('id');
                 $.ajax({
-                    type:"GET",
                     url:"/detail",
-                    data:{
-                            'm':'{{me}}',
-                            'w':$(this).attr('id'),
-                         },
-                    success:function(d){
+                    type: "POST",
+                    data: {'json':JSON.stringify(data)},
+                    success: function(d){
                         $("#detail-content").html(d);
                     },
                 });

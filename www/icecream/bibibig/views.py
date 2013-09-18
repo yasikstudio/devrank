@@ -5,6 +5,7 @@ from django.shortcuts import *
 from django.views.generic.base import View
 from devrankmodels import DevRankModel
 from oauthmanagers import OAuthManager
+from sqlalchemy.orm import class_mapper
 
 import json
 
@@ -29,23 +30,30 @@ class intro(View):
 
 class home(View):
     def get(self, request, *args, **kwargs):
-        if u'q' in request.GET.keys() and \
-            u'm' in request.GET.keys():
+        if request.GET.has_key(u'q') and request.GET.has_key(u'm'):
             c = DevRankModel()
             me = request.GET.get(u'm')
             if not c.check_oauth(me):
                 me = ''
-
             details = c.search(request.GET.get(u'q'))
+
+            detail_json = {}
+            for value in details:
+                columns = [c.key for c in class_mapper(value.__class__).columns]
+                d = dict((c, str(getattr(value, c)).replace('\r\n','')) for c in columns)
+                d['etag']=d['etag'].replace('"','')
+                detail_json.update({d['login']:d})
+
             var = RequestContext(request, {
                     'page_title': u'Devrank',
                     'results': details,
+                    'result_json': json.dumps(detail_json),
                     'query': request.GET.get(u'q'),
                     'login': True,
                     'me' : me,
                     })
             return render_to_response('result_list.html', var)
-        elif u'm' in request.GET.keys():
+        elif request.GET.has_key(u'm'):
             c = DevRankModel()
             me = request.GET.get(u'm')
             if not c.check_oauth(me):
@@ -58,15 +66,14 @@ class home(View):
         return HttpResponseRedirect('/')
 
 class detail(View):
-    def GET(self, request, *args, **kwargs):
-        me = request.GET.get('m', None)
-        who = request.GET.get('w', None)
-        j = json.loads(request.GET.get('j', None).replace('\r\n','\\r\\n'))
+    def post(self, request, *args, **kwargs):
+        data = request.POST['json']
+        j = json.loads(data)
 
         var = RequestContext(request, {
             'page_title': u'Devrank',
-            'me': me,
-            'who': j[who],
+            'me': j['me'],
+            'who': j[j['who']],
             })
         return render_to_response('detail.html', var)
 
