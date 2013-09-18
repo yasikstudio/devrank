@@ -7,7 +7,7 @@
     <link href="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.css" rel="stylesheet" />
     <script type="text/javascript">
         $(document).ready(function (){
-            data = JSON.parse('{{result_json|safe}}');
+            data = JSON.parse(JSON.stringify({{result_json}}));
             data['me']='{{me}}';
 
             $('#search_query').val("{{query}}");

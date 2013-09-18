@@ -3,6 +3,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import RequestContext, Context
 from django.shortcuts import *
 from django.views.generic.base import View
+from django.utils.safestring import *
 from devrankmodels import DevRankModel
 from oauthmanagers import OAuthManager
 from sqlalchemy.orm import class_mapper
@@ -36,18 +37,16 @@ class home(View):
             if not c.check_oauth(me):
                 me = ''
             details = c.search(request.GET.get(u'q'))
-
             detail_json = {}
             for value in details:
                 columns = [c.key for c in class_mapper(value.__class__).columns]
-                d = dict((c, str(getattr(value, c)).replace('\r\n','')) for c in columns)
-                d['etag']=d['etag'].replace('"','')
+                d = dict((c, '%s' % (getattr(value, c))) for c in columns)
                 detail_json.update({d['login']:d})
 
             var = RequestContext(request, {
                     'page_title': u'Devrank',
                     'results': details,
-                    'result_json': json.dumps(detail_json),
+                    'result_json': SafeString(json.dumps(detail_json)),
                     'query': request.GET.get(u'q'),
                     'login': True,
                     'me' : me,
