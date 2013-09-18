@@ -10,10 +10,10 @@
             data = JSON.parse(JSON.stringify({{result_json}}));
             data['me']='{{me}}';
 
-            $('#search_query').val("{{query}}");
+            $('#query').val("{{query}}");
             $(".task").on("click", function(d){
-                //$(".task").removeClass('active');
-                //$(this).addClass('active');
+                $(".task").removeClass('active');
+                $(this).addClass('active');
                 data['who']=$(this).attr('id');
                 $.ajax({
                     url:"/detail",
@@ -33,49 +33,45 @@
 
 <div class='container'>
     <div class='row-fluid'>
-            <div id="result_search_head" class="span12">
-                <a href='/'><img id="logo_pic" src='{{ STATIC_URL }}images/logo.png'></a>
-            </div>
-
-            {% if login == True %}
-            <form id="search-bt">
-                <div id='search-form' class="span12">
-                    <div class="input-append">
-                        <input  placeholder="Enter Keyword" name='q' type="text" id="search_query" class="search" autocomplete="off"> </input>
-                        <button type="submit" class="search btn" id="btn_search">Search</button>
-                    </div>
+            <div id="result_head" class="row">
+                <div id="logo" class="span4">
+                    <a href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
                 </div>
-            </form>
-            <script>
-                $("#search-bt").submit(function(e){
-                    e.preventDefault();
-                    var $form = $( this ),
-                    q = $form.find( 'input[name="q"]' ).val(),
-                    url = '/home?';
-                    window.location = url+'m={{me}}&q='+q;
-                });
-            </script>
-            {% else %}
-            <div id="search-bt">
-                <a class="btn btn-large btn-info" href="/login/github">
-                    <i class="icon-github icon-1x"></i>Login
-                </a>
+
+                <div id="search" class="span8">
+                    {% if login == True %}
+                    <form class="span10" id="search_form" >
+                        <div class="span12 input-append">
+                            <input  placeholder="Enter Keyword" name='q' type="text" id="query" class="search" autocomplete="off"> </input>
+                            <button type="submit" class="search btn" id="submit">Search</button>
+                        </div>
+                    </form>
+                    <script>
+                        $("#search_form").submit(function(e){
+                            e.preventDefault();
+                            var $form = $( this ),
+                            q = $form.find( 'input[name="q"]' ).val(),
+                            url = '/home?';
+                            window.location = url+'m={{me}}&q='+q;
+                        });
+                    </script>
+                    {% else %}
+                    <a class="btn btn-large btn-info" href="/login/github">
+                        <i class="icon-github icon-1x"></i>Login
+                    </a>
+                    {% endif %}
+                </div>
             </div>
-            {% endif %}
-    </div>
-</div>
 
+            <div class="row">
+                <div class="span4">
+                    {% for result in results %}
+                      {% include "result.html" %}
+                    {% endfor %}
+                </div>
+                <div id="detail-content" class="span8"> </div>
+            </div>
 
-<div class='container'>
-    <div class='row-fluid'>
-        <div class="span4">
-            {% for result in results %}
-              {% include "result.html" %}
-            {% endfor %}
-        </div>
-        <div id="detail-content" class="span8">
-            okok.
-        </div>
     </div>
 </div>
 {% endblock %}

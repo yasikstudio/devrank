@@ -1,7 +1,13 @@
-<div class="task" id="{{result.login}}">
-    <img class="avatar" src="http://www.gravatar.com/avatar/{{ result.gravatar_id }}?s=80"/>
-    <div class="info">
-        <p class="userid">{{ result.login|truncatechars:13}}</p>
+<div class="row-fluid task" id="{{result.login}}">
+    <div class="span4">
+        {% if forloop.counter <= 3 %}
+            Top{{forloop.counter}}
+        {% endif %}
+        <img class="avatar" src="http://www.gravatar.com/avatar/{{ result.gravatar_id }}?s=80"/>
+    </div>
+
+    <div class="span4 info">
+        <p class="userid">{{ result.login|truncatechars:10}}</p>
         <p class="rank"> {{ result.devrank_score|floatformat:"-2" }} </p>
     </div>
 </div>
