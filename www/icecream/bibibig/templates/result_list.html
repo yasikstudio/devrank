@@ -13,12 +13,11 @@
                 //$(".task").removeClass('active');
                 //$(this).addClass('active');
                 $.ajax({
-                    type:"POST",
+                    type:"GET",
                     url:"/detail",
                     data:{
-                            'm':'{{who}}',
+                            'm':'{{me}}',
                             'w':$(this).attr('id'),
-                            'j':'{{results|jsonify|safe}}'
                          },
                     success:function(d){
                         $("#detail-content").html(d);
@@ -53,7 +52,7 @@
                     var $form = $( this ),
                     q = $form.find( 'input[name="q"]' ).val(),
                     url = '/home?';
-                    window.location = url+'m={{who}}&q='+q;
+                    window.location = url+'m={{me}}&q='+q;
                 });
             </script>
             {% else %}

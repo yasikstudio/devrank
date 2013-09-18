@@ -17,9 +17,9 @@ def oauth(request):
     o = OAuthManager()
     c = DevRankModel()
     o.callback_response(request.get_full_path())
-    user = json.loads(o.getUser())['login']
-    c.oauth(user)
-    return HttpResponseRedirect('/home?m='+user)
+    me = json.loads(o.getUser())['login']
+    c.oauth(me)
+    return HttpResponseRedirect('/home?m='+me)
 
 
 class intro(View):
@@ -32,36 +32,36 @@ class home(View):
         if u'q' in request.GET.keys() and \
             u'm' in request.GET.keys():
             c = DevRankModel()
-            user = request.GET.get(u'm')
-            if not c.check_oauth(user):
-                user = ''
+            me = request.GET.get(u'm')
+            if not c.check_oauth(me):
+                me = ''
 
-            users = c.search(request.GET.get(u'q'))
+            details = c.search(request.GET.get(u'q'))
             var = RequestContext(request, {
                     'page_title': u'Devrank',
-                    'results': users,
+                    'results': details,
                     'query': request.GET.get(u'q'),
                     'login': True,
-                    'who' : user,
+                    'me' : me,
                     })
             return render_to_response('result_list.html', var)
         elif u'm' in request.GET.keys():
             c = DevRankModel()
-            user = request.GET.get(u'm')
-            if not c.check_oauth(user):
-                user = ''
+            me = request.GET.get(u'm')
+            if not c.check_oauth(me):
+                me = ''
             var = RequestContext(request, {
                 'page_title': u'Devrank',
-                'who' : user,
+                'me' : me,
                 })
             return render_to_response('home.html', var)
         return HttpResponseRedirect('/')
 
 class detail(View):
-    def post(self, request, *args, **kwargs):
-        me = request.POST.get('m', None)
-        who = request.POST.get('w', None)
-        j = json.loads(request.POST.get('j', None).replace('\r\n','\\r\\n'))
+    def GET(self, request, *args, **kwargs):
+        me = request.GET.get('m', None)
+        who = request.GET.get('w', None)
+        j = json.loads(request.GET.get('j', None).replace('\r\n','\\r\\n'))
 
         var = RequestContext(request, {
             'page_title': u'Devrank',
