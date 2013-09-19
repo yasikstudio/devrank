@@ -42,14 +42,20 @@
                 <div id="hireable">{{ who.hireable }}</div>
 
                 <div class="label">EMAIL</div>
-                <div id="email">{{ who.email }}</div>
+                <div id="email">{{ who.email|urlize }}</div>
 
                 <div class="label">COMPANY</div>
                 <div id="company">{{ who.company }}</div>
             </div>
             <div class="span6">
                 <div class="label">BLOG</div>
-                <div id="blog"><a href="{{ who.blog }}" target="_blank">{{ who.blog }}</a></div>
+                <div id="blog">
+                {% if who.blog == "None" %}
+                    {{ who.blog }}
+                {% else %}
+                    <a href="{{ who.blog }}" target="_blank">{{ who.blog }}</a>
+                {% endif %}
+                </div>
 
                 <div class="label">LOCATION</div>
                 <div id="location">{{ who.location }}</div>
@@ -64,10 +70,10 @@
 
         <div class="row social">
             <div class="span12">
+                <div id="social-content">
+                </div>
                 <div id="loader" class="progress progress-striped active">
                   <div class="span12 bar"></div>
-                </div>
-                <div id="social-content">
                 </div>
             </div>
         </div>

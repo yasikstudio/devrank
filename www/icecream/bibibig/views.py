@@ -78,6 +78,9 @@ class detail(View):
         else:
             who['hireable'] = "Can't"
 
+        if (not "://" in who['blog']) and who['blog'] != "None":
+            who['blog'] = "http://%s" % who['blog']
+
 
         var = RequestContext(request, {
             'page_title': u'Devrank',
