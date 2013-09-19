@@ -1,14 +1,27 @@
-<script>
+{% block head %}
+<script type="text/javascript">
     var id = 'social-content';
-    var width = 800;
+    var width = $("#"+id).width();
     var height = 500;
+    $("#"+id).width(height);
     var query = "{{me}}|{{who.login}}";
 
     //test query.
     query = "jongyeol|jweb";
 
-    social_rel(query, '#' + id, width, height);
+    $.ajax({
+        type: "GET",
+        url: "/social.json?users=" + query,
+        success: function(result, status, xhr) {
+            $("#loader").fadeOut();
+            $("#"+id).empty();
+            social_rel(result, '#' + id, width, height);
+        },
+        error: function(xhr,status,error) {
+        }
+     });
 </script>
+{% endblock %}
 
 <div class="row-fluid">
     <div class="span12">
@@ -51,7 +64,11 @@
 
         <div class="row social">
             <div class="span12">
-                <div id="social-content"> </div>
+                <div id="loader" class="progress progress-striped active">
+                  <div class="span12 bar"></div>
+                </div>
+                <div id="social-content">
+                </div>
             </div>
         </div>
     </div>
