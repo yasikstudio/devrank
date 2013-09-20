@@ -5,32 +5,20 @@
 <div class='container'>
     <div class='row-fluid'>
         <div class="row">
-
             <div id="search_head" class="span12">
                 <a href='/'><img id="logo_pic" src='{{ STATIC_URL }}images/logo.png'></a>
                 <div>Developer Rank analysis system is based of <a href="http://github.com">Github.</a> </div>
             </div>
 
-            <form class="span12" id="search_form" >
+            <form class="span12" action="/home" id="search_form" >
                 <div class="span12 input-append">
                     <input  placeholder="Enter Keyword" name='q' type="text" id="query" class="search" autocomplete="off"> </input>
                     <button type="submit" class="search btn" id="submit">Search</button>
                 </div>
             </form>
-            <script>
-                $("#search_form").submit(function(e){
-                    e.preventDefault();
-                    var $form = $( this ),
-                        q = $form.find( 'input[name="q"]' ).val(),
-                        url = '/home?';
-                    window.location = url+'m={{me}}&q='+q;
-                });
-            </script>
-
         </div>
     </div>
 </div>
-
 
 {% endblock %}
 

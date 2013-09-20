@@ -11,7 +11,6 @@ from sqlalchemy.orm import class_mapper
 import json
 
 def login_github(request):
-    #login github and allow access over oauth2
     o = OAuthManager()
     return HttpResponseRedirect(o.login_request())
 
@@ -21,21 +20,23 @@ def oauth(request):
     o.callback_response(request.get_full_path())
     me = json.loads(o.getUser())['login']
     c.oauth(me)
-    return HttpResponseRedirect('/home?m='+me)
-
+    response = HttpResponseRedirect('/home')
+    response.set_cookie('own', me)
+    return response
 
 class intro(View):
     def get(self, request, *args, **kwargs):
         var = RequestContext(request, {'page_title': u'Devrank', })
-        return render_to_response('intro.html', var)
+        try:
+            request.COOKIES['own']
+            return render_to_response('home.html', var)
+        except:
+            return render_to_response('intro.html', var)
 
 class home(View):
     def get(self, request, *args, **kwargs):
-        if request.GET.has_key(u'q') and request.GET.has_key(u'm'):
+        if request.GET.has_key(u'q'):
             c = DevRankModel()
-            me = request.GET.get(u'm')
-            if not c.check_oauth(me):
-                me = ''
             details = c.search(request.GET.get(u'q'))
             detail = {}
             for value in details:
@@ -43,25 +44,23 @@ class home(View):
                 d = dict((c, '%s' % (getattr(value, c))) for c in columns)
                 detail.update({d['login']:d})
 
+            me = 'None'
+            login = False
+            try:
+                me = request.COOKIES['own']
+                login = True
+            except:
+                pass
+
             var = RequestContext(request, {
                     'page_title': u'Devrank',
                     'results': details,
                     'result_json': SafeString(json.dumps(detail)),
                     'query': request.GET.get(u'q'),
-                    'login': True,
+                    'login': login,
                     'me' : me,
                     })
             return render_to_response('result_list.html', var)
-        elif request.GET.has_key(u'm'):
-            c = DevRankModel()
-            me = request.GET.get(u'm')
-            if not c.check_oauth(me):
-                me = ''
-            var = RequestContext(request, {
-                'page_title': u'Devrank',
-                'me' : me,
-                })
-            return render_to_response('home.html', var)
         return HttpResponseRedirect('/')
 
 class detail_json(View):
@@ -81,9 +80,7 @@ class detail_json(View):
         if (not "://" in who['blog']) and who['blog'] != "None":
             who['blog'] = "http://%s" % who['blog']
 
-
         var = RequestContext(request, {
-            'page_title': u'Devrank',
             'me': j['me'],
             'who': j[j['who']],
             })

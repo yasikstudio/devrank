@@ -58,21 +58,12 @@
 
                     <div id="search" class="span8">
                         {% if login == True %}
-                        <form id="search_form" >
+                        <form action="/home" id="search_form" >
                             <div class="input-append">
                                 <input  placeholder="Enter Keyword" name='q' type="text" id="query" class="search" autocomplete="off"> </input>
                                 <button type="submit" class="search btn" id="submit">Search</button>
                             </div>
                         </form>
-                        <script>
-                            $("#search_form").submit(function(e){
-                                e.preventDefault();
-                                var $form = $( this ),
-                                q = $form.find( 'input[name="q"]' ).val(),
-                                url = '/home?';
-                                window.location = url+'m={{me}}&q='+q;
-                            });
-                        </script>
                         {% else %}
                         <a class="btn btn-large btn-info" href="/login/github">
                             <i class="icon-github icon-1x"></i>Login

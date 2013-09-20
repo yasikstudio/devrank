@@ -1,27 +1,33 @@
 {% block head %}
 <script type="text/javascript">
-    var id = 'social-content';
-    var query = "{{me}}|{{who.login}}";
+    $(document).ready(function (){
+    {% if me != "None" %}
+        var query = "{{me}}|{{who.login}}";
+        var id = 'social-content';
 
-    //test query.
-    query = "jongyeol|jweb";
+        //test query.
+        query = "jongyeol|jweb";
 
-    $.ajax({
-        type: "GET",
-        url: "/social.json?users=" + query,
-        success: function(result, status, xhr) {
-            $("#loader").fadeOut();
-            $("#"+id).empty();
+        $.ajax({
+            type: "GET",
+            url: "/social.json?users=" + query,
+            success: function(result, status, xhr) {
+                $("#loader").fadeOut();
+                $("#"+id).empty();
 
-            var width = $("#"+id).width();
-            var height = 500;
+                var width = $("#"+id).width();
+                var height = 500;
 
-            social_rel(result, '#' + id, width, height);
-        },
-        error: function(xhr,status,error) {
-        }
-     });
-
+                social_rel(result, '#' + id, width, height);
+            },
+            error: function(xhr,status,error) {
+                $("#loader").fadeOut();
+            }
+         });
+    {% else %}
+        $("#alert").fadeIn();
+    {% endif %}
+    });
 </script>
 {% endblock %}
 
@@ -64,12 +70,19 @@
 
         <div class="row social">
             <div class="span12">
-                <div id="social-content">
-                </div>
-                <div id="loader" class="progress progress-striped active">
-                  <div class="span12 bar"></div>
-                </div>
+                {% if me != "None" %}
+                    <div id="loader" class="progress progress-striped active">
+                      <div class="span12 bar"></div>
+                    </div>
+                {% else %}
+                    <div id="alert">
+                      <h4>Warning!</h4>
+                        If you check social graph, must be login with github.
+                    </div>
+                {% endif %}
+                <div id="social-content"> </div>
             </div>
         </div>
+
     </div>
 </div>
