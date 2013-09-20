@@ -15,7 +15,6 @@
 
             var width = $("#"+id).width();
             var height = 500;
-            $("#"+id).width(height);
 
             social_rel(result, '#' + id, width, height);
         },
@@ -28,14 +27,6 @@
 
 <div class="row-fluid">
     <div class="span12">
-        <div class="row detail-header">
-            <div class="info">
-                <img class="avatar" src="http://www.gravatar.com/avatar/{{ who.gravatar_id }}?s=200"/>
-                <div id="title"> <h1><a href="http://github.com/{{who.login}}" target="_blank">{{ who.login }}</a></h1> </div>
-                <div id="rank"> <h2>{{ who.devrank_score }}</h2> </div>
-            </div>
-        </div>
-
         <div class="row detail">
             <div class="span6">
                 <div class="label">NAME</div>
