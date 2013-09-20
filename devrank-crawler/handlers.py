@@ -43,6 +43,12 @@ class UserHandler(BaseHandler):
         s = self.crawler.db.makesession()
         if qu.login != None:
             user = self.user(s, qu.login)
+            if user == None:
+                qu.completed_dt = datetime.datetime.utcnow()
+                qu.success = False
+                s.commit()
+                s.close()
+                return
             tasks = [
                 ('followers', qu.task_type),
                 ('followings', qu.task_type),
@@ -200,6 +206,7 @@ class RepoHandler(BaseHandler):
                     new_qu = TaskQueue()
                     new_qu = new_qu.from_dict({
                         'login': qu.login,
+                        'user_id': qu.user_id,
                         'reponame': repo.name,
                         'repo_id': repo.id,
                         'root_login': qu.root_login,
@@ -341,8 +348,9 @@ class ContributorHandler(BaseHandler):
                     'method': 'user'
                 })
                 # friendship flag
-                s.merge(Friendship(qu.user_id, contributor['id']))
-                s.merge(Friendship(contributor['id'], qu.user_id))
+                if contributor['id'] and qu.user_id != contributor:
+                    s.merge(Friendship(qu.user_id, contributor['id']))
+                    s.merge(Friendship(contributor['id'], qu.user_id))
                 self.queue(new_qu)
             qu.completed_dt = datetime.datetime.utcnow()
             qu.success = True
@@ -363,7 +371,7 @@ class ContributorHandler(BaseHandler):
             return []
         path = url = None
         for user in res.json:
-            if username != user['login']:
+            if username != user['login'] and user['type'] == 'User':
                 session.merge(
                     Contributor(repo_id, user['id'], user['contributions']))
                 contributors.append(user)

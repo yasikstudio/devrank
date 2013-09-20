@@ -5,6 +5,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 import os
+import traceback
 import sys
 sys.path.append('../devrank-sqlclient')
 
@@ -69,7 +70,7 @@ class GitHubCrawler(object):
                 elif result.status_code == 304:
                     # cached
                     return result
-                elif result.status_code == 403 and self.remaining_requests == 0:
+                elif result.status_code == 403 or self.remaining_requests == 0:
                     # RateLimit
                     self.__toggle_username()
                     continue
@@ -196,8 +197,13 @@ if __name__ == '__main__':
     pid = os.getpid()
     ghcrawler_id = 'gh_%s_%s' % (hostname.replace('.', '_'), pid)
     c = GitHubCrawler(ghcrawler_id)
-    try:
-        c.crawl()
-    except KeyboardInterrupt:
-        c.rollback()
-        print 'exit with keyboard interuupt'
+    while True:
+        try:
+            c.crawl()
+        except KeyboardInterrupt:
+            c.rollback()
+            print 'exit with keyboard interuupt'
+            break
+        except:
+            c.rollback()
+            print traceback.format_exc()
