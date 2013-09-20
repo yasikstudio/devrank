@@ -183,11 +183,20 @@ class TaskQueue(ReprMixin, DevRankMixin, Base):
     __tablename__ = 'queue'
 
     task_id = Column(Integer, primary_key=True)
-    login = Column(String(45), unique=True)
+    login = Column(String(45))
+    user_id = Column(Integer)
+    reponame = Column(Integer)
+    repo_id = Column(Integer)
+    root_login = Column(String(45))
     task_type = Column(Integer)
+    method = Column(String(50))
     assignee = Column(String(150))
     assigned_dt = Column(DateTime)
+    completed_dt = Column(DateTime)
+    success = Column(Boolean)
+    __table_args__ = (
+        UniqueConstraint('login', 'method', name='_queue_login_method_uc'),
+    )
 
-    def __init__(self, login, task_type):
-        self.login = login
-        self.task_type = task_type
+    def __init__(self):
+        pass
