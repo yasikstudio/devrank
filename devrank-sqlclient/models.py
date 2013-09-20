@@ -57,7 +57,7 @@ class User(ReprMixin, DevRankMixin, Base):
     company = Column(String(45))
     hireable = Column(Boolean)
     crawled_at = Column(DateTime)
-    devrank_score = Column(Float)
+    devrank_score = Column(Float(30))
 
     def __init__(self):
         self.devrank_score = 0.0
