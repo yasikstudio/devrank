@@ -26,7 +26,7 @@ class BaseHandler(object):
         s = self.crawler.db.makesession()
         q = s.query(TaskQueue).filter_by(login=qu.login, method=qu.method)
         if q.count() == 0:
-            qu.task_type = max(qu.task_type, self.MAX_TASK_TYPE)
+            qu.task_type = min(qu.task_type, self.MAX_TASK_TYPE)
             s.add(qu)
             s.commit()
         else:
@@ -69,6 +69,7 @@ class UserHandler(BaseHandler):
     def user(self, session, username):
         """Get user by username"""
         etag = None
+        user = User()
         q = session.query(User).filter_by(login=username)
         if q.count() == 1:
             user = q.first()
@@ -92,7 +93,7 @@ class UserHandler(BaseHandler):
 class FollowerHandler(BaseHandler):
 
     def process(self, qu):
-        s = self.db.makesession()
+        s = self.crawler.db.makesession()
         if qu.login != None and qu.user_id != None:
             followers = self.followers(s, qu.login, qu.user_id)
             for follower in followers:
@@ -138,7 +139,7 @@ class FollowerHandler(BaseHandler):
 class FollowingHandler(BaseHandler):
 
     def process(self, qu):
-        s = self.db.makesession()
+        s = self.crawler.db.makesession()
         if qu.login != None and qu.user_id != None:
             followings = self.followings(s, qu.login, qu.user_id)
             for following in followings:
@@ -184,7 +185,7 @@ class FollowingHandler(BaseHandler):
 class RepoHandler(BaseHandler):
 
     def process(self, qu):
-        s = self.db.makesession()
+        s = self.crawler.db.makesession()
         if qu.login != None and qu.user_id != None:
             repos = self.repos(s, qu.login, qu.user_id)
             tasks = [
@@ -193,7 +194,7 @@ class RepoHandler(BaseHandler):
                 ('contributors', qu.task_type)
             ]
             for repo in repos:
-                if repo['fork']:
+                if repo.fork:
                     continue
                 for method, task_type in tasks:
                     new_qu = TaskQueue()
@@ -233,7 +234,7 @@ class RepoHandler(BaseHandler):
                     fork_owner_id = self.__fork(username, repo_obj.name)
                     repo_obj.fork_owner_id = fork_owner_id
                 session.merge(repo_obj)
-                repos.append(repo)
+                repos.append(repo_obj)
             link = self.crawler.link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
@@ -260,7 +261,7 @@ class RepoHandler(BaseHandler):
 class WatcherHandler(BaseHandler):
 
     def process(self, qu):
-        s = self.db.makesession()
+        s = self.crawler.db.makesession()
         if qu.login != None and qu.reponame != None and qu.repo_id != None:
             watchers = self.watchers(s, qu.login, qu.reponame, qu.repo_id)
             qu.completed_dt = datetime.datetime.utcnow()
@@ -293,7 +294,7 @@ class WatcherHandler(BaseHandler):
 class StargazerHandler(BaseHandler):
 
     def process(self, qu):
-        s = self.db.makesession()
+        s = self.crawler.db.makesession()
         if qu.login != None and qu.reponame != None and qu.repo_id != None:
             stargazers = self.stargazers(s, qu.login, qu.reponame, qu.repo_id)
             qu.completed_dt = datetime.datetime.utcnow()
@@ -326,7 +327,7 @@ class StargazerHandler(BaseHandler):
 class ContributorHandler(BaseHandler):
 
     def process(self, qu):
-        s = self.db.makesession()
+        s = self.crawler.db.makesession()
         if qu.login != None and qu.reponame != None and qu.repo_id != None:
             contributors = self.contributors(s, qu.login,
                                              qu.reponame, qu.repo_id)

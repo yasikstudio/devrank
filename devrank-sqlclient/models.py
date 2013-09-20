@@ -185,7 +185,7 @@ class TaskQueue(ReprMixin, DevRankMixin, Base):
     task_id = Column(Integer, primary_key=True)
     login = Column(String(45))
     user_id = Column(Integer)
-    reponame = Column(Integer)
+    reponame = Column(String(45))
     repo_id = Column(Integer)
     root_login = Column(String(45))
     task_type = Column(Integer)

@@ -129,11 +129,13 @@ class GitHubCrawler(object):
                 assigned_dt = now()
             WHERE
                     login = :login
+                AND method = :method
                 AND assignee IS NULL
             '''
             result = session.execute(update_qry, {
                 'assignee': self.crawler_id,
-                'login': qu.login
+                'login': qu.login,
+                'method': qu.method
             })
             if result.rowcount != 1:
                 sleep(1)
