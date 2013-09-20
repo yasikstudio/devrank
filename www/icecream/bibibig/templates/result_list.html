@@ -34,19 +34,16 @@
 
                     data['who'] = task.attr('id');
 
-                    task.ScrollTo({
-                      callback: function(){
-                            $.ajax({
-                                url:"/detail",
-                                type: "POST",
-                                data: {'json':JSON.stringify(data)},
-                                success: function(d){
-                                    detail.hide();
-                                    detail.html(d);
-                                    detail.fadeIn();
-                                },
-                            });
-                        }
+                    $.ajax({
+                        url:"/detail",
+                        type: "POST",
+                        data: {'json':JSON.stringify(data)},
+                        success: function(d){
+                            detail.hide();
+                            detail.html(d);
+                            detail.fadeIn();
+                            task.ScrollTo();
+                        },
                     });
                 }
             });
