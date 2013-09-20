@@ -5,6 +5,12 @@
         var query = "{{me}}|{{who.login}}";
         var id = 'social-content';
 
+        var color = "#1abc9c";
+        if ("{{odd}}" % 2 == 0){
+            color =  "#f1c40f";
+        }
+
+
         //test query.
         query = "jongyeol|jweb";
 
@@ -14,6 +20,7 @@
             success: function(result, status, xhr) {
                 $("#loader").fadeOut();
                 $("#"+id).empty();
+                $("#"+id).css("background-color", color);
 
                 var width = $("#"+id).width();
                 var height = 500;
@@ -69,18 +76,19 @@
         </div>
 
         <div class="row social">
-            <div class="span12">
-                {% if me != "None" %}
-                    <div id="loader" class="progress progress-striped active">
-                      <div class="span12 bar"></div>
-                    </div>
-                {% else %}
-                    <div id="alert">
-                      <h4>Warning!</h4>
-                        If you check social graph, must be login with github.
-                    </div>
-                {% endif %}
-                <div id="social-content"> </div>
+            <div id="social-content">
+                <div class="span12">
+                    {% if me != "None" %}
+                        <div id="loader" class="progress progress-striped active">
+                          <div class="span12 bar"></div>
+                        </div>
+                    {% else %}
+                        <div id="alert">
+                          <h4>Warning!</h4>
+                            If you check social graph, must be login with github.
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 

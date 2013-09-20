@@ -68,10 +68,12 @@ class detail_json(View):
         data = request.POST['json']
         j = json.loads(data)
         who = j[j['who']]
+        odd = j['odd']
 
         for key, value in who.iteritems():
             if value == '':
                 who[key]='None';
+
         if who['hireable'] == True:
             who['hireable'] = "Can!"
         else:
@@ -82,7 +84,8 @@ class detail_json(View):
 
         var = RequestContext(request, {
             'me': j['me'],
-            'who': j[j['who']],
+            'who': who,
+            'odd': odd,
             })
         return render_to_response('detail.html', var)
 

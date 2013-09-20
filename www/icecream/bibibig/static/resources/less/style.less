@@ -268,18 +268,11 @@ button > a:link { color:white; text-decoration:none; }
     border:5px solid @lineLight;
 }
 
-/*
 footer {
+    padding-top: 20px;
     border-top:1px solid @line;
     background:@light;
-    clear:both;
-    .inner-shadow(0px, 0px, 5px, 0.05);
 }
-
-footer:after {
-    clear:both;
-}
- */
 
 .task:hover {
     background-color:#ecf0f1;
@@ -298,8 +291,10 @@ footer:after {
     //background-color: #16a085;
     background-color:white;
     border-bottom:5px dotted @lineDark;
+    .task-rank{
+        font-size:20px;
+    }
     .avatar{
-        margin-right:@padding / 1;
         margin-bottom:@padding / 1;
         .rounded(120px);
         border:10px solid @lineLight;
@@ -309,6 +304,26 @@ footer:after {
         word-break:break-all;
         .task_link;
     }
+
+    .labels {
+        margin-top:20px;
+        .label {
+            font-size:15px;
+            font-weight:normal;
+            background:none;
+            color:black;
+        }
+        .public_repo {
+            background:#efb8ed;
+        }
+        .followers {
+            background:#f4c413;
+        }
+        .following {
+            background:#6dcfd6;
+        }
+    }
+
 }
 
 .detail{
@@ -316,14 +331,13 @@ footer:after {
     padding:@padding;
     margin:0px;
     background-color:  #7f8c8d;//#ecf0f1;
-    font-size:20px;
+    font-size:18px;
     color:white;
     .detail_link;
 }
 
 .social{
     margin:0px;
-    background-color: #34495e;
 }
 
 

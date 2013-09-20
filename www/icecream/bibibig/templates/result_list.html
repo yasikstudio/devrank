@@ -8,11 +8,12 @@
     <script type="text/javascript">
         $(document).ready(function (){
             data = JSON.parse(JSON.stringify({{result_json}}));
-            data['me']='{{me}}';
 
             $('#query').val("{{query}}");
             $(".task").on("click", function(d){
                 var task = $(this);
+                data['me']='{{me}}';
+                data['odd'] = task.attr('odd');
                 var has_active = task.hasClass("active")
                 $(".active").parent().children(".task-detail").animate(
                     { height: 0, opacity: 0 },

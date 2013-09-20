@@ -1,4 +1,4 @@
-<div class="row-fluid task" id="{{result.login}}">
+<div class="row-fluid task" odd="{{forloop.counter}}" id="{{result.login}}">
     <div class="span12">
         <div class="row">
             <div class="info">
@@ -10,6 +10,21 @@
                 </div>
                 <div class="task-userid"> <h1><a href="http://github.com/{{result.login}}" target="_blank">{{ result.login }}</a></h1> </div>
                 <div class="task-rank"> <h2>{{ result.devrank_score|floatformat:2 }}</h2> </div>
+
+                 <div class="labels" >
+                    <div class="label">PublicRepo
+                    <span class="badge badge-warning public_repo">{{ result.public_repos }}</span>
+                    </div>
+
+                    <div class="label">Follower
+                    <span class="badge badge-important followers">{{ result.followers}}</span>
+                    </div>
+
+                    <div class="label">Following
+                    <span class="badge badge-info following">{{ result.following}}</span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
