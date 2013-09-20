@@ -9,7 +9,7 @@
                   {% endif %}
                 </div>
                 <div class="task-userid"> <h1><a href="http://github.com/{{result.login}}" target="_blank">{{ result.login }}</a></h1> </div>
-                <div class="task-rank"> <h2>{{ result.devrank_score:floatformat }}</h2> </div>
+                <div class="task-rank"> <h2>{{ result.devrank_score|floatformat:2 }}</h2> </div>
             </div>
         </div>
     </div>
