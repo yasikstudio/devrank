@@ -37,16 +37,16 @@ class home(View):
             if not c.check_oauth(me):
                 me = ''
             details = c.search(request.GET.get(u'q'))
-            detail_json = {}
+            detail = {}
             for value in details:
                 columns = [c.key for c in class_mapper(value.__class__).columns]
                 d = dict((c, '%s' % (getattr(value, c))) for c in columns)
-                detail_json.update({d['login']:d})
+                detail.update({d['login']:d})
 
             var = RequestContext(request, {
                     'page_title': u'Devrank',
                     'results': details,
-                    'result_json': SafeString(json.dumps(detail_json)),
+                    'result_json': SafeString(json.dumps(detail)),
                     'query': request.GET.get(u'q'),
                     'login': True,
                     'me' : me,
@@ -64,9 +64,9 @@ class home(View):
             return render_to_response('home.html', var)
         return HttpResponseRedirect('/')
 
-class detail(View):
-    def get(self, request, *args, **kwargs):
-        data = request.GET['json']
+class detail_json(View):
+    def post(self, request, *args, **kwargs):
+        data = request.POST['json']
         j = json.loads(data)
         who = j[j['who']]
 

@@ -31,8 +31,8 @@
                     data['who'] = task.attr('id');
 
                     $.ajax({
-                        url:"/detail",
-                        type: "GET",
+                        url:"/detail.json/",
+                        type: "POST",
                         data: {'json':JSON.stringify(data)},
                         success: function(d){
                             detail.hide();
