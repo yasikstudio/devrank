@@ -1,9 +1,6 @@
 {% block head %}
 <script type="text/javascript">
     var id = 'social-content';
-    var width = $("#"+id).width();
-    var height = 500;
-    $("#"+id).width(height);
     var query = "{{me}}|{{who.login}}";
 
     //test query.
@@ -15,11 +12,17 @@
         success: function(result, status, xhr) {
             $("#loader").fadeOut();
             $("#"+id).empty();
+
+            var width = $("#"+id).width();
+            var height = 500;
+            $("#"+id).width(height);
+
             social_rel(result, '#' + id, width, height);
         },
         error: function(xhr,status,error) {
         }
      });
+
 </script>
 {% endblock %}
 

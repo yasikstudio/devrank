@@ -266,53 +266,30 @@ button > a:link { color:white; text-decoration:none; }
 .task:hover {
     background-color:#ecf0f1;
     //#95a5a6;
-    > div >.avatar{
-        border:5px solid white;
-    }
 }
 
 .task {
-    margin-left:auto;
-    margin-right:auto;
-    margin-top:10px;
     margin-bottom:10px;
-    background:white;
-    height:100px;
+    background-color:white;
     padding-top:20px;
     padding-bottom:20px;
 
-.avatar {
-    .avatar;
-    border:5px solid @lineDark;
-}
+    .avatar {
+        .avatar;
+        float:none;
+        border:5px solid @lineDark;
+    }
 
-.info { margin-top:20px; }
-.userid {
-    font-size:35px;
-}
+    .info { margin-top:20px; }
+    .task-info-userid {
+        font-size:35px;
+    }
 
-.rank {
-    margin-top:-10px;
-    font-size:18px;
-}
+    .task-info-rank {
+        margin-top:-10px;
+        font-size:18px;
+    }
 
-.labels {
-    margin-top:20px;
-    .label {
-        font-size:15px;
-        font-weight:normal;
-        background:white;
-        color:black;
-    }
-    .public_repo {
-        background:#efb8ed;
-    }
-    .followers {
-        background:#f4c413;
-    }
-    .following {
-        background:#6dcfd6;
-    }
 }
 
 /*
@@ -327,7 +304,6 @@ footer:after {
     clear:both;
 }
  */
-}
 
 .detail-header{
     padding:@padding;

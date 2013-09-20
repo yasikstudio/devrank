@@ -4,7 +4,9 @@
     <script src="{{ STATIC_URL }}resources/js/social.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/d3.v3.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}resources/js/jquery-scrollto.js"></script>
     <link href="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.css" rel="stylesheet" />
+
     <script type="text/javascript">
         $(document).ready(function (){
             data = JSON.parse(JSON.stringify({{result_json}}));
@@ -12,25 +14,47 @@
 
             $('#query').val("{{query}}");
             $(".task").on("click", function(d){
-                $(".task").removeClass('active');
-                $(this).addClass('active');
-                data['who']=$(this).attr('id');
-                $.ajax({
-                    url:"/detail",
-                    type: "POST",
-                    data: {'json':JSON.stringify(data)},
-                    success: function(d){
-                        $("#detail-content").html(d);
-                    },
-                });
+                var task = $(this);
+                var has_active = task.hasClass("active")
+                $(".active .avatar").css("border-color", "#D4D4D4");
+                $(".active").parent().children(".task-detail").animate(
+                    { height: 0, opacity: 0 },
+                    'slow',
+                    function() {
+                            $(this).remove();
+                        }
+                    );
+                $(".active").removeClass("active");
+
+                if (!has_active){
+                    task.children(".avatar").css("border-color","#3498db");
+                    task.addClass("active");
+                    task.after("<div class='row-fluid task-detail'></div>");
+                    detail = task.parent().children(".task-detail");
+
+                    data['who'] = task.attr('id');
+
+                    task.ScrollTo({
+                      callback: function(){
+                            $.ajax({
+                                url:"/detail",
+                                type: "POST",
+                                data: {'json':JSON.stringify(data)},
+                                success: function(d){
+                                    detail.hide();
+                                    detail.html(d);
+                                    detail.fadeIn();
+                                },
+                            });
+                        }
+                    });
+                }
             });
         });
     </script>
 {% endblock %}
 
 {% block body %}
-
-
 <div class='container'>
     <div class='row-fluid'>
             <div id="result_head" class="row">
@@ -63,13 +87,10 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="span4">
-                    {% for result in results %}
-                      {% include "result.html" %}
-                    {% endfor %}
-                </div>
-                <div id="detail-content" class="span8"> </div>
+            <div id="result-lists" class="span12">
+                {% for result in results %}
+                  {% include "result.html" %}
+                {% endfor %}
             </div>
 
     </div>
