@@ -103,8 +103,10 @@ class GitHubCrawler(object):
         self.username = self.usernames[self.username_idx]
         debug('toggle username : %s' % self.username)
     
-    def dequeue(self, session):
+    def dequeue(self):
         while True:
+            session = self.db.makesession()
+            session.expire_on_commit = False
             select_qry = '''
             SELECT
                 Q.task_id,
@@ -141,16 +143,18 @@ class GitHubCrawler(object):
                 sleep(1)
                 continue
             session.commit()
+            session.close()
             return qu
 
     def crawl(self):
         """Crawling start"""
         while True:
-            s = self.db.makesession()
-            qu = self.dequeue(s)
+            qu = self.dequeue()
             if qu == None:
                 sleep(config.CRAWLER_IDLE_TIME)
                 continue
+
+            self.current_queue = qu
 
             username = qu.login
             method = qu.method
@@ -158,7 +162,12 @@ class GitHubCrawler(object):
             handler = self.handlers[qu.method]
             handler.process(qu)
 
-            s.merge(qu)
+            s = self.db.makesession()
+            s.query(TaskQueue).filter_by(login=qu.login, method=qu.method).\
+                update({
+                    'completed_dt': qu.completed_dt,
+                    'success': qu.success
+                })
             s.commit()
             s.close()
 
@@ -169,6 +178,19 @@ class GitHubCrawler(object):
 
             # TODO: add org's members
 
+    def rollback(self):
+        qu = self.current_queue
+        s = self.db.makesession()
+        s.query(TaskQueue).filter_by(login=qu.login, method=qu.method).\
+            update({
+                'assignee': None,
+                'assigned_dt': None,
+                'completed_dt': None,
+                'success': None
+            })
+        s.commit()
+        s.close()
+
 if __name__ == '__main__':
     hostname = os.uname()[1]
     pid = os.getpid()
@@ -177,5 +199,5 @@ if __name__ == '__main__':
     try:
         c.crawl()
     except KeyboardInterrupt:
-        c.flush()
+        c.rollback()
         print 'exit with keyboard interuupt'
