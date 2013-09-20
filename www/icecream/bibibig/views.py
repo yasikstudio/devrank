@@ -65,8 +65,8 @@ class home(View):
         return HttpResponseRedirect('/')
 
 class detail(View):
-    def post(self, request, *args, **kwargs):
-        data = request.POST['json']
+    def get(self, request, *args, **kwargs):
+        data = request.GET['json']
         j = json.loads(data)
         who = j[j['who']]
 
