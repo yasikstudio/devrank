@@ -90,7 +90,7 @@ def update_score(s, f):
             uid, exists, score = line.strip().split(',')
             if exists == 'true':
                 score = float(score)
-                s.query(User).update({'devrank_score': score})
+                s.query(User).filter(User.id == uid).update({'devrank_score': score})
                 count += 1
                 if count % 100 == 0:
                     print('%d rows updated' % count)
