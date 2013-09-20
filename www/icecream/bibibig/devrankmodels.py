@@ -35,6 +35,7 @@ class DevRankModel(object):
                  .filter(or_(Repo.description.like(likequery), \
                              Repo.language.like(likequery))) \
                  .order_by(User.devrank_score.desc()) \
+                 .distinct() \
                  .limit(20) \
                  .all()
         for u in users:
