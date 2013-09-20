@@ -32,7 +32,7 @@
 
                     $.ajax({
                         url:"/detail",
-                        type: "POST",
+                        type: "GET",
                         data: {'json':JSON.stringify(data)},
                         success: function(d){
                             detail.hide();
