@@ -3,9 +3,7 @@
 {% block head %}
     <script src="{{ STATIC_URL }}resources/js/social.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/d3.v3.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}resources/js/jquery-scrollto.js"></script>
-    <link href="{{ STATIC_URL }}resources/js/bootstrap-modal-fullscreen.css" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function (){
@@ -16,7 +14,6 @@
             $(".task").on("click", function(d){
                 var task = $(this);
                 var has_active = task.hasClass("active")
-                $(".active .avatar").css("border-color", "#D4D4D4");
                 $(".active").parent().children(".task-detail").animate(
                     { height: 0, opacity: 0 },
                     'slow',
@@ -27,7 +24,6 @@
                 $(".active").removeClass("active");
 
                 if (!has_active){
-                    task.children(".avatar").css("border-color","#3498db");
                     task.addClass("active");
                     task.after("<div class='row-fluid task-detail'></div>");
                     detail = task.parent().children(".task-detail");
@@ -54,37 +50,39 @@
 {% block body %}
 <div class='container'>
     <div class='row-fluid'>
-            <div id="result_head" class="row">
-                <div id="logo" class="span4">
-                    <a href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
-                </div>
+            <div class="offset2 span8">
+                <div id="result_head" class="row">
+                    <div id="logo" class="span4">
+                        <a href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
+                    </div>
 
-                <div id="search" class="span8">
-                    {% if login == True %}
-                    <form class="span10" id="search_form" >
-                        <div class="span12 input-append">
-                            <input  placeholder="Enter Keyword" name='q' type="text" id="query" class="search" autocomplete="off"> </input>
-                            <button type="submit" class="search btn" id="submit">Search</button>
-                        </div>
-                    </form>
-                    <script>
-                        $("#search_form").submit(function(e){
-                            e.preventDefault();
-                            var $form = $( this ),
-                            q = $form.find( 'input[name="q"]' ).val(),
-                            url = '/home?';
-                            window.location = url+'m={{me}}&q='+q;
-                        });
-                    </script>
-                    {% else %}
-                    <a class="btn btn-large btn-info" href="/login/github">
-                        <i class="icon-github icon-1x"></i>Login
-                    </a>
-                    {% endif %}
+                    <div id="search" class="span8">
+                        {% if login == True %}
+                        <form id="search_form" >
+                            <div class="input-append">
+                                <input  placeholder="Enter Keyword" name='q' type="text" id="query" class="search" autocomplete="off"> </input>
+                                <button type="submit" class="search btn" id="submit">Search</button>
+                            </div>
+                        </form>
+                        <script>
+                            $("#search_form").submit(function(e){
+                                e.preventDefault();
+                                var $form = $( this ),
+                                q = $form.find( 'input[name="q"]' ).val(),
+                                url = '/home?';
+                                window.location = url+'m={{me}}&q='+q;
+                            });
+                        </script>
+                        {% else %}
+                        <a class="btn btn-large btn-info" href="/login/github">
+                            <i class="icon-github icon-1x"></i>Login
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
-            <div id="result-lists" class="span12">
+            <div id="result-lists" class="offset2 span8 offset2">
                 {% for result in results %}
                   {% include "result.html" %}
                 {% endfor %}

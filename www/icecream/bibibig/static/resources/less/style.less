@@ -95,7 +95,6 @@ body {
     margin-top:30px;
     margin-bottom:30px;
     #logo > a > img { width:200px; }
-    border-bottom:1px solid @line;
 }
 
 #search { height:40px; }
@@ -249,10 +248,16 @@ a { .fade; }
 button > a:link { color:white; text-decoration:none; }
 
 .detail_link{
-    a:link { color:white; text-decoration:none; }
+    a:link { text-decoration:none; color:white; }
     a:visited {text-decoration: none; color: white;}
     a:active {text-decoration: none; color: #333333;}
     a:hover {text-decoration: none; color: #333333;}
+}
+.task_link{
+    a:link {text-decoration: none; color:@fontBaseColor;}
+    a:visited {text-decoration: none; color:@fontBaseColor;}
+    a:active {text-decoration: none; color: #333333;}
+    a:hover {text-decoration: none; color: gray;}
 }
 
 .avatar {
@@ -261,35 +266,6 @@ button > a:link { color:white; text-decoration:none; }
     margin-bottom:@padding / 1;
     .rounded(50px);
     border:5px solid @lineLight;
-}
-
-.task:hover {
-    background-color:#ecf0f1;
-    //#95a5a6;
-}
-
-.task {
-    margin-bottom:10px;
-    background-color:white;
-    padding-top:20px;
-    padding-bottom:20px;
-
-    .avatar {
-        .avatar;
-        float:none;
-        border:5px solid @lineDark;
-    }
-
-    .info { margin-top:20px; }
-    .task-info-userid {
-        font-size:35px;
-    }
-
-    .task-info-rank {
-        margin-top:-10px;
-        font-size:18px;
-    }
-
 }
 
 /*
@@ -305,11 +281,23 @@ footer:after {
 }
  */
 
-.detail-header{
-    padding:@padding;
+.task:hover {
+    background-color:#ecf0f1;
+    //#95a5a6;
+}
+
+.task{
+    margin-top:20px;
+    margin-bottom:20px;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+    padding-top:@padding;
+    padding-bottom:@padding;
     margin:0px;
-    padding-top:100px;
-    background-color: #16a085;
+    //background-color: #16a085;
+    background-color:white;
+    border-bottom:5px dotted @lineDark;
     .avatar{
         margin-right:@padding / 1;
         margin-bottom:@padding / 1;
@@ -318,11 +306,7 @@ footer:after {
         float:none;
     }
     .info {
-        text-align:center;
-        margin-left:auto;
-        margin-right:auto;
-        color:white;
-        .detail_link;
+        .task_link;
     }
 }
 
