@@ -7,7 +7,13 @@
 
     <script type="text/javascript">
         $(document).ready(function (){
+            var xhr;
             function activePos(who, detail){
+                var id = 'social-graph-'+who;
+
+                $("#"+id).empty();
+                detail.children().find(".loader").show();
+
                 detail.addClass("pos");
                 detail.fadeIn();
 
@@ -20,23 +26,23 @@
                 query = "jongyeol|jweb";
 
                 {% if login == True %}
-                var id = 'social-graph-'+who;
-                $.ajax({
+                  if(xhr && xhr.readyState != 4){
+                    $("#"+id).empty();
+                    detail.children().find(".loader").show();
+                    xhr.abort();
+                  }
+                  xhr = $.ajax({
                     type: "GET",
                     url: "/social.json?users=" + query,
                     success: function(result, status, xhr) {
                         detail.children().find(".loader").fadeOut();
-                        $("#"+id).empty();
                         $("#"+id).css("background-color", color);
 
                         var width = $("#"+id).width();
-                        var height = 500;
+                        var height = 300;
 
                         social_rel(result, '#' + id, width, height);
                     },
-                    error: function(xhr,status,error) {
-                        detail.children().find(".loader").fadeOut();
-                    }
                  });
                 {% endif %}
             }

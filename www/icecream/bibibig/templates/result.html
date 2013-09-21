@@ -69,7 +69,6 @@
 
         <div class="row social">
             <div class="span12">
-                <div id="social-graph-{{result.login}}"></div>
                 {% if me != "None" %}
                     <div class="loader progress progress-striped active">
                       <div class="span12 bar"></div>
@@ -80,6 +79,7 @@
                         If you check social graph, must be login with github.
                     </div>
                 {% endif %}
+                <div id="social-graph-{{result.login}}"></div>
             </div>
         </div>
 
