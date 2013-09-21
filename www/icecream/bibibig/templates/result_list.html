@@ -7,42 +7,60 @@
 
     <script type="text/javascript">
         $(document).ready(function (){
-            data = JSON.parse(JSON.stringify({{result_json}}));
+            function activePos(who, detail ){
+                detail.addClass("pos");
+                detail.fadeIn();
+
+                var odd = detail.attr('odd');
+                var query = "{{me}}|"+who;
+                var color = "#1abc9c";
+                if (odd % 2 == 0){ color =  "#f1c40f"; }
+
+                //test query.
+                query = "jongyeol|jweb";
+
+                {% if login == True %}
+                var id = 'social-graph-'+who;
+                $.ajax({
+                    type: "GET",
+                    url: "/social.json?users=" + query,
+                    success: function(result, status, xhr) {
+                        detail.children().find(".loader").fadeOut();
+                        $("#"+id).empty();
+                        $("#"+id).css("background-color", color);
+
+                        var width = $("#"+id).width();
+                        var height = 500;
+
+                        social_rel(result, '#' + id, width, height);
+                    },
+                    error: function(xhr,status,error) {
+                        detail.children().find(".loader").fadeOut();
+                    }
+                 });
+                {% endif %}
+            }
 
             $('#query').val("{{query}}");
             $(".task").on("click", function(d){
                 var task = $(this);
-                data['me']='{{me}}';
-                data['odd'] = task.attr('odd');
-                var has_active = task.hasClass("active")
-                $(".active").parent().children(".task-detail").animate(
+                var who = $(this).attr('id');
+                var detail = $(this).parent().find("#detail-"+who);
+                var has_pos = detail.hasClass("pos")
+
+                $(".pos").animate(
                     { height: 0, opacity: 0 },
                     'slow',
                     function() {
-                            $(this).remove();
-                        }
-                    );
-                $(".active").removeClass("active");
-
-                if (!has_active){
-                    task.addClass("active");
-                    task.after("<div class='row-fluid task-detail'></div>");
-                    detail = task.parent().children(".task-detail");
-
-                    data['who'] = task.attr('id');
-
-                    $.ajax({
-                        url:"/detail.json/",
-                        type: "POST",
-                        data: {'json':JSON.stringify(data)},
-                        success: function(d){
-                            detail.hide();
-                            detail.html(d);
-                            detail.fadeIn();
-                            task.ScrollTo();
-                        },
-                    });
+                        $(this).attr("style","display:none");
+                        $(this).removeClass("pos");
+                        task.ScrollTo();
+                });
+                if (!has_pos){
+                    task.ScrollTo();
+                    activePos(who, detail);
                 }
+
             });
         });
     </script>

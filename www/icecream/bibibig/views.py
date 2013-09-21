@@ -38,11 +38,14 @@ class home(View):
         if request.GET.has_key(u'q'):
             c = DevRankModel()
             details = c.search(request.GET.get(u'q'))
-            detail = {}
-            for value in details:
-                columns = [c.key for c in class_mapper(value.__class__).columns]
-                d = dict((c, '%s' % (getattr(value, c))) for c in columns)
-                detail.update({d['login']:d})
+            for d in details:
+                if d.hireable == True:
+                    d.hireable = "Can!"
+                else:
+                    d.hireable = "Can't"
+
+                if isinstance(d.blog, str) and (not "://" in d.blog) :
+                    d.blog = "http://%s" % d.blog
 
             me = 'None'
             login = False
@@ -55,39 +58,12 @@ class home(View):
             var = RequestContext(request, {
                     'page_title': u'Devrank',
                     'results': details,
-                    'result_json': SafeString(json.dumps(detail)),
                     'query': request.GET.get(u'q'),
                     'login': login,
                     'me' : me,
                     })
             return render_to_response('result_list.html', var)
         return HttpResponseRedirect('/')
-
-class detail_json(View):
-    def post(self, request, *args, **kwargs):
-        data = request.POST['json']
-        j = json.loads(data)
-        who = j[j['who']]
-        odd = j['odd']
-
-        for key, value in who.iteritems():
-            if value == '':
-                who[key]='None';
-
-        if who['hireable'] == True:
-            who['hireable'] = "Can!"
-        else:
-            who['hireable'] = "Can't"
-
-        if (not "://" in who['blog']) and who['blog'] != "None":
-            who['blog'] = "http://%s" % who['blog']
-
-        var = RequestContext(request, {
-            'me': j['me'],
-            'who': who,
-            'odd': odd,
-            })
-        return render_to_response('detail.html', var)
 
 def social_json(request):
     c = DevRankModel()

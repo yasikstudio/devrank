@@ -1,4 +1,4 @@
-<div class="row-fluid task" odd="{{forloop.counter}}" id="{{result.login}}">
+<div class="row-fluid task" id="{{result.login}}">
     <div class="span12">
         <div class="row">
             <div class="info">
@@ -30,3 +30,58 @@
     </div>
 </div>
 
+<div class='row-fluid task-detail' odd="{{forloop.counter}}" id="detail-{{result.login}}">
+    <div class="span12">
+        <div class="row detail">
+            <div class="span6">
+                <div class="label">NAME</div>
+                <div class="name">{{ result.name }}</div>
+
+                <div class="label">HIREABLE</div>
+                <div class="hireable">{{ result.hireable }}</div>
+
+                <div class="label">EMAIL</div>
+                <div class="email">{{ result.email|urlize }}</div>
+
+                <div class="label">COMPANY</div>
+                <div class="company">{{ result.company }}</div>
+            </div>
+            <div class="span6">
+                <div class="label">BLOG</div>
+                <div class="blog">
+                {% if result.blog == "None" %}
+                    {{ result.blog }}
+                {% else %}
+                    <a href="{{ result.blog }}" target="_blank">{{ result.blog }}</a>
+                {% endif %}
+                </div>
+
+                <div class="label">LOCATION</div>
+                <div class="location">{{ result.location }}</div>
+
+                <div class="label">BIO</div>
+                <div class="bio">{{ result.bio }}</div>
+
+                <div class="label">LAST UPDATE</div>
+                <div class="crawled_at">{{ result.crawled_at }}</div>
+            </div>
+        </div>
+
+        <div class="row social">
+            <div class="span12">
+                <div id="social-graph-{{result.login}}"></div>
+                {% if me != "None" %}
+                    <div class="loader progress progress-striped active">
+                      <div class="span12 bar"></div>
+                    </div>
+                {% else %}
+                    <div class="alert">
+                      <h4>Warning!</h4>
+                        If you check social graph, must be login with github.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
