@@ -112,10 +112,6 @@ limit :limit_clause
                  .offset((page - 1) * page_per_row) \
                  .all()
         for u in users:
-            if u.devrank_score:
-                u.devrank_score *= 1000000
-            else:
-                u.devrank_score = 0
             u.public_repos = self._get_repos_count(s, u.id)
             u.followers = self._get_followers_count(s, u.id)
             u.following = self._get_following_count(s, u.id)
@@ -155,9 +151,6 @@ limit :limit_clause
                                   'src_gravatar_url': gravatars[login_src],
                                   'tgt_gravatar_url': gravatars[login_dest],
                                   'type': 'type3'})
-                else:
-                    # TODO check this problem..
-                    print('No gravatar: %s or %s' % (login_src, login_dest))
             else:
                 # TODO check this problem..
                 print('No id_to_login: %s or %s' % (f.src_id, f.dest_id))
