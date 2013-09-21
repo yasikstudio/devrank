@@ -74,7 +74,11 @@ class home(View):
                 except:
                     return HttpResponseRedirect('/')
 
-            details = c.search(request.GET.get(u'q'), me)
+            me_id = c.get_user_id(me)
+            if me_id == None:
+                # TODO: not crawled
+                return HttpResponseRedirect('/')
+            details = c.search(request.GET.get(u'q'), me_id)
             for d in details:
                 if d.hireable == True:
                     d.hireable = "Can!"
