@@ -88,10 +88,6 @@ limit :limit_clause
         users = s.query(User).from_statement(sql) \
                        .params(id=me_id).all()
         for u in users:
-            if u.devrank_score:
-                u.devrank_score *= 1000000
-            else:
-                u.devrank_score = 0
             u.public_repos = self._get_repos_count(s, u.id)
             u.followers = self._get_followers_count(s, u.id)
             u.following = self._get_following_count(s, u.id)
