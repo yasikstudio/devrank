@@ -7,7 +7,7 @@
 
     <script type="text/javascript">
         $(document).ready(function (){
-            function activePos(who, detail ){
+            function activePos(who, detail){
                 detail.addClass("pos");
                 detail.fadeIn();
 
@@ -55,10 +55,15 @@
                         $(this).attr("style","display:none");
                         $(this).removeClass("pos");
                         task.ScrollTo();
-                });
+                        }
+                );
+
                 if (!has_pos){
-                    task.ScrollTo();
-                    activePos(who, detail);
+                    task.ScrollTo({
+                        callback: function(){
+                            activePos(who, detail);
+                        }
+                    });
                 }
 
             });
