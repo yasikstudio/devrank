@@ -44,49 +44,43 @@ def usage():
     sys.exit(-1)
 
 
-def sumof(d):
-    '''d = ((1, 456), (1, 1), ...))'''
-    data = {}
-    for k, v in d:
-        if k in data:
-            data[k] += v
-        else:
-            data[k] = v
-    return ','.join('%s:%d' % (k, v) for k, v in data.items())
-
-
 def dump(s, f):
     # iterate all users
     for me in s.query(User):
-        # U|uid|follow_id1,follow_id2,follow_id3|fork_id4,fork_id5,fork_id6
-
+        # U|uid|follow_id1:1,follow_id2:1,follow_id3:1
         rs = s.query(Follower.dest_id).filter(Follower.src_id == me.id)
-        followings = sumof((str(x[0]), 1) for x in rs)
+        followings = ','.join('%s:1' % str(x[0]) for x in rs)
 
-        rs = s.query(Repo.fork_owner_id) \
-              .filter(and_(Repo.fork_owner_id == me.id, Repo.fork == True))
-        forked_repos = sumof((str(x[0]), 1) for x in rs)
+        # |fork_id4:num,fork_id5:num,fork_id6:num
+        rs = s.query(Repo.fork_owner_id, func.count(Repo.id)) \
+              .filter(and_(Repo.owner_id == me.id, Repo.fork == True)) \
+              .group_by(Repo.fork_owner_id)
+        forked_repos = ','.join('%s:%d' % (u, count) for u, count in rs)
 
-        # P|uid|owner_uid|count
-        rs = s.query(User, Repo, Contributor) \
-              .filter(and_(User.id == Repo.owner_id, \
-                           Repo.id == Contributor.repo_id, \
-                           Contributor.contributor_id == me.id))
-        pulls = sumof((u.id, c.contributions) for u, r, c in rs)
+        # pull requests => |owner_uid:count,
+        rs = s.query(Contributor.contributor_id, \
+                     func.sum(Contributor.contributions)) \
+              .filter(and_(User.id == me.id, \
+                           User.id == Repo.owner_id, \
+                           Repo.id == Contributor.repo_id)) \
+              .group_by(Contributor.contributor_id)
+        pulls = ','.join('%s:%d' % (c, count) for c, count in rs)
 
         # S|uid|owner_uid
-        rs = s.query(User, Repo, Stargazer) \
+        rs = s.query(User.id, func.count(Repo.id)) \
               .filter(and_(User.id == Repo.owner_id, \
                            Repo.id == Stargazer.repo_id, \
-                           Stargazer.stargazer_id == me.id))
-        stars = sumof((u.id, 1) for u, r, star in rs)
+                           Stargazer.stargazer_id == me.id)) \
+              .group_by(User.id)
+        stars = ','.join('%s:%d' % (u, count) for u, count in rs)
 
         # W|uid|owner_uid
-        rs = s.query(User, Repo, Watcher) \
+        rs = s.query(User.id, func.count(Repo.id)) \
               .filter(and_(User.id == Repo.owner_id, \
                            Repo.id == Watcher.repo_id, \
-                           Watcher.watcher_id == me.id))
-        watches = sumof((u.id, 1) for u, r, w in rs)
+                           Watcher.watcher_id == me.id)) \
+              .group_by(User.id)
+        watches = ','.join('%s:%d' % (u, count) for u, count in rs)
 
         f.write('%s|true|%s|%s|%s|%s|%s\n' % (me.id, followings, forked_repos,
                                             pulls, stars, watches))
