@@ -35,10 +35,9 @@ class DevRankMixin(object):
             yield col.name
 
     def from_dict(self, obj_dict):
-        for key in obj_dict:
-            lower_key = key.lower()
-            if hasattr(self, lower_key):
-                setattr(self, lower_key, obj_dict[key])
+        for col in self.columns():
+            if col in obj_dict:
+                setattr(self, col, obj_dict[col])
         return self
 
 class User(ReprMixin, DevRankMixin, Base):

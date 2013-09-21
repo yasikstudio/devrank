@@ -29,9 +29,45 @@ class BaseHandler(object):
             qu.task_type = min(qu.task_type, self.MAX_TASK_TYPE)
             s.add(qu)
             s.commit()
-        else:
-            debug("already exist on queue. %s" % qu)
         s.close()
+
+    def add_friendship(self, owner_id, friends_list):
+        success = False
+        while not success:
+            try:
+                debug("try add_friendship. %s, ..." % owner_id)
+                s = self.crawler.db.makesession()
+                already_list = s.query(Friendship).\
+                                    filter_by(owner_id=owner_id).all()
+                for fr in already_list:
+                    if fr.friend_id in friends_list:
+                        friends_list.remove(fr.friend_id)
+                for fr in friends_list:
+                    s.merge(Friendship(owner_id, fr))
+                s.commit()
+                s.close()
+                success = True
+            except:
+                print traceback.format_exc()
+
+    def add_friend_ownership(self, owners_list, friend_id):
+        success = False
+        while not success:
+            try:
+                debug("try add_friend_ownership. %s, ..." % friend_id)
+                s = self.crawler.db.makesession()
+                already_list = s.query(Friendship).\
+                                    filter_by(friend_id=friend_id).all()
+                for fr in already_list:
+                    if fr.owner_id in owners_list:
+                        owners_list.remove(fr.owner_id)
+                for fr in owners_list:
+                    s.merge(Friendship(fr, friend_id))
+                s.commit()
+                s.close()
+                success = True
+            except:
+                print traceback.format_exc()
 
     def process(self, qu):
         pass
@@ -52,7 +88,8 @@ class UserHandler(BaseHandler):
             tasks = [
                 ('followers', qu.task_type),
                 ('followings', qu.task_type),
-                ('repos', qu.task_type)
+                ('repos', qu.task_type),
+                ('orgs', qu.task_type)
             ]
             for method, task_type in tasks:
                 new_qu = TaskQueue()
@@ -102,6 +139,7 @@ class FollowerHandler(BaseHandler):
         s = self.crawler.db.makesession()
         if qu.login != None and qu.user_id != None:
             followers = self.followers(s, qu.login, qu.user_id)
+            friend_owners = []
             for follower in followers:
                 new_qu = TaskQueue()
                 new_qu = new_qu.from_dict({
@@ -111,9 +149,10 @@ class FollowerHandler(BaseHandler):
                     'task_type': qu.task_type + 1,
                     'method': 'user'
                 })
-                # friendship flag
-                s.merge(Friendship(follower['id'], qu.user_id))
                 self.queue(new_qu)
+                # friendship flag
+                friend_owners.append(follower['id'])
+            self.add_friend_ownership(friend_owners, qu.user_id)
             qu.completed_dt = datetime.datetime.utcnow()
             qu.success = True
         else:
@@ -135,7 +174,9 @@ class FollowerHandler(BaseHandler):
             path = url = None
             for user in res.json:
                 followers.append(user)
-                session.merge(Follower(user['id'], user_id))
+                c = Follower.__table__.insert(prefixes=['IGNORE'],
+                        values=dict(src_id=user['id'], dest_id=user_id))
+                session.execute(c)
             link = self.crawler.link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
@@ -148,6 +189,7 @@ class FollowingHandler(BaseHandler):
         s = self.crawler.db.makesession()
         if qu.login != None and qu.user_id != None:
             followings = self.followings(s, qu.login, qu.user_id)
+            friends = []
             for following in followings:
                 new_qu = TaskQueue()
                 new_qu = new_qu.from_dict({
@@ -157,9 +199,10 @@ class FollowingHandler(BaseHandler):
                     'task_type': qu.task_type + 1,
                     'method': 'user'
                 })
-                # friendship flag
-                s.merge(Friendship(qu.user_id, following['id']))
                 self.queue(new_qu)
+                # friendship flag
+                friends.append(following['id'])
+            self.add_friendship(qu.user_id, friends)
             qu.completed_dt = datetime.datetime.utcnow()
             qu.success = True
         else:
@@ -180,8 +223,9 @@ class FollowingHandler(BaseHandler):
             res = self.crawler.get(path=path, url=url, etag=etag)
             path = url = None
             for user in res.json:
-                followings.append(user)
-                session.merge(Follower(user_id, user['id']))
+                c = Follower.__table__.insert(prefixes=['IGNORE'],
+                        values=dict(src_id=user_id, dest_id=user['id']))
+                session.execute(c)
             link = self.crawler.link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
@@ -232,16 +276,17 @@ class RepoHandler(BaseHandler):
         while path != None or url != None:
             debug('repos(%s) path=%s, url=%s' % (username, path, url))
             res = self.crawler.get(path=path, url=url, etag=etag)
-            path = url = None
-            for repo in res.json:
-                repo_obj = Repo().from_dict(repo)
-                repo_obj.crawled_at = datetime.datetime.utcnow()
-                repo_obj.owner_id = user_id
-                if repo_obj.fork:
-                    fork_owner_id = self.__fork(username, repo_obj.name)
-                    repo_obj.fork_owner_id = fork_owner_id
-                session.merge(repo_obj)
-                repos.append(repo_obj)
+            if res.status_code == 200:
+                path = url = None
+                for repo in res.json:
+                    repo_obj = Repo().from_dict(repo)
+                    repo_obj.crawled_at = datetime.datetime.utcnow()
+                    repo_obj.owner_id = user_id
+                    if repo_obj.fork:
+                        fork_owner_id = self.__fork(username, repo_obj.name)
+                        repo_obj.fork_owner_id = fork_owner_id
+                    session.merge(repo_obj)
+                    repos.append(repo_obj)
             link = self.crawler.link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
@@ -251,6 +296,8 @@ class RepoHandler(BaseHandler):
         """Get repo's fork parent owner's id"""
         etag = None # TODO: applied
 
+        debug('fork(%s, %s) path=%s' % (username, reponame,
+                            'repos/%s/%s' % (username, reponame)))
         result = self.crawler.get(path='repos/%s/%s' % (username, reponame),
                                   etag=etag)
         status_code = result.status_code
@@ -338,6 +385,8 @@ class ContributorHandler(BaseHandler):
         if qu.login != None and qu.reponame != None and qu.repo_id != None:
             contributors = self.contributors(s, qu.login,
                                              qu.reponame, qu.repo_id)
+            friends = []
+            friend_owners = []
             for contributor in contributors:
                 new_qu = TaskQueue()
                 new_qu = new_qu.from_dict({
@@ -347,11 +396,13 @@ class ContributorHandler(BaseHandler):
                     'task_type': qu.task_type + 1,
                     'method': 'user'
                 })
-                # friendship flag
-                if contributor['id'] and qu.user_id != contributor:
-                    s.merge(Friendship(qu.user_id, contributor['id']))
-                    s.merge(Friendship(contributor['id'], qu.user_id))
                 self.queue(new_qu)
+                # friendship flag
+                if contributor['id'] and qu.user_id != contributor['id']:
+                    friends.append(contributor['id'])
+                    friend_owners.append(contributor['id'])
+            self.add_friendship(qu.user_id, friends)
+            self.add_friend_ownership(friend_owners, qu.user_id)
             qu.completed_dt = datetime.datetime.utcnow()
             qu.success = True
         else:
@@ -376,3 +427,71 @@ class ContributorHandler(BaseHandler):
                     Contributor(repo_id, user['id'], user['contributions']))
                 contributors.append(user)
         return contributors
+
+
+class OrganizationHandler(BaseHandler):
+
+    def process(self, qu):
+        s = self.crawler.db.makesession()
+        if qu.login != None:
+            orgs = self.orgs(qu.login)
+            friends = []
+            friend_owners = []
+            for org in orgs:
+                members = self.members(s, org['login'], org['id'])
+                for member in members:
+                    new_qu = TaskQueue()
+                    new_qu = new_qu.from_dict({
+                        'login': member['login'],
+                        'user_id': member['id'],
+                        'root_login': qu.root_login,
+                        'task_type': qu.task_type + 1,
+                        'method': 'user'
+                    })
+                    self.queue(new_qu)
+                    # friendship flag
+                    if member['id'] and qu.user_id != member['id']:
+                        friends.append(contributor['id'])
+                        friend_owners.append(contributor['id'])
+            self.add_friendship(qu.user_id, friends)
+            self.add_friend_ownership(friend_owners, qu.user_id)
+            qu.completed_dt = datetime.datetime.utcnow()
+            qu.success = True
+        else:
+            qu.completed_dt = datetime.datetime.utcnow()
+            qu.success = False
+        s.commit()
+        s.close()
+
+    def orgs(self, username):
+        """Get organizations list by username"""
+        path = 'users/%s/orgs' % username
+        url = None
+        etag = None # TODO: applied
+        orgs = []
+        while path != None or url != None:
+            debug('orgs(%s) path=%s, url=%s' % (username, path, url))
+            res = self.crawler.get(path=path, url=url, etag=etag)
+            path = url = None
+            for org in res.json:
+                orgs.append(org)
+            link = self.crawler.link_header_parse(res.headers['link'])
+            if link != None and 'next' in link:
+                url = link['next']
+        return orgs
+
+    def members(self, session, org_login, org_id):
+        """Get org's members"""
+        path = 'orgs/%s/members' % org_login
+        etag = None # TODO: applied
+        members = []
+        debug('members(%s) path=%s' % (org_login, path))
+        res = self.crawler.get(path=path, etag=etag)
+        if res.status_code == 404:
+            return []
+        path = url = None
+        for member in res.json:
+            session.merge(Org(org_id, member['id']))
+            members.append(member)
+        return members
+

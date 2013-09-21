@@ -43,6 +43,7 @@ class GitHubCrawler(object):
         self.remaining_requests = 0
         self.db = DevRankDB(config.DB_CONN_STRING)
         self.db.connect()
+        self.current_queue = None
         self.handlers = {
             'user': UserHandler(self),
             'followers': FollowerHandler(self),
@@ -50,30 +51,35 @@ class GitHubCrawler(object):
             'repos': RepoHandler(self),
             'watchers': WatcherHandler(self),
             'stargazers': StargazerHandler(self),
-            'contributors': ContributorHandler(self)
+            'contributors': ContributorHandler(self),
+            'orgs': OrganizationHandler(self)
         }
 
     def get(self, url=None, path=None, etag=None):
         retry = self.RETRY
         while retry > 0:
-            retry -= 1
             try:
                 if url == None and path != None:
                     url = 'https://api.github.com/%s' % path
                 headers = { 'If-None-Match': etag }
                 result = requests.get(url, auth=(self.username, self.password),
                         headers=headers)
-                self.remaining_requests =\
-                        result.headers['X-RateLimit-Remaining']
+                rate_limit = result.headers['X-RateLimit-Remaining']
+                if rate_limit == None:
+                    rate_limit = 0
+                self.remaining_requests = int(rate_limit)
                 if result.status_code == 200:
                     return result
                 elif result.status_code == 304:
                     # cached
                     return result
-                elif result.status_code == 403 or self.remaining_requests == 0:
-                    # RateLimit
-                    self.__toggle_username()
-                    continue
+                elif result.status_code == 403:
+                    if self.remaining_requests == 0:
+                        # RateLimit
+                        self.__toggle_username()
+                        continue
+                    else:
+                        return result
                 elif result.status_code == 404:
                     # Not Found
                     return result
@@ -84,6 +90,7 @@ class GitHubCrawler(object):
             except (HTTPError, ConnectionError) as e:
                 print 'HTTPError. retry...'
                 print url, path
+                retry -= 1
         raise HTTPError('API failed')
 
     def link_header_parse(self, link_header):
@@ -160,6 +167,10 @@ class GitHubCrawler(object):
             username = qu.login
             method = qu.method
 
+            print('Task Start [%s] username: %s, method: %s, rate-limit: %s' %
+                (strftime("%Y-%m-%d %H:%M:%S", localtime()), username,
+                    method, self.remaining_requests))
+
             handler = self.handlers[qu.method]
             handler.process(qu)
 
@@ -173,24 +184,29 @@ class GitHubCrawler(object):
             s.close()
 
             # print progress
-            print('[%s] username: %s, method: %s, rate-limit: %s' %
+            print('Task End [%s] username: %s, method: %s, rate-limit: %s' %
                 (strftime("%Y-%m-%d %H:%M:%S", localtime()), username,
                     method, self.remaining_requests))
 
             # TODO: add org's members
 
     def rollback(self):
+        if self.current_queue == None:
+            return
         qu = self.current_queue
-        s = self.db.makesession()
-        s.query(TaskQueue).filter_by(login=qu.login, method=qu.method).\
-            update({
-                'assignee': None,
-                'assigned_dt': None,
-                'completed_dt': None,
-                'success': None
-            })
-        s.commit()
-        s.close()
+        try:
+            s = self.db.makesession()
+            s.query(TaskQueue).filter_by(login=qu.login, method=qu.method).\
+                update({
+                    'assignee': None,
+                    'assigned_dt': None,
+                    'completed_dt': None,
+                    'success': None
+                })
+            s.commit()
+            s.close()
+        except:
+            print 'rollback failed. (queue: %s, %s)' % (qu.login, qu.method)
 
 if __name__ == '__main__':
     hostname = os.uname()[1]
