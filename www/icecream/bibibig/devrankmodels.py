@@ -33,7 +33,10 @@ class DevRankModel(object):
         likequery = '%%%s%%' % query
         users = s.query(User).join(Repo, User.id == Repo.owner_id) \
                  .filter(or_(Repo.description.like(likequery), \
-                             Repo.language.like(likequery))) \
+                             Repo.language.like(likequery), \
+                             User.location.like(likequery), \
+                             User.login.like(likequery), \
+                             User.name.like(likequery))) \
                  .order_by(User.devrank_score.desc()) \
                  .distinct() \
                  .limit(20) \
