@@ -28,17 +28,17 @@ class DevRankModel(object):
                                       User.id == Follower.dest_id)) \
                       .filter(User.login.in_(users)).all()
 
-    def get_user_id(self, login):
+    def _get_user_id(self, login):
         s = self.db.makesession()
         user = s.query(User).filter_by(login=login).first()
         if user == None:
             return None
         return user.id
 
-    def search(self, query, me_id=None, page=1, page_per_row=20):
+    def search(self, query, me=None, page=1, page_per_row=20):
         # TODO search using query and me.
-        if me_id == None:
-            return self.__search_global(query)
+        if me == None:
+            return self._search_global(query)
         search_sql = u'''
 select distinct * from
 (
@@ -84,6 +84,7 @@ limit :limit_clause
         '''.replace(':like_qry', '%%%s%%' % query)
         sql = search_sql.replace(':where_clause_qry', where_clause_qry) \
                         .replace(':limit_clause', limit_clause)
+        me_id = self._get_user_id(me)
         s = self.db.makesession()
         users = s.query(User).from_statement(sql) \
                        .params(id=me_id).all()
@@ -93,7 +94,7 @@ limit :limit_clause
             u.following = self._get_following_count(s, u.id)
         return users
 
-    def __search_global(self, query, page=1, page_per_row=20):
+    def _search_global(self, query, page=1, page_per_row=20):
         s = self.db.makesession()
         likequery = '%%%s%%' % query
         users = s.query(User).join(Repo, User.id == Repo.owner_id) \
@@ -126,30 +127,108 @@ limit :limit_clause
                       .filter(Follower.dest_id == login_id).scalar()
 
     def social_search(self, users):
-        s = self.db.makesession()
-
         if len(users) == 0:
             return []
 
-        matchedusers = self._get_users_by_login(s, users)
-        gravatars = dict((x[0], x[2]) for x in matchedusers)
-        id_to_login = dict((x[1], x[0]) for x in matchedusers)
-        followings = self._get_followings(s, users)
-
+        social_sql = u'''
+select distinct * from
+(
+    select
+        u1.login src1,
+        u1.avatar_url src1_gravata,
+        u2.login dest1,
+        u2.avatar_url dest1_gravata,
+        null src2,
+        null src2_gravata,
+        null dest2,
+        null dest2_gravata,
+        null src3,
+        null src3_gravata,
+        null dest3,
+        null dest3_gravata,
+        u.login
+    from friend_relation fr
+    inner join users u on fr.dest_id = u.id
+    inner join users u1 on fr.src_id = u1.id
+    inner join users u2 on fr.dest_id = u2.id
+    where src_id = :id
+    and find_in_set(u.login, ':friends')
+    # 3-depth
+    union all
+    select
+        u1.login src1,
+        u1.avatar_url src1_gravata,
+        u2.login dest1,
+        u2.avatar_url dest1_gravata,
+        u3.login src2,
+        u3.avatar_url src2_gravata,
+        u4.login dest2,
+        u4.avatar_url dest2_gravata,
+        null src3,
+        null src3_gravata,
+        null dest3,
+        null dest3_gravata,
+        u.login
+    from friend_relation fr1
+    inner join friend_relation fr2 on fr1.dest_id = fr2.src_id
+    inner join users u on fr2.dest_id = u.id
+    inner join users u1 on fr1.src_id = u1.id
+    inner join users u2 on fr1.dest_id = u2.id
+    inner join users u3 on fr2.src_id = u3.id
+    inner join users u4 on fr2.dest_id = u4.id
+    where fr1.src_id = :id
+    and find_in_set(u.login, ':friends')
+    # 4-depth
+    union all
+    select
+        u1.login src1,
+        u1.avatar_url src1_gravata,
+        u2.login dest1,
+        u2.avatar_url dest1_gravata,
+        u3.login src2,
+        u3.avatar_url src2_gravata,
+        u4.login dest2,
+        u4.avatar_url dest2_gravata,
+        u5.login src3,
+        u5.avatar_url src3_gravata,
+        u6.login dest3,
+        u6.avatar_url dest3_gravata,
+        u.login
+    from friend_relation fr1
+    inner join friend_relation fr2 on fr1.dest_id = fr2.src_id
+    inner join friend_relation fr3 on fr2.dest_id = fr3.src_id
+    inner join users u on fr3.dest_id = u.id
+    inner join users u1 on fr1.src_id = u1.id
+    inner join users u2 on fr1.dest_id = u2.id
+    inner join users u3 on fr2.src_id = u3.id
+    inner join users u4 on fr2.dest_id = u4.id
+    inner join users u5 on fr3.src_id = u5.id
+    inner join users u6 on fr3.dest_id = u6.id
+    where fr1.src_id = :id
+    and find_in_set(u.login, ':friends')
+) friends
+'''
+        s = self.db.makesession()
+        me = users.pop()
+        me_id = self._get_user_id(me)
+        sql = social_sql.replace(':friends', ','.join(users))
+        res = s.execute(sql, { 'id': me_id })
         links = []
-        for f in followings:
-            if (f.src_id in id_to_login) and (f.dest_id in id_to_login):
-                login_src = id_to_login[f.src_id]
-                login_dest = id_to_login[f.dest_id]
-                if (login_src in gravatars) and (login_dest in gravatars):
-                    links.append({'source': login_src,
-                                  'target': login_dest,
-                                  'src_gravatar_url': gravatars[login_src],
-                                  'tgt_gravatar_url': gravatars[login_dest],
-                                  'type': 'type3'})
-            else:
-                # TODO check this problem..
-                print('No id_to_login: %s or %s' % (f.src_id, f.dest_id))
+        for row in res:
+            for idx in range(1, 4):
+                src = 'src%d' % idx
+                dest = 'dest%d' % idx
+                src_gravatar = 'src%d_gravata' % idx
+                dest_gravatar = 'dest%d_gravata' % idx
+                if row[src] == None:
+                    continue
+                links.append({
+                    'source': row[src],
+                    'target': row[dest],
+                    'src_gravatar_url': row[src_gravatar],
+                    'tgt_gravatar_url': row[dest_gravatar],
+                    'type': 'type3'
+                })
         return links
 
 

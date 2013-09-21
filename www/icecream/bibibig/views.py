@@ -74,11 +74,7 @@ class home(View):
                 except:
                     return HttpResponseRedirect('/')
 
-            me_id = c.get_user_id(me)
-            if me_id == None:
-                # TODO: not crawled
-                return HttpResponseRedirect('/')
-            details = c.search(request.GET.get(u'q'), me_id)
+            details = c.search(request.GET.get(u'q'), me)
             for d in details:
                 if d.hireable == True:
                     d.hireable = "Can!"
@@ -103,6 +99,7 @@ def social_json(request):
     c = DevRankModel()
     usersparam = request.GET.get('users', None)
     users = usersparam and usersparam.split('|') or []
+    print users
     data = {
         "links": c.social_search(users)
     }
