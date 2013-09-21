@@ -47,7 +47,17 @@ How to run this
 
 You needs installed Hadoop cluster. (You can use pseudo-distributed mode)
 
-    hadoop jar devrank-0.3.0-jar-with-dependencies.jar -w 1 -i /user/YOUR_LINUX_ID/test1/input/input.log -o /user/YOUR_LINUX_ID/test1/output
+    hadoop jar devrank-0.5.0-jar-with-dependencies.jar -w 1 -s 10 -r 1,1,1,1,1 -i /user/YOUR_LINUX_ID/test1/input/input.log -o /user/YOUR_LINUX_ID/test1/output
+
+
+
+If you use Mac OS X with case insensitive HFS+ file system
+----------------------------------------------------------
+
+If you use case insensitive file system, try this. And run jar again.
+
+    zip -d devrank-job-0.5.0-jar-with-dependencies.jar META-INF/LICENSE
+
 
 
 Getting output
