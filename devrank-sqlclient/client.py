@@ -44,40 +44,52 @@ def usage():
     sys.exit(-1)
 
 
+def sumof(d):
+    '''d = ((1, 456), (1, 1), ...))'''
+    data = {}
+    for k, v in d:
+        if k in data:
+            data[k] += v
+        else:
+            data[k] = v
+    return ','.join('%s:%d' % (k, v) for k, v in data.items())
+
+
 def dump(s, f):
     # iterate all users
     for me in s.query(User):
         # U|uid|follow_id1,follow_id2,follow_id3|fork_id4,fork_id5,fork_id6
+
         rs = s.query(Follower.dest_id).filter(Follower.src_id == me.id)
-        followings = ','.join(str(x[0]) for x in rs)
+        followings = sumof((str(x[0]), 1) for x in rs)
+
         rs = s.query(Repo.fork_owner_id) \
               .filter(and_(Repo.fork_owner_id == me.id, Repo.fork == True))
-        repos = ','.join(str(x[0]) for x in rs)
-        f.write('U|%s|%s|%s\n' % (me.id, followings, repos))
+        forked_repos = sumof((str(x[0]), 1) for x in rs)
 
         # P|uid|owner_uid|count
         rs = s.query(User, Repo, Contributor) \
               .filter(and_(User.id == Repo.owner_id, \
                            Repo.id == Contributor.repo_id, \
                            Contributor.contributor_id == me.id))
-        for u, r, c in rs:
-            f.write('P|%s|%s|%s\n' % (me.id, u.id, c.contributions))
+        pulls = sumof((u.id, c.contributions) for u, r, c in rs)
 
         # S|uid|owner_uid
         rs = s.query(User, Repo, Stargazer) \
               .filter(and_(User.id == Repo.owner_id, \
                            Repo.id == Stargazer.repo_id, \
                            Stargazer.stargazer_id == me.id))
-        for u, r, star in rs:
-            f.write('S|%s|%s\n' % (me.id, u.id))
+        stars = sumof((u.id, 1) for u, r, star in rs)
 
         # W|uid|owner_uid
         rs = s.query(User, Repo, Watcher) \
               .filter(and_(User.id == Repo.owner_id, \
                            Repo.id == Watcher.repo_id, \
                            Watcher.watcher_id == me.id))
-        for u, r, w in rs:
-            f.write('W|%s|%s\n' % (me.id, u.id))
+        watches = sumof((u.id, 1) for u, r, w in rs)
+
+        f.write('%s|true|%s|%s|%s|%s|%s\n' % (me.id, followings, forked_repos,
+                                            pulls, stars, watches))
 
 
 def update_score(s, f):
