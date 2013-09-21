@@ -1,5 +1,4 @@
 #-*- coding:utf-8 -*-
-from django.http import HttpResponseNotFound
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import RequestContext, Context
 from django.shortcuts import *
@@ -62,8 +61,12 @@ class home(View):
                     login = False
                 else:
                     #bad user
-                    return HttpResponseNotFound( \
-                            "<h1>We don't no %s</h1>" % me)
+                    var = RequestContext(request, {
+                            'page_title': u'Devrank',
+                            'me' : me,
+                            })
+                    return render_to_response('except.html', var)
+
             else:
                 try:
                     me = request.COOKIES['own']
