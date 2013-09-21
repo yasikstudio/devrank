@@ -1,4 +1,5 @@
 #-*- coding:utf-8 -*-
+from django.http import HttpResponseNotFound
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import RequestContext, Context
 from django.shortcuts import *
@@ -20,7 +21,7 @@ def oauth(request):
     o.callback_response(request.get_full_path())
     me = json.loads(o.getUser())['login']
     c.oauth(me)
-    response = HttpResponseRedirect('/home')
+    response = HttpResponseRedirect('/home?m='+me)
     response.set_cookie('own', me)
     return response
 
@@ -28,7 +29,10 @@ class intro(View):
     def get(self, request, *args, **kwargs):
         var = RequestContext(request, {'page_title': u'Devrank', })
         try:
-            request.COOKIES['own']
+            var = RequestContext(request, {
+                    'page_title': u'Devrank',
+                    'me' : request.COOKIES['own'],
+                    })
             return render_to_response('home.html', var)
         except:
             return render_to_response('intro.html', var)
@@ -37,7 +41,37 @@ class home(View):
     def get(self, request, *args, **kwargs):
         if request.GET.has_key(u'q'):
             c = DevRankModel()
-            details = c.search(request.GET.get(u'q'))
+
+            me = 'None'
+            login = False
+
+            if request.GET.has_key(u'm'):
+                me = request.GET.get(u'm')
+                cookie = None
+
+                try:
+                    cookie = request.COOKIES['own']
+                except:
+                    pass
+
+                if me == cookie:
+                    #me
+                    login = True
+                elif c.oauth(me, False):
+                    #other user
+                    login = False
+                else:
+                    #bad user
+                    return HttpResponseNotFound( \
+                            "<h1>We don't no %s</h1>" % me)
+            else:
+                try:
+                    me = request.COOKIES['own']
+                    login = True
+                except:
+                    return HttpResponseRedirect('/')
+
+            details = c.search(request.GET.get(u'q'), me)
             for d in details:
                 if d.hireable == True:
                     d.hireable = "Can!"
@@ -47,13 +81,6 @@ class home(View):
                 if isinstance(d.blog, str) and (not "://" in d.blog) :
                     d.blog = "http://%s" % d.blog
 
-            me = 'None'
-            login = False
-            try:
-                me = request.COOKIES['own']
-                login = True
-            except:
-                pass
 
             var = RequestContext(request, {
                     'page_title': u'Devrank',

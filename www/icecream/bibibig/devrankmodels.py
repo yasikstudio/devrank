@@ -95,10 +95,14 @@ class DevRankModel(object):
         return links
 
 
-    def oauth(self, user):
+    def oauth(self, user, DBSave=True):
         s = self.db.makesession()
         r = s.query(Member).filter(Member.login == user).scalar()
         if r == None:
-            s = self.db.makesession()
-            s.add(Member(user))
-            s.commit()
+            if DBSave:
+                s = self.db.makesession()
+                s.add(Member(user))
+                s.commit()
+            return False
+        else:
+            return True
