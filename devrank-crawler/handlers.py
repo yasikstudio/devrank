@@ -151,8 +151,11 @@ class FollowerHandler(BaseHandler):
                 })
                 self.queue(new_qu)
                 # friendship flag
-                friend_owners.append(follower['id'])
-            self.add_friend_ownership(friend_owners, qu.user_id)
+                #friend_owners.append(follower['id'])
+                c = Friendship.__table__.insert(prefixes=['IGNORE'],
+                    values=dict(owner_id=follower['id'], friend_id=qu.user_id))
+                s.execute(c)
+            #self.add_friend_ownership(friend_owners, qu.user_id)
             qu.completed_dt = datetime.datetime.utcnow()
             qu.success = True
         else:
@@ -164,20 +167,21 @@ class FollowerHandler(BaseHandler):
     def followers(self, session, username, user_id):
         """Get followers list by username"""
         path = 'users/%s/followers' % username
-        url = None
+        url = link = None
         etag = None # TODO: applied
         followers = []
         users = []
         while path != None or url != None:
             debug('followers(%s) path=%s, url=%s' % (username, path, url))
             res = self.crawler.get(path=path, url=url, etag=etag)
-            path = url = None
-            for user in res.json:
-                followers.append(user)
-                c = Follower.__table__.insert(prefixes=['IGNORE'],
-                        values=dict(src_id=user['id'], dest_id=user_id))
-                session.execute(c)
-            link = self.crawler.link_header_parse(res.headers['link'])
+            path = url = link = None
+            if res.status_code == 200:
+                for user in res.json:
+                    followers.append(user)
+                    c = Follower.__table__.insert(prefixes=['IGNORE'],
+                            values=dict(src_id=user['id'], dest_id=user_id))
+                    session.execute(c)
+                link = self.crawler.link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
         return followers
@@ -201,8 +205,11 @@ class FollowingHandler(BaseHandler):
                 })
                 self.queue(new_qu)
                 # friendship flag
-                friends.append(following['id'])
-            self.add_friendship(qu.user_id, friends)
+                #friends.append(following['id'])
+                c = Friendship.__table__.insert(prefixes=['IGNORE'],
+                    values=dict(owner_id=qu.user_id, friend_id=follower['id']))
+                s.execute(c)
+            #self.add_friendship(qu.user_id, friends)
             qu.completed_dt = datetime.datetime.utcnow()
             qu.success = True
         else:
@@ -214,19 +221,20 @@ class FollowingHandler(BaseHandler):
     def followings(self, session, username, user_id):
         """Get followings list by username"""
         path = 'users/%s/following' % username
-        url = None
+        url = link = None
         etag = None # TODO: applied
         followings = []
         users = []
         while path != None or url != None:
             debug('followings(%s) path=%s, url=%s' % (username, path, url))
             res = self.crawler.get(path=path, url=url, etag=etag)
-            path = url = None
-            for user in res.json:
-                c = Follower.__table__.insert(prefixes=['IGNORE'],
-                        values=dict(src_id=user_id, dest_id=user['id']))
-                session.execute(c)
-            link = self.crawler.link_header_parse(res.headers['link'])
+            path = url = link = None
+            if res.status_code == 200:
+                for user in res.json:
+                    c = Follower.__table__.insert(prefixes=['IGNORE'],
+                            values=dict(src_id=user_id, dest_id=user['id']))
+                    session.execute(c)
+                link = self.crawler.link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
         return followings
@@ -269,25 +277,29 @@ class RepoHandler(BaseHandler):
     def repos(self, session, username, user_id):
         """Get repos list by username"""
         path = 'users/%s/repos' % username
-        url = None
+        url = link = None
         etag = None # TODO: applied
         repos = []
         users_repos = []
         while path != None or url != None:
             debug('repos(%s) path=%s, url=%s' % (username, path, url))
             res = self.crawler.get(path=path, url=url, etag=etag)
+            path = url = link = None
             if res.status_code == 200:
-                path = url = None
                 for repo in res.json:
                     repo_obj = Repo().from_dict(repo)
                     repo_obj.crawled_at = datetime.datetime.utcnow()
                     repo_obj.owner_id = user_id
                     if repo_obj.fork:
                         fork_owner_id = self.__fork(username, repo_obj.name)
-                        repo_obj.fork_owner_id = fork_owner_id
-                    session.merge(repo_obj)
-                    repos.append(repo_obj)
-            link = self.crawler.link_header_parse(res.headers['link'])
+                        if fork_owner_id != None:
+                            repo_obj.fork_owner_id = fork_owner_id
+                            session.merge(repo_obj)
+                            repos.append(repo_obj)
+                    else:
+                        session.merge(repo_obj)
+                        repos.append(repo_obj)
+                link = self.crawler.link_header_parse(res.headers['link'])
             if link != None and 'next' in link:
                 url = link['next']
         return repos
@@ -305,6 +317,8 @@ class RepoHandler(BaseHandler):
             debug('cached %s/%s' % (username, reponame))
         elif status_code == 200:
             repo = result.json
+            if 'parent' not in repo:
+                return None
             return repo['parent']['owner']['id']
         else:
             # TODO: Error handling
