@@ -28,7 +28,8 @@ class DevRankModel(object):
                                       User.id == Follower.dest_id)) \
                       .filter(User.login.in_(users)).all()
 
-    def search(self, query):
+    def search(self, query, me):
+        # TODO search using query and me.
         s = self.db.makesession()
         likequery = '%%%s%%' % query
         users = s.query(User).join(Repo, User.id == Repo.owner_id) \
