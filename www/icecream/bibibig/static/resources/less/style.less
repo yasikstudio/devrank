@@ -1,12 +1,8 @@
-@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
-@import url(http://fonts.googleapis.com/earlyaccess/nanumbrushscript.css);
-
 @import url(http://fonts.googleapis.com/css?family=Poiret+One);
 @import url(http://fonts.googleapis.com/css?family=Rock+Salt);
 @import "/static/resources/less/elements.less";
 
-
-@fontBase:13px  Helvetica, 'Nanum Gothic', arial, freesans, clean, sans-serif;
+@fontBase:13px  Helvetica,  arial, freesans, clean, sans-serif;
 @fontHead1:50px 'Poiret One';
 @fontHead2:13px 'Rock Salt';
 @padding:20px;
@@ -33,9 +29,7 @@
 .fade {
     .transition-duration(0.15s);
 }
-.brush {
-    font-family: 'Nanum Brush Script', cursive;
-}
+
 .border(@color:@line) {
     border:1px solid @color;
 }
@@ -53,7 +47,7 @@
 }
 
 textarea, input, button {
-    font: 13px 'Nanum Gothic', Helvetica, arial, freesans, clean, sans-serif;
+    font: 13px Helvetica, arial, freesans, clean, sans-serif;
 }
 
 body {
@@ -82,7 +76,7 @@ body {
     margin-right:auto;
 
     margin-bottom:50px;
-    margin-top:200px;
+    margin-top:100px;
 }
 
 #search_form{
@@ -90,15 +84,19 @@ body {
     margin-left:auto;
     margin-right:auto;
 }
+
 #result_head{
     #search_head;
     margin-top:30px;
     margin-bottom:30px;
-    #logo > a > img { width:200px; }
+    #logo > a > img {
+        width:200px;
+    }
+    #search {
+        margin-top: 5px;
+    }
 }
 
-#search { height:40px; }
-#query { min-width:200px; height:20px; }
 
 #index {
     overflow:hidden;
@@ -239,11 +237,6 @@ hr {
     display: none;
 }
 
-footer .container {
-    color:@gray;
-    text-align:center;
-}
-
 a { .fade; }
 button > a:link { color:white; text-decoration:none; }
 
@@ -268,10 +261,10 @@ button > a:link { color:white; text-decoration:none; }
     border:5px solid @lineLight;
 }
 
-footer {
+footer .container {
     padding-top: 20px;
-    border-top:1px solid @line;
-    background:@light;
+    color:@gray;
+    text-align:center;
 }
 
 .task:hover {

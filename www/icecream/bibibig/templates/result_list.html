@@ -57,20 +57,25 @@
                         <a href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
                     </div>
 
+                    {% if login == True %}
                     <div id="search" class="span8">
-                        {% if login == True %}
-                        <form action="/home" id="search_form" >
+                        <form action="/home" id="search_form">
                             <div class="input-append">
-                                <input  placeholder="Enter Keyword" name='q' type="text" id="query" class="search" autocomplete="off"> </input>
-                                <button type="submit" class="search btn" id="submit">Search</button>
+                                <div class="control-group success">
+                                    <input  placeholder="Enter Keyword" name='q' type="text" id="query" class="search" autocomplete="off"> </input>
+                                    <button type="submit" class="search btn" id="submit">Search</button>
+                                </div>
                             </div>
                         </form>
-                        {% else %}
-                        <a class="btn btn-large btn-info" href="/login/github">
-                            <i class="icon-github icon-1x"></i>Login
-                        </a>
-                        {% endif %}
                     </div>
+                    {% else %}
+                    <div class="offset5 span3">
+                        <a class="btn btn btn-info" href="/login/github">
+                            <i class="icon-github icon-1x"></i> Connect with Github
+                        </a>
+                    </div>
+                    {% endif %}
+
                 </div>
             </div>
 
