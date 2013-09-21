@@ -40,6 +40,8 @@ public class DeveloperRankVertexInputFormat extends
       // 999212|true|14953:1,931534:1|1445542:1,999212:10|999212:1,145585:1||931534:2,1589355:1,575576:1,1206239:1,71561:2,333745:1
       // 999255|false|||||333745:1
 
+      int[] ratio = parseRatioOption(getConf().get("ratioOptions"));
+
       // read, parse and setup.
       Text line = getRecordReader().getCurrentValue();
 
@@ -47,11 +49,11 @@ public class DeveloperRankVertexInputFormat extends
         String[] items = line.toString().split("\\|", -1);
         Text uid = new Text(items[0]);
         boolean exists = Boolean.parseBoolean(items[1]);
-        Map<String, Long> followings = parseEdge(items[2], 1);
-        Map<String, Long> forks = parseEdge(items[3], 1);
-        Map<String, Long> pulls = parseEdge(items[4], 1);
-        Map<String, Long> stars = parseEdge(items[5], 1);
-        Map<String, Long> watches = parseEdge(items[6], 1);
+        Map<String, Long> followings = parseEdge(items[2], ratio[0]);
+        Map<String, Long> forks = parseEdge(items[3], ratio[1]);
+        Map<String, Long> pulls = parseEdge(items[4], ratio[2]);
+        Map<String, Long> stars = parseEdge(items[5], ratio[3]);
+        Map<String, Long> watches = parseEdge(items[6], ratio[4]);
 
         @SuppressWarnings("unchecked")
         Map<String, Long> allEdges = merge(followings, forks, pulls, stars,
@@ -74,6 +76,15 @@ public class DeveloperRankVertexInputFormat extends
       }
 
       return vertex;
+    }
+
+    private int[] parseRatioOption(String option) {
+      String[] ratioOptions = option.split(",", -1);
+      int[] ratio = new int[ratioOptions.length];
+      for (int i = 0; i < ratioOptions.length; i++) {
+        ratio[i] = Integer.parseInt(ratioOptions[i]);
+      }
+      return ratio;
     }
 
     private Map<String, Long> parseEdge(String data, long weight) {

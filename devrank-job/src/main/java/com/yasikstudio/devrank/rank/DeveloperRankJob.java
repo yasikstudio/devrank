@@ -10,7 +10,6 @@ import org.apache.giraph.io.formats.GiraphFileInputFormat;
 import org.apache.giraph.job.GiraphJob;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 
@@ -26,6 +25,7 @@ public class DeveloperRankJob implements Tool {
     options.addOption("o", "outputPath", true, "Output Path");
     options.addOption("w", "workers", true, "Number of workers");
     options.addOption("s", "supersteps", true, "Number of supersteps");
+    options.addOption("r", "ratioOptions", true, "followings,forks,pulls,stars,watches");
 
     HelpFormatter formatter = new HelpFormatter();
     if (args.length == 0) {
@@ -43,8 +43,10 @@ public class DeveloperRankJob implements Tool {
     long supersteps = Long.parseLong(cmd.getOptionValue('s', "10"));
     String inputPath = cmd.getOptionValue("inputPath");
     String outputPath = cmd.getOptionValue("outputPath");
+    String ratio = cmd.getOptionValue("ratioOptions", "1,1,1,1,1");
 
     configuration.setLong("superstep", supersteps);
+    configuration.setStrings("ratioOptions", ratio);
 
     String jobname = "devrank-job-rank-" + System.currentTimeMillis();
     GiraphJob job = new GiraphJob(getConf(), jobname);

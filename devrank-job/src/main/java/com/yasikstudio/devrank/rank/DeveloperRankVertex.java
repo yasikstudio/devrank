@@ -22,13 +22,19 @@ public class DeveloperRankVertex extends
         sum += m.getDevrankValue();
       }
 
+      if (outEdges == 0L) {
+        outEdges = 1L;
+      }
+
       // calculate with PageRank algorithm using countOfOutWeight.
       // do not use getTotalNumvertices() for weighted edges.
       self.setValue((0.15f / outEdges) + (0.85f * sum));
-
-      // store my value
-      setValue(self);
+    } else {
+      self.setValue(0.0f);
     }
+
+    // store my value
+    setValue(self);
 
     if (getSuperstep() < k) {
       // TODO
