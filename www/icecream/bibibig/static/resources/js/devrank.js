@@ -27,7 +27,7 @@ function activePos(me, who, detail, xhr){
           var width = $("#"+id).width();
           var height = 500;
 
-          social_rel(result, '#' + id, width, height);
+          social_rel(result, '#' + id, width, height, true);
       },
     });
 }
@@ -63,7 +63,7 @@ function initialize(me, query) {
     });
 
     $(".social-progress").hide();
-    $("#social_map").on("click",function(d){
+    $("#social_map").on("click",{ me : "{{me}}"}, function(d){
         var id = "social-map-content";
         var toggle = $(this).hasClass("toggle");
 
@@ -76,7 +76,7 @@ function initialize(me, query) {
 
             var users = $(".task-userid a").map(function() {return $(this).text()});
             users = $.makeArray(users);
-            users.unshift('{{me}}');
+            users.unshift(me);
 
             if(xhr_socialmap && xhr_socialmap.readyState != 4){
               xhr_socialmap.abort();
@@ -93,7 +93,7 @@ function initialize(me, query) {
                       url: "/social.json?users=" + users,
                       success: function(result, status, xhr) {
                           $(".social-progress").hide();
-                          social_rel(result, '#' + id, width, height);
+                          social_rel(result, '#' + id, width, height, false);
                       },
                     });
                 }

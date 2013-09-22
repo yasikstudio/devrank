@@ -1,5 +1,6 @@
-function social_rel(graph, elid, width, height) {
-    //var width = 800, height = 500;
+function social_rel(graph, elid, width, height, mode) {
+    //* mode false is social_map mode.
+
     var color = d3.scale.category20();
     var radius = d3.scale.sqrt()
         .range([0, 6]);
@@ -44,7 +45,6 @@ function social_rel(graph, elid, width, height) {
         .data(force.links())
         .enter().append("path")
         .attr("class", function(d) { return "link " + d.type; })
-        .attr("marker-end", function(d) { return "url(#" + d.type + ")"; })
         .style("stroke-width", function(d) { return Math.sqrt(8); });
 
     var node = svg.append("g").selectAll("circle")
@@ -79,20 +79,30 @@ function social_rel(graph, elid, width, height) {
 
     function tick() {
         node.attr("transform", function(d) {
-            if (d.index == 0){
-                return "translate( 50, 50)";
+            if (mode == true){
+                if (d.index == 0){
+                    return "translate( 50, 50)";
+                }else{
+                    return "translate(" + d.x + "," + d.y + ")";
+                }
             }else{
                 return "translate(" + d.x + "," + d.y + ")";
             }
         });
 
         path.attr("d", function(d) {
-            if (d.source.index == 0){
-                d.source.x=50;
-                d.source.y=50;
-                var dx = d.target.x - d.source.x,
-                dy = d.target.y - d.source.y;
-                return "M" + d.source.x + "," + d.source.y + "A0,0 0 0,1 " + d.target.x + "," + d.target.y;
+            if (mode == true){
+                if (d.source.index == 0){
+                    d.source.x=50;
+                    d.source.y=50;
+                    var dx = d.target.x - d.source.x,
+                    dy = d.target.y - d.source.y;
+                    return "M" + d.source.x + "," + d.source.y + "A0,0 0 0,1 " + d.target.x + "," + d.target.y;
+                }else{
+                    var dx = d.target.x - d.source.x,
+                    dy = d.target.y - d.source.y;
+                    return "M" + d.source.x + "," + d.source.y + "A0,0 0 0,1 " + d.target.x + "," + d.target.y;
+                }
             }else{
                 var dx = d.target.x - d.source.x,
                 dy = d.target.y - d.source.y;
