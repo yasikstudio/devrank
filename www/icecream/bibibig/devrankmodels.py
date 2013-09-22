@@ -177,6 +177,7 @@ select distinct * from
     inner join users u4 on fr2.dest_id = u4.id
     where fr1.src_id = :id
     and find_in_set(u.login, '%(friends)s')
+    and fr2.dest_id != :id
     # 4-depth
     union all
     select
@@ -205,6 +206,8 @@ select distinct * from
     inner join users u6 on fr3.dest_id = u6.id
     where fr1.src_id = :id
     and find_in_set(u.login, '%(friends)s')
+    and fr2.dest_id != :id
+    and fr3.dest_id != :id
 ) friends
 '''
         s = self.db.makesession()
