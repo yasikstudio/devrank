@@ -1,7 +1,6 @@
 
 function social_rel(graph, elid, width, height) {
     //var width = 800, height = 500;
-    $(elid).css("margin-top", 0);
     var color = d3.scale.category20();
     var radius = d3.scale.sqrt()
         .range([0, 6]);
@@ -38,7 +37,7 @@ function social_rel(graph, elid, width, height) {
         .attr("markerWidth", 7)
         .attr("markerHeight", 7)
         .attr("orient", "auto")
-        .attr("fill","#999999")
+        .attr("fill","#ffffff")
         .append("path")
         .attr("d", "M0,-5L5,0L0,6");
 
@@ -82,7 +81,7 @@ function social_rel(graph, elid, width, height) {
     function tick() {
         node.attr("transform", function(d) {
             if (d.index == 0){
-                return "translate( 250, 200)";
+                return "translate( 50, 50)";
             }else{
                 return "translate(" + d.x + "," + d.y + ")";
             }
@@ -90,8 +89,8 @@ function social_rel(graph, elid, width, height) {
 
         path.attr("d", function(d) {
             if (d.source.index == 0){
-                d.source.x=250;
-                d.source.y=200;
+                d.source.x=50;
+                d.source.y=50;
                 var dx = d.target.x - d.source.x,
                 dy = d.target.y - d.source.y;
                 return "M" + d.source.x + "," + d.source.y + "A0,0 0 0,1 " + d.target.x + "," + d.target.y;
