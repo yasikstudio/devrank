@@ -44,8 +44,9 @@ class intro(View):
 class search(View):
     def get(self, request, *args, **kwargs):
         if request.GET.has_key(u'q'):
+            page = request.GET.get(u'p', 1)
             c = DevRankModel()
-            login = request.COOKIES['own'] != None and True or False
+            logined = request.COOKIES.has_key('own')
 
             me = None
             try:
@@ -62,7 +63,7 @@ class search(View):
                         })
                 return render_to_response('except.html', var)
 
-            details = c.search(request.GET.get(u'q'), me)
+            details = c.search(request.GET.get(u'q'), me, page)
             for d in details:
                 if d.hireable == True:
                     d.hireable = "Can!"
@@ -76,7 +77,7 @@ class search(View):
                     'page_title': u'Devrank',
                     'results': details,
                     'query': request.GET.get(u'q'),
-                    'login': login,
+                    'login': logined,
                     'me' : me,
                     })
             return render_to_response('result_list.html', var)

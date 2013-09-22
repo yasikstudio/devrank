@@ -36,7 +36,6 @@ class DevRankModel(object):
         return user.id
 
     def search(self, query, me=None, page=1, page_per_row=20):
-        # TODO search using query and me.
         if me == None:
             return self._search_global(query)
         search_sql = u'''
