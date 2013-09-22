@@ -36,7 +36,6 @@ class DevRankModel(object):
         return user.id
 
     def search(self, query, me=None, page=1, page_per_row=20):
-        # TODO search using query and me.
         if me == None:
             return self._search_global(query)
         search_sql = u'''
@@ -243,3 +242,9 @@ select distinct * from
             return False
         else:
             return True
+
+
+    def crawled(self, user):
+        s = self.db.makesession()
+        cnt = s.query(func.count(User.id)).filter(User.login == user).scalar()
+        return cnt == 1

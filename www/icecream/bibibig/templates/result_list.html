@@ -18,30 +18,28 @@
                 detail.fadeIn();
 
                 var odd = detail.attr('odd');
-                var query = "{{me}}|"+who;
+                var query = "{{me}},"+who;
                 var color = "#1abc9c";
                 if (odd % 2 == 0){ color =  "#f1c40f"; }
 
-                {% if login == True %}
-                  if(xhr && xhr.readyState != 4){
-                    $("#"+id).empty();
-                    detail.children().find(".loader").show();
-                    xhr.abort();
-                  }
-                  xhr = $.ajax({
-                    type: "GET",
-                    url: "/social.json?users=" + query,
-                    success: function(result, status, xhr) {
-                        detail.children().find(".loader").fadeOut();
-                        $("#"+id).css("background-color", color);
+                if(xhr && xhr.readyState != 4){
+                  $("#"+id).empty();
+                  detail.children().find(".loader").show();
+                  xhr.abort();
+                }
+                xhr = $.ajax({
+                  type: "GET",
+                  url: "/social.json?users=" + query,
+                  success: function(result, status, xhr) {
+                      detail.children().find(".loader").fadeOut();
+                      $("#"+id).css("background-color", color);
 
-                        var width = $("#"+id).width();
-                        var height = 500;
+                      var width = $("#"+id).width();
+                      var height = 500;
 
-                        social_rel(result, '#' + id, width, height);
-                    },
-                 });
-                {% endif %}
+                      social_rel(result, '#' + id, width, height);
+                  },
+                });
             }
             $('#query').val("{{query}}");
             $(".task").on("click", function(d){

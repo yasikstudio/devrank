@@ -25,7 +25,7 @@ def oauth(request):
     o.callback_response(request.get_full_path())
     me = json.loads(o.getUser())['login']
     c.oauth(me)
-    response = HttpResponseRedirect('/home?m='+me)
+    response = HttpResponseRedirect('/search?m='+me)
     response.set_cookie('own', me)
     return response
 
@@ -41,45 +41,29 @@ class intro(View):
         except:
             return render_to_response('intro.html', var)
 
-class home(View):
+class search(View):
     def get(self, request, *args, **kwargs):
         if request.GET.has_key(u'q'):
+            page = request.GET.get(u'p', 1)
             c = DevRankModel()
+            logined = request.COOKIES.has_key('own')
 
-            me = 'None'
-            login = False
-
-            if request.GET.has_key(u'm'):
-                me = request.GET.get(u'm')
-                cookie = None
-
-                try:
-                    cookie = request.COOKIES['own']
-                except:
-                    pass
-
-                if me == cookie:
-                    #me
-                    login = True
-                elif c.oauth(me, False):
-                    #other user
-                    login = False
+            me = None
+            try:
+                if request.GET.has_key(u'm'):
+                    me = request.GET.get(u'm')
+                    if not c.crawled(me):
+                        raise
                 else:
-                    #bad user
-                    var = RequestContext(request, {
-                            'page_title': u'Devrank',
-                            'me' : me,
-                            })
-                    return render_to_response('except.html', var)
+                    raise
+            except:
+                var = RequestContext(request, {
+                        'page_title': u'Devrank',
+                        'me' : me,
+                        })
+                return render_to_response('except.html', var)
 
-            else:
-                try:
-                    me = request.COOKIES['own']
-                    login = True
-                except:
-                    return HttpResponseRedirect('/')
-
-            details = c.search(request.GET.get(u'q'), me)
+            details = c.search(request.GET.get(u'q'), me, page)
             for d in details:
                 if d.hireable == True:
                     d.hireable = "Can!"
@@ -89,12 +73,11 @@ class home(View):
                 if isinstance(d.blog, str) and (not "://" in d.blog) :
                     d.blog = "http://%s" % d.blog
 
-
             var = RequestContext(request, {
                     'page_title': u'Devrank',
                     'results': details,
                     'query': request.GET.get(u'q'),
-                    'login': login,
+                    'login': logined,
                     'me' : me,
                     })
             return render_to_response('result_list.html', var)
@@ -103,8 +86,7 @@ class home(View):
 def social_json(request):
     c = DevRankModel()
     usersparam = request.GET.get('users', None)
-    users = usersparam and usersparam.split('|') or []
-    print users
+    users = usersparam and usersparam.split(',') or []
     data = {
         "links": c.social_search(users)
     }
