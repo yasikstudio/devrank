@@ -1,4 +1,4 @@
-function activePos(me, who, detail){
+function activePos(me, who, detail, xhr){
     var id = 'social-graph-'+who;
 
     $("#"+id).empty();
@@ -33,7 +33,8 @@ function activePos(me, who, detail){
 }
 
 function initialize(me, query) {
-    var xhr;
+    var xhr_socialmap;
+    var xhr_task;
     $('#query').val(query);
     $(".task").on("click", function(d){
         var task = $(this);
@@ -54,7 +55,7 @@ function initialize(me, query) {
         if (!has_pos){
             task.ScrollTo({
                 callback: function(){
-                    activePos(me, who, detail);
+                    activePos(me, who, detail, xhr_task);
                 }
             });
         }
@@ -67,10 +68,10 @@ function initialize(me, query) {
         users.unshift('{{me}}');
         var id = "social-map";
 
-        if(xhr && xhr.readyState != 4){
-          xhr.abort();
+        if(xhr_socialmap && xhr_socialmap.readyState != 4){
+          xhr_socialmap.abort();
         }
-        xhr = $.ajax({
+        xhr_socialmap = $.ajax({
           type: "GET",
           url: "/social.json?users=" + users,
           success: function(result, status, xhr) {
