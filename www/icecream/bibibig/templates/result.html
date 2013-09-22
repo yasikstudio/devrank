@@ -2,14 +2,14 @@
     <div class="span12">
         <div class="row">
             <div class="info">
-                <img class="avatar" src="http://www.gravatar.com/avatar/{{ result.gravatar_id }}?s=200"/>
-                <div class="task-rank">
+                <img class="avatar" src="http://www.gravatar.com/avatar/{{ result.gravatar_id }}?s=140"/>
+                <div class="task-top">
                   {% if forloop.counter <= 3 %}
                       Top{{forloop.counter}}
                   {% endif %}
                 </div>
-                <div class="task-userid"> <h1><a href="http://github.com/{{result.login}}" target="_blank">{{ result.login }}</a></h1> </div>
-                <div class="task-rank"> <h2>{{ result.devrank_score|floatformat:2 }}</h2> </div>
+                <div class="task-userid"> <a href="http://github.com/{{result.login}}" target="_blank">{{ result.login }}</a> </div>
+                <div class="task-rank"> {{ result.devrank_score|floatformat:2 }} </div>
 
                  <div class="labels" >
                     <div class="label">PublicRepo
