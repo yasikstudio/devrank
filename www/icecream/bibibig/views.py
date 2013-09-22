@@ -44,7 +44,7 @@ class intro(View):
 class search(View):
     def get(self, request, *args, **kwargs):
         if request.GET.has_key(u'q'):
-            page = request.GET.get(u'p', 1)
+            page = int(request.GET.get(u'p', '1'))
             c = DevRankModel()
             logined = request.COOKIES.has_key('own')
 
@@ -65,22 +65,23 @@ class search(View):
 
             details = c.search(request.GET.get(u'q'), me, page)
             for d in details:
-                if d.hireable == True:
-                    d.hireable = "Can!"
-                else:
-                    d.hireable = "Can't"
-
+                d.hireable = d.hireable == True and "Can!" or "Can't"
                 if isinstance(d.blog, str) and (not "://" in d.blog) :
                     d.blog = "http://%s" % d.blog
 
             var = RequestContext(request, {
                     'page_title': u'Devrank',
+                    'length': len(details),
                     'results': details,
                     'query': request.GET.get(u'q'),
                     'login': logined,
                     'me' : me,
                     })
-            return render_to_response('result_list.html', var)
+
+            if page == 1:
+                return render_to_response('result_list.html', var)
+            else:
+                return render_to_response('result_list_more.html', var)
         return HttpResponseRedirect('/')
 
 def social_json(request):
