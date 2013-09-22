@@ -43,11 +43,10 @@
                  });
                 {% endif %}
             }
-
             $('#query').val("{{query}}");
             $(".task").on("click", function(d){
                 var task = $(this);
-                var who = $(this).attr('id');
+                var who = str($(this).attr('id')).split("-")[1];
                 var detail = $(this).parent().find("#detail-"+who);
                 var has_pos = detail.hasClass("pos")
 
@@ -69,6 +68,11 @@
                     });
                 }
 
+            });
+            $("#social_map").on("click",function(d){
+                var users = $(".task-userid a").map(function() {return $(this).text()});
+                users = $.makeArray(users);
+                users.unshift('{{me}}');
             });
         });
     </script>
@@ -93,7 +97,7 @@
                             </div>
                         </form>
                         {% if results|length != 0 %}
-                        <li><a href="#">Social Map</a></li>
+                        <li><a id="social_map" href="#">Social Map</a></li>
                         {% endif %}
                         <li><a href="/logout">Logout</a></li>
                         {% else %}
