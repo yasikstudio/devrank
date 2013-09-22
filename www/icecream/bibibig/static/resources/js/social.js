@@ -1,4 +1,3 @@
-
 function social_rel(graph, elid, width, height) {
     //var width = 800, height = 500;
     var color = d3.scale.category20();
@@ -102,6 +101,5 @@ function social_rel(graph, elid, width, height) {
         });
 
     }
-
 
 }

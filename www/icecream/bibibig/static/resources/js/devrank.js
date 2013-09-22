@@ -62,14 +62,18 @@ function initialize(me, query) {
 
     });
 
+    $(".social-progress").hide();
     $("#social_map").on("click",function(d){
-        var id = "social-map";
+        var id = "social-map-content";
         var toggle = $(this).hasClass("toggle");
 
         if (toggle == false){
-            $("#social_map").toggleClass("toggle");
-            $("#social_map").text("Back");
+            $(".social-progress").show();
+            $("#"+id).show();
+            $(this).toggleClass("toggle");
+            $(this).text("Back");
             $("#search_form").hide();
+
             var users = $(".task-userid a").map(function() {return $(this).text()});
             users = $.makeArray(users);
             users.unshift('{{me}}');
@@ -88,6 +92,7 @@ function initialize(me, query) {
                       type: "GET",
                       url: "/social.json?users=" + users,
                       success: function(result, status, xhr) {
+                          $(".social-progress").hide();
                           social_rel(result, '#' + id, width, height);
                       },
                     });
@@ -95,16 +100,19 @@ function initialize(me, query) {
             );
         }else{
             if(xhr_socialmap){
+              $(".social-progress").hide();
               xhr_socialmap.abort();
             }
-            $("#social_map").toggleClass("toggle");
-            $("#social_map").text("Social Map");
+            $(this).toggleClass("toggle");
+            $(this).text("Social Map");
             $("#search_form").show();
+
             $("#"+id).animate(
                 { height: 0 },
                 'slow',
                 function() {
                     $("#"+id).empty();
+                    $("#"+id).hide();
                 }
             );
         }
