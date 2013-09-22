@@ -75,37 +75,50 @@
 {% endblock %}
 
 {% block body %}
-<div class='container'>
-    <div class='row-fluid'>
-
-        <div class="navbar navbar-fixed-top">
+        <div class="navbar navbar-static-top">
           <div id="result_head" class="navbar-inner">
-            <a class="brand" href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
-                {% if login == True %}
-                <form id='search_form' class="nav navbar-form pull-left" action="/home">
-                    <div class="control-group success">
-                        <input type="hidden" name='m' value="{{ me }}"></input>
-                        <input placeholder="Enter Keyword" name='q' type="text" id="query" class="search-query" autocomplete="off"> </input>
-                    </div>
-                </form>
-                {% endif %}
-                <ul class="nav nav-bar pull-right">
-                    {% if login == True %}
-                      <li><a href="#">Social Map</a></li>
-                      <li><a href="/logout">Logout</a></li>
-                    {% else %}
-                      <li><a href="/login/github"><i class="icon-github icon-1x"></i> Connect with Github</a></li>
-                    {% endif %}
-                </ul>
+            <div class='container'>
+                <a class="brand" href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <ul class="nav-collapse collapse nav nav-bar pull-right">
+                        {% if login == True %}
+                        <form id='search_form' class="nav navbar-form" action="/home">
+                            <div class="control-group success">
+                                <input type="hidden" name='m' value="{{ me }}"></input>
+                                <input placeholder="Enter Keyword" name='q' type="text" id="query" class="span4 search-query" autocomplete="off"> </input>
+                            </div>
+                        </form>
+                        <li><a href="#">Social Map</a></li>
+                        <li><a href="/logout">Logout</a></li>
+                        {% else %}
+                        <li><a href="/login/github"><i class="icon-github icon-1x"></i> Connect with Github</a></li>
+                        {% endif %}
+                    </ul>
+              </div>
           </div>
         </div>
 
-        <div class="offset2 span8 offset2">
-            {% for result in results %}
-              {% include "result.html" %}
-            {% endfor %}
+<div class='container'>
+    <div class='row-fluid'>
+        <div id="result_list">
+            {% if results|length != 0 %}
+            <div class="offset2 span8 offset2">
+                {% for result in results %}
+                  {% include "result.html" %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class='exception'>
+                 <i class="icon-code icon-3x"></i> <i class="icon-bug icon-3x"></i> <i class="icon-exclamation icon-3x"></i>
+                <h1>No have keyword result.<h1>
+                <h3>So sorry, we don't have about '{{query}}'</h3>
+            </div>
+            {% endif %}
         </div>
-
     </div>
 </div>
 {% endblock %}
