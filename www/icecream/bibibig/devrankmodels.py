@@ -48,7 +48,7 @@ select distinct * from
     inner join users u on fr.dest_id = u.id
     inner join repos r on u.id = r.owner_id
     where src_id = :id
-    :where_clause_qry
+    %(where_clause_qry)s
     # 3-depth
     union all
     select
@@ -58,7 +58,7 @@ select distinct * from
     inner join users u on fr2.dest_id = u.id
     inner join repos r on u.id = r.owner_id
     where fr1.src_id = :id
-    :where_clause_qry
+    %(where_clause_qry)s
     # 4-depth
     union all
     select
@@ -69,21 +69,21 @@ select distinct * from
     inner join users u on fr3.dest_id = u.id
     inner join repos r on u.id = r.owner_id
     where fr1.src_id = :id
-    :where_clause_qry
+    %(where_clause_qry)s
     order by devrank_score desc
 ) friends
-limit :limit_clause
-        '''
+limit %(limit_clause)s
+'''
         limit_clause = '%d, %d' % ((page - 1) * page_per_row, page_per_row)
         where_clause_qry = '''
-            and (r.description like ':like_qry'
-            or r.language like ':like_qry'
-            or u.location like ':like_qry'
-            or u.login like ':like_qry'
-            or u.name like ':like_qry')
-        '''.replace(':like_qry', '%%%s%%' % query)
-        sql = search_sql.replace(':where_clause_qry', where_clause_qry) \
-                        .replace(':limit_clause', limit_clause)
+            and (r.description like '%(like_qry)s'
+            or r.language like '%(like_qry)s'
+            or u.location like '%(like_qry)s'
+            or u.login like '%(like_qry)s'
+            or u.name like '%(like_qry)s')
+        ''' % {'like_qry': '%%%s%%' % query}
+        sql = search_sql % {'where_clause_qry': where_clause_qry,
+                            'limit_clause': limit_clause}
         me_id = self._get_user_id(me)
         s = self.db.makesession()
         users = s.query(User).from_statement(sql) \
@@ -152,7 +152,7 @@ select distinct * from
     inner join users u1 on fr.src_id = u1.id
     inner join users u2 on fr.dest_id = u2.id
     where src_id = :id
-    and find_in_set(u.login, ':friends')
+    and find_in_set(u.login, '%(friends)s')
     # 3-depth
     union all
     select
@@ -177,7 +177,7 @@ select distinct * from
     inner join users u3 on fr2.src_id = u3.id
     inner join users u4 on fr2.dest_id = u4.id
     where fr1.src_id = :id
-    and find_in_set(u.login, ':friends')
+    and find_in_set(u.login, '%(friends)s')
     # 4-depth
     union all
     select
@@ -205,13 +205,13 @@ select distinct * from
     inner join users u5 on fr3.src_id = u5.id
     inner join users u6 on fr3.dest_id = u6.id
     where fr1.src_id = :id
-    and find_in_set(u.login, ':friends')
+    and find_in_set(u.login, '%(friends)s')
 ) friends
 '''
         s = self.db.makesession()
         me = users.pop()
         me_id = self._get_user_id(me)
-        sql = social_sql.replace(':friends', ','.join(users))
+        sql = social_sql % {'friends': ','.join(users)}
         res = s.execute(sql, { 'id': me_id })
         links = []
         for row in res:
