@@ -56,6 +56,7 @@ function boundEvents(me, query) {
 }
 
 function initialize(me, query) {
+    $("#moreButton-alert").hide();
     var xhr_socialmap;
     $('#query').val(query);
     boundEvents(me, query);
@@ -119,7 +120,8 @@ function initialize(me, query) {
 }
 
 function removeMoreButton() {
-    $("#moreButton").html("<div>no more data</div>");
+    $("#moreButton").fadeOut();
+    $("#moreButton-alert").fadeIn();
 }
 
 function onClickMore(me, query) {

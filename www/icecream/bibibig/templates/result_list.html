@@ -54,12 +54,17 @@
                   {% include "result.html" %}
                 {% endfor %}
             </div>
+            <div id="moreButton">
+                <a class="offset2 span8 btn" href="#" onclick="onClickMore('{{me}}', '{{query}}'); return false;">More</a>
+            </div>
+            <div id="moreButton-alert" >
+                <div class="offset2 span8 alert">
+                  <strong>No more data</strong>
+                </div>
+            </div>
             {% else %}
             {% include "result_except.html" %}
             {% endif %}
-        </div>
-        <div id="moreButton">
-            <a href="#" onclick="onClickMore('{{me}}', '{{query}}'); return false;">More developers...</a>
         </div>
     </div>
 </div>
