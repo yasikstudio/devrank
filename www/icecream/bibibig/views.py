@@ -45,39 +45,22 @@ class search(View):
     def get(self, request, *args, **kwargs):
         if request.GET.has_key(u'q'):
             c = DevRankModel()
+            login = request.COOKIES['own'] != None and True or False
 
-            me = 'None'
-            login = False
-
-            if request.GET.has_key(u'm'):
-                me = request.GET.get(u'm')
-                cookie = None
-
-                try:
-                    cookie = request.COOKIES['own']
-                except:
-                    pass
-
-                if me == cookie:
-                    #me
-                    login = True
-                elif c.oauth(me, False):
-                    #other user
-                    login = False
+            me = None
+            try:
+                if request.GET.has_key(u'm'):
+                    me = request.GET.get(u'm')
+                    if not c.crawled(me):
+                        raise
                 else:
-                    #bad user
-                    var = RequestContext(request, {
-                            'page_title': u'Devrank',
-                            'me' : me,
-                            })
-                    return render_to_response('except.html', var)
-
-            else:
-                try:
-                    me = request.COOKIES['own']
-                    login = True
-                except:
-                    return HttpResponseRedirect('/')
+                    raise
+            except:
+                var = RequestContext(request, {
+                        'page_title': u'Devrank',
+                        'me' : me,
+                        })
+                return render_to_response('except.html', var)
 
             details = c.search(request.GET.get(u'q'), me)
             for d in details:
@@ -88,7 +71,6 @@ class search(View):
 
                 if isinstance(d.blog, str) and (not "://" in d.blog) :
                     d.blog = "http://%s" % d.blog
-
 
             var = RequestContext(request, {
                     'page_title': u'Devrank',

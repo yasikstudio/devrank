@@ -243,3 +243,9 @@ select distinct * from
             return False
         else:
             return True
+
+
+    def crawled(self, user):
+        s = self.db.makesession()
+        cnt = s.query(func.count(User.id)).filter(User.login == user).scalar()
+        return cnt == 1

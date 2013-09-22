@@ -69,16 +69,9 @@
 
         <div class="row social">
             <div class="span12">
-                {% if login == True %}
-                    <div class="loader progress progress-striped active">
-                      <div class="span12 bar"></div>
-                    </div>
-                {% else %}
-                    <div class="alert">
-                      <h4>Warning!</h4>
-                        If you check social graph, must be login with github.
-                    </div>
-                {% endif %}
+                <div class="loader progress progress-striped active">
+                  <div class="span12 bar"></div>
+                </div>
                 <div id="social-graph-{{result.login}}"></div>
             </div>
         </div>
