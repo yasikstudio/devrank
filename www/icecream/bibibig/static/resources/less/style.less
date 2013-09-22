@@ -109,24 +109,33 @@ body {
     padding-bottom: 50px;
 
     #splash {
-        background:url(/static/images/background.png);
-        //background:url(/static/images/background2.png);
+        //background:url(/static/images/background.png);
+        background:url(/static/images/background5.png);
+        border-bottom: 3px solid @blue;
         margin-top: 30px;
-        margin-bottom:40px;
+        margin-bottom: 40px;
 
         #value-prop {
-            position:relative;
-            padding-top:40px;
+            position: relative;
+            padding-top: 40px;
 
+            #video_phone {
+                margin-top: 20px;
+            }
             #copy {
-                > h1 { font:@fontHead1 }
-                padding:@padding;
-                letter-spacing:-1px;
-                word-spacing:5px;
-                > a { letter-spacing:1px;}
+                > h1 { font: @fontHead1 }
+                padding: @padding;
+                letter-spacing: -1px;
+                word-spacing: 5px;
+                > a { letter-spacing: 1px;}
             }
 
             #laptop {
+                #intro_video {
+                    position: relative;
+                    top:30px;
+                    left:100px;
+                }
                 top:-70px;
                 left:600px;
                 width:863px;
@@ -139,11 +148,13 @@ body {
 }
 
 
+body{
+    background:url(/static/images/background4.png);
+}
 #social {
     margin-top:100px;
     margin-bottom:100px;
-    background:url(/static/images/background2.png);
-    border-bottom:5px solid @line;
+    //background:url(/static/images/background2.png);
 
     .socialtext {
         margin: 0px auto;
@@ -167,7 +178,6 @@ body {
 }
 
 #formula {
-    border-bottom:1px solid @blue;
     text-align:center;
     margin-bottom:100px;
     padding-bottom:100px;
@@ -178,18 +188,6 @@ body {
         .subline { margin-top:20px; font-size:15px; }
     }
 
-    .hero-tail {
-        background-image: -webkit-gradient(radial, 50% 0%, 0, 50% 0%, 65, color-stop(0%, rgba(0,0,0,0.08)), color-stop(65%, transparent));
-        background-image: -webkit-radial-gradient(top, rgba(0,0,0,0.08) 0%, transparent 65%);
-        background-image: -moz-radial-gradient(top, rgba(0,0,0,0.08) 0%, transparent 65%);
-        background-image: -o-radial-gradient(top, rgba(0,0,0,0.08) 0%, transparent 65%);
-        background-image: radial-gradient(top, rgba(0,0,0,0.08) 0%,transparent 65%);
-        width:100%;
-        height:10px;
-        bottom:-10px;
-        left:0px;
-        margin-bottom:50px;
-    }
 
 
     .feature { margin-top:50px; text-align:center; }
@@ -207,7 +205,7 @@ body {
         -o-border-radius: @radius-img;
         border-radius: @radius-img;
         margin-bottom: 10px;
-        border: 10px solid white;
+        border: 5px solid @lineLight;
         -webkit-box-shadow: 0px 1px 2px rgba(0,0,0,0.3),inset 0px 3px 8px rgba(0,0,0,0.3);
         -moz-box-shadow: 0px 1px 2px rgba(0,0,0,0.3),inset 0px 3px 8px rgba(0,0,0,0.3);
         box-shadow: 0px 1px 2px rgba(0,0,0,0.3),inset 0px 3px 8px rgba(0,0,0,0.3);
@@ -224,7 +222,6 @@ body {
 
 #preview {
     margin-top:100px;
-    border-bottom:1px solid @blue;
     text-align:center;
 }
 
