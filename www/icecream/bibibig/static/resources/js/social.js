@@ -11,8 +11,8 @@ function social_rel(graph, elid, width, height, mode) {
 
     var force = d3.layout.force()
         .size([width, height])
-        .charge(-900)
-        .linkDistance( 130 );
+        .charge(-1200)
+        .linkDistance( 230 );
 
     var nodes = {};
     graph.links.forEach(function(link) {
