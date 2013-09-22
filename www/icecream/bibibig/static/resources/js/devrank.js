@@ -1,4 +1,4 @@
-function activePos(me, who, detail, xhr){
+function activePos(me, who, detail){
     var id = 'social-graph-'+who;
 
     $("#"+id).empty();
@@ -12,12 +12,7 @@ function activePos(me, who, detail, xhr){
     var color = "#1abc9c";
     if (odd % 2 == 0){ color =  "#f1c40f"; }
 
-    if(xhr && xhr.readyState != 4){
-      $("#"+id).empty();
-      detail.children().find(".loader").show();
-      xhr.abort();
-    }
-    xhr = $.ajax({
+    var xhr = $.ajax({
       type: "GET",
       url: "/social.json?users=" + query,
       success: function(result, status, xhr) {
@@ -32,11 +27,8 @@ function activePos(me, who, detail, xhr){
     });
 }
 
-function initialize(me, query) {
-    var xhr_socialmap;
-    var xhr_task;
-    $('#query').val(query);
-    $(".task").on("click", function(d){
+function boundEvents(me, query) {
+    $(".task:not(.bound-click)").addClass('bound-click').on("click", function(d){
         var task = $(this);
         var who = $(this).attr('id').split("-")[1];
         var detail = $(this).parent().find("#detail-"+who);
@@ -55,12 +47,18 @@ function initialize(me, query) {
         if (!has_pos){
             task.ScrollTo({
                 callback: function(){
-                    activePos(me, who, detail, xhr_task);
+                    activePos(me, who, detail);
                 }
             });
         }
 
     });
+}
+
+function initialize(me, query) {
+    var xhr_socialmap;
+    $('#query').val(query);
+    boundEvents(me, query);
 
     $(".social-progress").hide();
     $("#social_map").on("click",{ me : "{{me}}"}, function(d){
@@ -129,13 +127,13 @@ function onClickMore(me, query) {
     var count = $(".task-userid a").size();
     if (count % USERS_PER_PAGE != 0) {
         removeMoreButton();
-        alert('Error: no more data...');
     } else {
         var page = (count / 20) + 1;
         $.ajax({
             url: '/search?' + $.param({m: me, q: query, p: page})
         }).done(function(data) {
             $("#result_list_data").append(data);
+            boundEvents(me, query);
             var newCount = $(".task-userid a").size();
             if (count == newCount) {
                 removeMoreButton();
