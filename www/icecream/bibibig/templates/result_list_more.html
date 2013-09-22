@@ -1,9 +1,3 @@
-            {% if results|length != 0 %}
-            <div class="offset2 span8 offset2">
-                {% for result in results %}
-                  {% include "result.html" %}
-                {% endfor %}
-            </div>
-            {% else %}
-            {% include "result_except.html" %}
-            {% endif %}
+        {% for result in results %}
+          {% include "result.html" %}
+        {% endfor %}
