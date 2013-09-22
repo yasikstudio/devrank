@@ -75,7 +75,8 @@ class search(View):
                     'results': details,
                     'query': request.GET.get(u'q'),
                     'login': logined,
-                    'me' : me,
+                    'me': me,
+                    'has_more': len(details) % 20 == 0,
                     })
 
             if page == 1:

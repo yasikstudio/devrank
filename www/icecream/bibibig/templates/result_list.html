@@ -46,7 +46,7 @@
     <div class='row-fluid'>
         <div id="result_list">
             {% if results|length != 0 %}
-            <div class="offset2 span8 offset2">
+            <div id="result_list_data" class="offset2 span8 offset2">
                 {% for result in results %}
                   {% include "result.html" %}
                 {% endfor %}
@@ -55,8 +55,8 @@
             {% include "result_except.html" %}
             {% endif %}
         </div>
-        <div>
-            <a href="#" onclick="onClickMore(); return false;">More...</a>
+        <div id="moreButton">
+            <a href="#" onclick="onClickMore('{{me}}', '{{query}}'); return false;">More developers...</a>
         </div>
     </div>
 </div>

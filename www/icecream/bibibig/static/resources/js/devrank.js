@@ -112,6 +112,26 @@ function initialize(me, query) {
     });
 }
 
-function onClickMore() {
-    // TODO
+function removeMoreButton() {
+    $("#moreButton").html("<div>no more data</div>");
+}
+
+function onClickMore(me, query) {
+    var USERS_PER_PAGE = 20;
+    var count = $(".task-userid a").size();
+    if (count % USERS_PER_PAGE != 0) {
+        removeMoreButton();
+        alert('Error: no more data...');
+    } else {
+        var page = (count / 20) + 1;
+        $.ajax({
+            url: '/search?' + $.param({m: me, q: query, p: page})
+        }).done(function(data) {
+            $("#result_list_data").append(data);
+            var newCount = $(".task-userid a").size();
+            if (count == newCount) {
+                removeMoreButton();
+            }
+        });
+    }
 }
