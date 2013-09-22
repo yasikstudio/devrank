@@ -77,40 +77,34 @@
 {% block body %}
 <div class='container'>
     <div class='row-fluid'>
-            <div class="offset2 span8">
-                <div id="result_head" class="row">
-                    <div id="logo" class="span4">
-                        <a href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
-                    </div>
 
+        <div class="navbar navbar-fixed-top">
+          <div id="result_head" class="navbar-inner">
+            <a class="brand" href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
+                {% if login == True %}
+                <form id='search_form' class="nav navbar-form pull-left" action="/home">
+                    <div class="control-group success">
+                        <input type="hidden" name='m' value="{{ me }}"></input>
+                        <input placeholder="Enter Keyword" name='q' type="text" id="query" class="search-query" autocomplete="off"> </input>
+                    </div>
+                </form>
+                {% endif %}
+                <ul class="nav nav-bar pull-right">
                     {% if login == True %}
-                    <div id="search" class="span8">
-                        <form action="/home" id="search_form">
-                            <div class="input-append">
-                                <div class="control-group success">
-                                    <input type="hidden" name='m' value="{{ me }}"></input>
-                                    <input  placeholder="Enter Keyword" name='q' type="text" id="query" class="search" autocomplete="off"> </input>
-                                    <button type="submit" class="search btn" id="submit">Search</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                      <li><a href="#">Social Map</a></li>
+                      <li><a href="/logout">Logout</a></li>
                     {% else %}
-                    <div class="offset5 span3">
-                        <a class="btn btn btn-info" href="/login/github">
-                            <i class="icon-github icon-1x"></i> Connect with Github
-                        </a>
-                    </div>
+                      <li><a href="/login/github"><i class="icon-github icon-1x"></i> Connect with Github</a></li>
                     {% endif %}
+                </ul>
+          </div>
+        </div>
 
-                </div>
-            </div>
-
-            <div id="result-lists" class="offset2 span8 offset2">
-                {% for result in results %}
-                  {% include "result.html" %}
-                {% endfor %}
-            </div>
+        <div class="offset2 span8 offset2">
+            {% for result in results %}
+              {% include "result.html" %}
+            {% endfor %}
+        </div>
 
     </div>
 </div>

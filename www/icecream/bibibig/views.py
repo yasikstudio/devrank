@@ -10,6 +10,11 @@ from sqlalchemy.orm import class_mapper
 
 import json
 
+def logout(request):
+    response = HttpResponseRedirect('/')
+    response.delete_cookie('own')
+    return response
+
 def login_github(request):
     o = OAuthManager()
     return HttpResponseRedirect(o.login_request())

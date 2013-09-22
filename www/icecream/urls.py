@@ -12,6 +12,7 @@ urlpatterns = patterns('',
 
     url(r'^oauth/$', oauth),
     url(r'^login/github/$', login_github),
+    url(r'^logout/$', logout),
     # url(r'^icecream/', include('icecream.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
