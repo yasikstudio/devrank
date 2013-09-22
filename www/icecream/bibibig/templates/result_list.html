@@ -44,7 +44,7 @@
             $('#query').val("{{query}}");
             $(".task").on("click", function(d){
                 var task = $(this);
-                var who = str($(this).attr('id')).split("-")[1];
+                var who = $(this).attr('id').split("-")[1];
                 var detail = $(this).parent().find("#detail-"+who);
                 var has_pos = detail.hasClass("pos")
 
