@@ -63,25 +63,52 @@ function initialize(me, query) {
     });
 
     $("#social_map").on("click",function(d){
-        var users = $(".task-userid a").map(function() {return $(this).text()});
-        users = $.makeArray(users);
-        users.unshift('{{me}}');
         var id = "social-map";
+        var toggle = $(this).hasClass("toggle");
 
-        if(xhr_socialmap && xhr_socialmap.readyState != 4){
-          xhr_socialmap.abort();
+        if (toggle == false){
+            $("#social_map").toggleClass("toggle");
+            $("#social_map").text("Back");
+            $("#search_form").hide();
+            var users = $(".task-userid a").map(function() {return $(this).text()});
+            users = $.makeArray(users);
+            users.unshift('{{me}}');
+
+            if(xhr_socialmap && xhr_socialmap.readyState != 4){
+              xhr_socialmap.abort();
+            }
+
+            var width = $( window ).width();
+            var height = $( window ).height() - $(".navbar").height();
+            $("#"+id).animate(
+                { height: height },
+                'slow',
+                function() {
+                    xhr_socialmap = $.ajax({
+                      type: "GET",
+                      url: "/social.json?users=" + users,
+                      success: function(result, status, xhr) {
+                          social_rel(result, '#' + id, width, height);
+                      },
+                    });
+                }
+            );
+        }else{
+            if(xhr_socialmap){
+              xhr_socialmap.abort();
+            }
+            $("#social_map").toggleClass("toggle");
+            $("#social_map").text("Social Map");
+            $("#search_form").show();
+            $("#"+id).animate(
+                { height: 0 },
+                'slow',
+                function() {
+                    $("#"+id).empty();
+                }
+            );
         }
-        xhr_socialmap = $.ajax({
-          type: "GET",
-          url: "/social.json?users=" + users,
-          success: function(result, status, xhr) {
-          $("#"+id).css("background-color", "black");
-              var width = $("#"+id).width();
-              var height = 500;
 
-              social_rel(result, '#' + id, width, height);
-          },
-        });
     });
 }
 
