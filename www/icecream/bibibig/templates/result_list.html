@@ -92,7 +92,9 @@
                                 <input placeholder="Enter Keyword" name='q' type="text" id="query" class="span4 search-query" autocomplete="off"> </input>
                             </div>
                         </form>
+                        {% if results|length != 0 %}
                         <li><a href="#">Social Map</a></li>
+                        {% endif %}
                         <li><a href="/logout">Logout</a></li>
                         {% else %}
                         <li><a href="/login/github"><i class="icon-github icon-1x"></i> Connect with Github</a></li>
