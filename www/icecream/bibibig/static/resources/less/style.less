@@ -3,7 +3,6 @@
 
 @fontBase:13px  Helvetica,  arial, freesans, clean, sans-serif;
 @fontHead1:50px 'Poiret One';
-@fontHead2:13px 'Rock Salt';
 @padding:20px;
 
 @line: #E5E5E5;
@@ -150,23 +149,19 @@ body {
     }
 
     .content {
-        #head {
-            font:@fontHead2;
-            text-align:center;
-            line-height:250%;
-            > p {
-                letter-spacing:8px;
-                word-spacing:10px;
-                }
-        }
         .socialtext {
-            font-size:15px;
-            padding-left:50px;
-            text-align:left;
-            line-height:250%;
-            letter-spacing:1px;
-            word-spacing:2px;
-            padding-bottom:50px;
+            #head {
+                text-align:center;
+                > p {
+                    letter-spacing:8px;
+                    word-spacing:10px;
+                    }
+                }
+                padding:@padding;
+                font-size:15px;
+                line-height:250%;
+                letter-spacing:1px;
+                word-spacing:2px;
             }
     }
 }
