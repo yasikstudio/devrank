@@ -25,7 +25,7 @@ def oauth(request):
     o.callback_response(request.get_full_path())
     me = json.loads(o.getUser())['login']
     c.oauth(me)
-    response = HttpResponseRedirect('/home?m='+me)
+    response = HttpResponseRedirect('/search?m='+me)
     response.set_cookie('own', me)
     return response
 
@@ -41,7 +41,7 @@ class intro(View):
         except:
             return render_to_response('intro.html', var)
 
-class home(View):
+class search(View):
     def get(self, request, *args, **kwargs):
         if request.GET.has_key(u'q'):
             c = DevRankModel()
@@ -103,8 +103,7 @@ class home(View):
 def social_json(request):
     c = DevRankModel()
     usersparam = request.GET.get('users', None)
-    users = usersparam and usersparam.split('|') or []
-    print users
+    users = usersparam and usersparam.split(',') or []
     data = {
         "links": c.social_search(users)
     }
