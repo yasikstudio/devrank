@@ -12,34 +12,35 @@
 {% endblock %}
 
 {% block body %}
-        <div class="navbar navbar-static-top">
-          <div id="result_head" class="navbar-inner">
-            <div class='container'>
-                <a class="brand" href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
-                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </a>
-                    <ul class="nav-collapse collapse nav nav-bar pull-right">
-                        {% if login == True %}
-                        <form id='search_form' class="nav navbar-form" action="/home">
-                            <div class="control-group success">
-                                <input type="hidden" name='m' value="{{ me }}"></input>
-                                <input placeholder="Enter Keyword" name='q' type="text" id="query" class="span4 search-query" autocomplete="off"> </input>
-                            </div>
-                        </form>
-                        {% if results|length != 0 %}
-                        <li><a id="social_map" href="#">Social Map</a></li>
-                        {% endif %}
-                        <li><a href="/logout">Logout</a></li>
-                        {% else %}
-                        <li><a href="/login/github"><i class="icon-github icon-1x"></i> Connect with Github</a></li>
-                        {% endif %}
-                    </ul>
-              </div>
-          </div>
-        </div>
+<div id="social-map"></div>
+<div class="navbar navbar-static-top">
+  <div id="result_head" class="navbar-inner">
+    <div class='container'>
+        <a class="brand" href='/'><img src='{{ STATIC_URL }}images/logo.png'></a>
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <ul class="nav-collapse collapse nav nav-bar pull-right">
+                {% if login == True %}
+                <form id='search_form' class="nav navbar-form" action="/home">
+                    <div class="control-group success">
+                        <input type="hidden" name='m' value="{{ me }}"></input>
+                        <input placeholder="Enter Keyword" name='q' type="text" id="query" class="span4 search-query" autocomplete="off"> </input>
+                    </div>
+                </form>
+                {% if results|length != 0 %}
+                <li><a id="social_map" href="#">Social Map</a></li>
+                {% endif %}
+                <li><a href="/logout">Logout</a></li>
+                {% else %}
+                <li><a href="/login/github"><i class="icon-github icon-1x"></i> Connect with Github</a></li>
+                {% endif %}
+            </ul>
+      </div>
+  </div>
+</div>
 
 <div class='container'>
     <div class='row-fluid'>

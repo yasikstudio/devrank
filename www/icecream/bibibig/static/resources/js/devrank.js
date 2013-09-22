@@ -64,7 +64,23 @@ function initialize(me, query) {
     $("#social_map").on("click",function(d){
         var users = $(".task-userid a").map(function() {return $(this).text()});
         users = $.makeArray(users);
-        users.unshift(me);
+        users.unshift('{{me}}');
+        var id = "social-map";
+
+        if(xhr && xhr.readyState != 4){
+          xhr.abort();
+        }
+        xhr = $.ajax({
+          type: "GET",
+          url: "/social.json?users=" + users,
+          success: function(result, status, xhr) {
+          $("#"+id).css("background-color", "black");
+              var width = $("#"+id).width();
+              var height = 500;
+
+              social_rel(result, '#' + id, width, height);
+          },
+        });
     });
 }
 
