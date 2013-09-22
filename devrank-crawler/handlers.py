@@ -465,8 +465,8 @@ class OrganizationHandler(BaseHandler):
                     self.queue(new_qu)
                     # friendship flag
                     if member['id'] and qu.user_id != member['id']:
-                        friends.append(contributor['id'])
-                        friend_owners.append(contributor['id'])
+                        friends.append(member['id'])
+                        friend_owners.append(member['id'])
             self.add_friendship(qu.user_id, friends)
             self.add_friend_ownership(friend_owners, qu.user_id)
             qu.completed_dt = datetime.datetime.utcnow()
