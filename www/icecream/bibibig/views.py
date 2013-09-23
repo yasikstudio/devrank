@@ -71,7 +71,6 @@ class search(View):
 
             var = RequestContext(request, {
                     'page_title': u'Devrank',
-                    'length': len(details),
                     'results': details,
                     'query': request.GET.get(u'q'),
                     'login': logined,

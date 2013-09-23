@@ -64,6 +64,7 @@ function initialize(me, query) {
     $(".social-progress").hide();
     $("#social_map").on("click",{ me : "{{me}}"}, function(d){
         var id = "social-map-content";
+        var draw = ".social-map-draw";
         var toggle = $(this).hasClass("toggle");
 
         if (toggle == false){
@@ -92,14 +93,14 @@ function initialize(me, query) {
                       url: "/social.json?users=" + users,
                       success: function(result, status, xhr) {
                           $(".social-progress").hide();
-                          social_rel(result, '#' + id, width, height, false);
+                          social_rel(result, draw, width, height, false);
                       },
                     });
                 }
             );
         }else{
             if(xhr_socialmap){
-              $(".social-progress").hide();
+                $(".social-progress").hide();
               xhr_socialmap.abort();
             }
             $(this).toggleClass("toggle");
@@ -110,7 +111,7 @@ function initialize(me, query) {
                 { height: 0 },
                 'slow',
                 function() {
-                    $("#"+id).empty();
+                    $(draw).empty();
                     $("#"+id).hide();
                 }
             );
