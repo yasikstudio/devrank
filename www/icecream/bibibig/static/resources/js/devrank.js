@@ -57,18 +57,20 @@ function boundEvents(me, query) {
 
 function initialize(me, query) {
     $("#moreButton-alert").hide();
+    $("#moreButton-progress").hide();
+    $("#social-progress").hide();
+
     var xhr_socialmap;
     $('#query').val(query);
     boundEvents(me, query);
 
-    $(".social-progress").hide();
     $("#social_map").on("click",{ me : "{{me}}"}, function(d){
         var id = "social-map-content";
-        var draw = ".social-map-draw";
+        var draw = "#social-map-draw";
         var toggle = $(this).hasClass("toggle");
 
         if (toggle == false){
-            $(".social-progress").show();
+            $("#social-progress").show();
             $("#"+id).show();
             $(this).toggleClass("toggle");
             $(this).text("Back");
@@ -92,7 +94,7 @@ function initialize(me, query) {
                       type: "GET",
                       url: "/social.json?users=" + users,
                       success: function(result, status, xhr) {
-                          $(".social-progress").hide();
+                          $("#social-progress").hide();
                           social_rel(result, draw, width, height, false);
                       },
                     });
@@ -100,7 +102,7 @@ function initialize(me, query) {
             );
         }else{
             if(xhr_socialmap){
-                $(".social-progress").hide();
+                $("#social-progress").hide();
               xhr_socialmap.abort();
             }
             $(this).toggleClass("toggle");
@@ -121,7 +123,7 @@ function initialize(me, query) {
 }
 
 function removeMoreButton() {
-    $("#moreButton").fadeOut();
+    $("#moreButton").hide();
     $("#moreButton-alert").fadeIn();
 }
 
@@ -132,10 +134,14 @@ function onClickMore(me, query) {
         removeMoreButton();
     } else {
         var page = (count / 20) + 1;
+        $("#moreButton-progress").fadeIn();
+        $("#moreButton").hide();
         $.ajax({
             url: '/search?' + $.param({m: me, q: query, p: page})
         }).done(function(data) {
             $("#result_list_data").append(data);
+            $("#moreButton-progress").hide();
+            $("#moreButton").fadeIn();
             boundEvents(me, query);
             var newCount = $(".task-userid a").size();
             if (count == newCount) {

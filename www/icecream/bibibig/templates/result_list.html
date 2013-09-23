@@ -13,10 +13,10 @@
 
 {% block body %}
 <div id="social-map-content">
-    <div class="social-progress row-fluid progress progress-striped active">
+    <div id="social-progress" class="row-fluid progress progress-striped active">
         <div class="span12 bar"></div>
     </div>
-    <div class="social-map-draw"></div>
+    <div id="social-map-draw"></div>
 </div>
 <div class="navbar navbar-static-top">
   <div id="result_head" class="navbar-inner">
@@ -55,6 +55,11 @@
                 {% for result in results %}
                   {% include "result.html" %}
                 {% endfor %}
+            </div>
+            <div id="moreButton-progress" class="row-fluid">
+                <div class="offset2 span8 progress progress-striped active">
+                    <div class="span12 bar"></div>
+                </div>
             </div>
             <div id="moreButton">
                 <a class="offset2 span8 btn" href="#" onclick="onClickMore('{{me}}', '{{query}}'); return false;">More</a>
