@@ -229,7 +229,6 @@ select distinct * from
                     'target': row[dest],
                     'src_gravatar_url': row[src_gravatar],
                     'tgt_gravatar_url': row[dest_gravatar],
-                    'type': 'type3'
                 })
         return links
 

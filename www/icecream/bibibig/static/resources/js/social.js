@@ -1,7 +1,6 @@
 function social_rel(graph, elid, width, height, mode) {
     //* mode false is social_map mode.
 
-    var color = d3.scale.category20();
     var radius = d3.scale.sqrt()
         .range([0, 6]);
 
@@ -10,9 +9,17 @@ function social_rel(graph, elid, width, height, mode) {
         .attr("height", height);
 
     var force = d3.layout.force()
-        .size([width, height])
-        .charge(-1200)
-        .linkDistance( 230 );
+        .size([width, height]);
+
+        if (mode == false){
+          force.gravity(1)
+          .charge(-4000)
+          .linkDistance( 200 );
+        }else if (mode == true){
+          force.gravity(0.05)
+          .charge(-2000)
+          .linkDistance( 100 );
+        }
 
     var nodes = {};
     graph.links.forEach(function(link) {
@@ -26,26 +33,14 @@ function social_rel(graph, elid, width, height, mode) {
         .on("tick", tick)
         .start();
 
-
-    svg.append("defs").selectAll("marker")
-        .data(["type1", "type2", "type3"])
-        .enter().append("marker")
-        .attr("id", String)
-        .attr("viewBox", "0 -5 10 10")
-        .attr("refX", 15)
-        .attr("refY", 0)
-        .attr("markerWidth", 7)
-        .attr("markerHeight", 7)
-        .attr("orient", "auto")
-        .attr("fill","#ffffff")
-        .append("path")
-        .attr("d", "M0,-5L5,0L0,6");
-
     var path = svg.append("g").selectAll("path")
         .data(force.links())
         .enter().append("path")
-        .attr("class", function(d) { return "link " + d.type; })
-        .style("stroke-width", function(d) { return Math.sqrt(8); });
+        if (mode == false){
+          path.attr("class", function(d) { return "link type1"; });
+        }else if (mode == true){
+          path.attr("class", function(d) { return "link type2"; });
+        }
 
     var node = svg.append("g").selectAll("circle")
         .data(force.nodes())
@@ -55,20 +50,19 @@ function social_rel(graph, elid, width, height, mode) {
         .attr("cy", function(d) { return d.y; })
         .call(force.drag);
 
-        node.append("defs")
-        .append('mask')
+        node.append('mask')
         .attr("id", "mask_pic")
         .append("circle")
-        .attr("r", function(d) { return radius(15); })
+        .attr("r", function(d) { return radius(20); })
         .style("fill", "#ffffff");
 
         node.append('image')
         .attr("xlink:href", function(d) { return d.gravatar_url; })
         .attr("mask", "url(#mask_pic)")
-        .attr("x", -25)
-        .attr("y", -25)
-        .attr("width", 50)
-        .attr("height", 50);
+        .attr("x", -30)
+        .attr("y", -30)
+        .attr("width", 60)
+        .attr("height", 60);
 
         node.append("text")
         .attr("dy", 35)
