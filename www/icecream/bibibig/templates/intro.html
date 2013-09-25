@@ -19,8 +19,8 @@
             <div id="value-prop">
                 <div class="container">
                     <div class="hidden-phone" id="laptop">
-                        <video id="intro_video" class="video-js vjs-default-skin" controls preload="auto" width="660" height="413" poster='{{ STATIC_URL }}images/devrank_poster.png'>
-                            <source src="http://video-js.zencoder.com/oceans-clip.mp4" type='video/mp4' />
+                        <video id="intro_video" class="video-js vjs-default-skin" controls width="660" height="413" poster='{{ STATIC_URL }}images/devrank_poster.png'>
+                        <source src="{{ STATIC_URL}}video/intro.mp4" type='video/mp4' />
                         </video>
                     </div>
                     <div id="copy">
@@ -36,9 +36,8 @@
                             <i class="icon-github icon-1x"></i> Connect with Github
                         </a>
                         <div id="video_phone" class="visible-phone" >
-                            <video id="intro_video" class="video-js vjs-default-skin" controls preload="auto" width="100%" height=auto
-                                poster=auto >
-                                <source src="http://video-js.zencoder.com/oceans-clip.mp4" type='video/mp4' />
+                            <video id="intro_video" class="video-js vjs-default-skin" controls  width="100%" height=auto poster='{{ STATIC_URL }}images/devrank_poster.png'>
+                                <source src="{{ STATIC_URL}}video/intro.mp4" type='video/mp4' />
                             </video>
                         </div>
                     </div>
