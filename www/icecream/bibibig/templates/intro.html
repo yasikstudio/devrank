@@ -17,24 +17,9 @@
             <div id="value-prop">
                 <div class="container">
                     <div class="hidden-phone" id="laptop">
-                        <div id="intro_video"></div>
-                        <script>
-                          var tag = document.createElement('script');
-                          tag.src = "https://www.youtube.com/iframe_api";
-                          var firstScriptTag = document.getElementsByTagName('script')[0];
-                          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-                          // 3. This function creates an <iframe> (and YouTube player)
-                          //    after the API code downloads.
-                          var player;
-                          function onYouTubeIframeAPIReady() {
-                            player = new YT.Player('intro_video', {
-                              height: '413',
-                              width: '660',
-                              videoId: 'ueM1HNzgbxI'
-                            });
-                          }
-                        </script>
+                        <div id="intro_video">
+                            <iframe width="660" height="413" src="//www.youtube.com/embed/ueM1HNzgbxI" frameborder="0" allowfullscreen></iframe>
+                        </div>
                     </div>
                     <div id="copy">
                         <h1>Discover great developers<br />associated with you.</h1>
@@ -49,9 +34,9 @@
                             <i class="icon-github icon-1x"></i> Connect with Github
                         </a>
                         <div id="video_phone" class="visible-phone" >
-                            <video id="intro_video" class="video-js vjs-default-skin" controls  width="100%" height=auto poster='{{ STATIC_URL }}images/devrank_poster.png'>
-                                <source src="{{ STATIC_URL}}video/intro.mp4" type='video/mp4' />
-                            </video>
+                            <div id="intro_video">
+                                <iframe width="100%" src="//www.youtube.com/embed/ueM1HNzgbxI" frameborder="0" allowfullscreen></iframe>
+                            </div>
                         </div>
                     </div>
                 </div>
