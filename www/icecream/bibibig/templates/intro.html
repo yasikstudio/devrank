@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block head %}
-<link href="http://vjs.zencdn.net/4.1/video-js.css" rel="stylesheet">
-<script src="http://vjs.zencdn.net/4.1/video.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -19,9 +17,24 @@
             <div id="value-prop">
                 <div class="container">
                     <div class="hidden-phone" id="laptop">
-                        <video id="intro_video" class="video-js vjs-default-skin" controls preload="auto" width="660" height="413" poster='{{ STATIC_URL }}images/devrank_poster.png'>
-                            <source src="http://video-js.zencoder.com/oceans-clip.mp4" type='video/mp4' />
-                        </video>
+                        <div id="intro_video"></div>
+                        <script>
+                          var tag = document.createElement('script');
+                          tag.src = "https://www.youtube.com/iframe_api";
+                          var firstScriptTag = document.getElementsByTagName('script')[0];
+                          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+                          // 3. This function creates an <iframe> (and YouTube player)
+                          //    after the API code downloads.
+                          var player;
+                          function onYouTubeIframeAPIReady() {
+                            player = new YT.Player('intro_video', {
+                              height: '413',
+                              width: '660',
+                              videoId: 'ueM1HNzgbxI'
+                            });
+                          }
+                        </script>
                     </div>
                     <div id="copy">
                         <h1>Discover great developers<br />associated with you.</h1>
