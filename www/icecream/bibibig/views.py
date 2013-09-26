@@ -9,6 +9,7 @@ from oauthmanagers import OAuthManager
 from sqlalchemy.orm import class_mapper
 
 import json
+import re
 
 def logout(request):
     response = HttpResponseRedirect('/')
@@ -54,8 +55,6 @@ class search(View):
                     me = request.GET.get(u'm')
                     if not c.crawled(me):
                         raise
-                else:
-                    raise
             except:
                 var = RequestContext(request, {
                         'page_title': u'Devrank',
@@ -63,7 +62,9 @@ class search(View):
                         })
                 return render_to_response('except.html', var)
 
-            details = c.search(request.GET.get(u'q'), me, page)
+            queries = re.split(r'[ \t]+', request.GET.get(u'q').strip())
+            print queries
+            details = c.search(queries, me, page)
             for d in details:
                 d.hireable = d.hireable == True and "Can!" or "Can't"
                 if isinstance(d.blog, str) and (not "://" in d.blog) :

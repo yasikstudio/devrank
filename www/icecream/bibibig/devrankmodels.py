@@ -37,9 +37,9 @@ class DevRankModel(object):
         s.close()
         return userid
 
-    def search(self, query, me=None, page=1, page_per_row=20):
+    def search(self, queries, me=None, page=1, page_per_row=20):
         if me == None:
-            return self._search_global(query)
+            return self._search_global(queries)
         search_sql = u'''
 select distinct * from
 (
@@ -76,13 +76,16 @@ select distinct * from
 limit %(limit_clause)s
 '''
         limit_clause = '%d, %d' % ((page - 1) * page_per_row, page_per_row)
-        where_clause_qry = '''
-            and (r.description like '%(like_qry)s'
-            or r.language like '%(like_qry)s'
-            or u.location like '%(like_qry)s'
-            or u.login like '%(like_qry)s'
-            or u.name like '%(like_qry)s')
-        ''' % {'like_qry': '%%%s%%' % query}
+
+        orlist = ["""r.description like '%(like_qry)s' or
+                     r.language like '%(like_qry)s' or
+                     u.location like '%(like_qry)s' or
+                     u.login like '%(like_qry)s' or
+                     u.name like '%(like_qry)s'
+                  """ % {'like_qry': '%%%s%%' % q}
+                  for q in queries]
+        where_clause_qry = 'and (%s)' % ' or '.join(orlist)
+        print where_clause_qry
         sql = search_sql % {'where_clause_qry': where_clause_qry,
                             'limit_clause': limit_clause}
         me_id = self._get_user_id(me)
@@ -96,15 +99,18 @@ limit %(limit_clause)s
         s.close()
         return users
 
-    def _search_global(self, query, page=1, page_per_row=20):
+    def _search_global(self, queries, page=1, page_per_row=20):
         s = self.db.makesession()
-        likequery = '%%%s%%' % query
+        whereargs = []
+        for q in queries:
+            likequery = '%%%s%%' % q
+            whereargs += [Repo.description.like(likequery), \
+                          Repo.language.like(likequery), \
+                          User.location.like(likequery), \
+                          User.login.like(likequery), \
+                          User.name.like(likequery)]
         users = s.query(User).join(Repo, User.id == Repo.owner_id) \
-                 .filter(or_(Repo.description.like(likequery), \
-                             Repo.language.like(likequery), \
-                             User.location.like(likequery), \
-                             User.login.like(likequery), \
-                             User.name.like(likequery))) \
+                 .filter(or_(*whereargs)) \
                  .order_by(User.devrank_score.desc()) \
                  .distinct() \
                  .limit(page_per_row) \
