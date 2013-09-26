@@ -77,14 +77,14 @@ limit %(limit_clause)s
 '''
         limit_clause = '%d, %d' % ((page - 1) * page_per_row, page_per_row)
 
-        orlist = ["""r.description like '%(like_qry)s' or
-                     r.language like '%(like_qry)s' or
-                     u.location like '%(like_qry)s' or
-                     u.login like '%(like_qry)s' or
-                     u.name like '%(like_qry)s'
-                  """ % {'like_qry': '%%%s%%' % q}
-                  for q in queries]
-        where_clause_qry = 'and (%s)' % ' or '.join(orlist)
+        andlist = ["""(r.description like '%(like_qry)s' or
+                      r.language like '%(like_qry)s' or
+                      u.location like '%(like_qry)s' or
+                      u.login like '%(like_qry)s' or
+                      u.name like '%(like_qry)s')
+                      """ % {'like_qry': '%%%s%%' % q}
+                   for q in queries]
+        where_clause_qry = 'and (%s)' % ' and '.join(andlist)
         print where_clause_qry
         sql = search_sql % {'where_clause_qry': where_clause_qry,
                             'limit_clause': limit_clause}
