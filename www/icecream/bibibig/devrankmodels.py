@@ -31,9 +31,11 @@ class DevRankModel(object):
     def _get_user_id(self, login):
         s = self.db.makesession()
         user = s.query(User).filter_by(login=login).first()
-        if user == None:
-            return None
-        return user.id
+        userid = None
+        if user != None:
+            userid = user.id
+        s.close()
+        return userid
 
     def search(self, query, me=None, page=1, page_per_row=20):
         if me == None:
@@ -91,6 +93,7 @@ limit %(limit_clause)s
             u.public_repos = self._get_repos_count(s, u.id)
             u.followers = self._get_followers_count(s, u.id)
             u.following = self._get_following_count(s, u.id)
+        s.close()
         return users
 
     def _search_global(self, query, page=1, page_per_row=20):
@@ -111,6 +114,7 @@ limit %(limit_clause)s
             u.public_repos = self._get_repos_count(s, u.id)
             u.followers = self._get_followers_count(s, u.id)
             u.following = self._get_following_count(s, u.id)
+        s.close()
         return users
 
     def _get_repos_count(self, session, login_id):
@@ -230,23 +234,29 @@ select distinct * from
                     'src_gravatar_url': row[src_gravatar],
                     'tgt_gravatar_url': row[dest_gravatar],
                 })
+        s.close()
         return links
 
 
     def oauth(self, user, DBSave=True):
         s = self.db.makesession()
         r = s.query(Member).filter(Member.login == user).scalar()
+        successed = None
         if r == None:
             if DBSave:
                 s = self.db.makesession()
                 s.add(Member(user))
                 s.commit()
-            return False
+            successed = False
         else:
-            return True
+            successed = True
+        s.close()
+        return successed
 
 
     def crawled(self, user):
         s = self.db.makesession()
         cnt = s.query(func.count(User.id)).filter(User.login == user).scalar()
-        return cnt == 1
+        ret = (cnt == 1)
+        s.close()
+        return ret

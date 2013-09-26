@@ -25,9 +25,9 @@ class DevRankDB(object):
         Org.metadata.create_all(self.engine)
         TaskQueue.metadata.create_all(self.engine)
         Member.metadata.create_all(self.engine)
-        self.session = sessionmaker(bind=self.engine,    \
-                                        autoflush = False, \
-                                        autocommit = False)
+        self.session = sessionmaker(bind=self.engine, \
+                                    autoflush = False, \
+                                    autocommit = False)
 
     def connect(self):
         return self.engine.connect()
@@ -129,3 +129,4 @@ if __name__ == '__main__':
         f = open(filename, 'r')
         update_score(s, f)
         f.close()
+    s.close()
