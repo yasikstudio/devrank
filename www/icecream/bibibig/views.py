@@ -63,7 +63,6 @@ class search(View):
                 return render_to_response('except.html', var)
 
             queries = re.split(r'[ \t]+', request.GET.get(u'q').strip())
-            print queries
             details = c.search(queries, me, page)
             for d in details:
                 d.hireable = d.hireable == True and "Can!" or "Can't"
